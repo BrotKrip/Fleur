@@ -1,0 +1,25 @@
+Референсы группы A. Нейтральные спрайты — исходные прозрачные PNG из ref/. Встроенный image_gen редактировал двойной атлас лиц для двух эмоций. Кадр, силуэт и поза берутся из референса.
+
+Общая часть каждого запроса
+Use case: identity-preserve. This is a registered expression atlas for a visual novel sprite. Edit the attached 2:1 contact sheet of two identical 512x512 crops of the SAME face, preserving identical framing and subject scale, side by side, no gutter; ultra-close crop must remain exactly as tightly clipped on all four edges as the input. Do not zoom out or show more costume, do not move heads or change silhouette. Draw two clearly distinct expressions using the brows, eyelids and lips only. Exactly retain original face proportions, age, eye colors and iris design, skin color and light, linework, hair, head tilt and costume. Keep clean original line-art style, a genuine RGBA background, absolutely no text, borders or labels. 
+
+arue.png
+Left: eyes closed in a warm jovial smiling grin, bushy moustache intact. Right: concentrated and thoughtful, questioning brows and closed lips beneath the same moustache.
+
+arlecchino.png
+Left: serious, severe downward eyebrows, a firmly closed mouth and a direct assessing stare. Right: smug, half-lidded red-cross eyes, an asymmetrical, crystalline little smirk.
+
+chevreuse.png
+Left: annoyed, narrow the one visible purple eye, knitted brow and tight displeased downturned mouth. Right: genuine warm smile with the visible eye gently closed, open smiling lips. Black eyepatch stays on viewer-right with its original gold motif and her beauty spot remains.
+
+emilie.png
+Left: thoughtful, eyes looking sideways and upward through her unchanged glasses, gently puckered lips and one questioning brow. Right: serious laboratory professional, unwavering focused eyes, lowered brows and firm mouth.
+
+escoffier.png
+Left: gentle cheerful smile, softly closed eyes, slight open smiling lips. Right: determined professional, gaze forward-right, brows firm and tightly resolved lips. Keep the same three-quarter face direction.
+
+furina.png
+Left: happy, eyes closed in two curved upward arcs and delightfully laughing mouth. Right: smug, knowing half-lidded heterochromic eyes and slightly upturned asymmetrical closed mouth; keep her theatrical charm.
+
+neuvillette.png
+Left: thoughtful, eyes almost shut with inward concentration, a very slight furrow and pensive serious mouth. Right: calm gracious visible smile, softened brows, warmly opened eyes and gently upturned lips.

@@ -757,7 +757,7 @@
 		"type": "location",
 		"title": "Опера «Эпиклез»",
 		"subtitle": "Маршрут через станцию Маркот",
-		"bg": "epiclèse_foyer",
+		"bg": "epiclèse_exterior",
 		"pin": [
 			0.272,
 			0.467
@@ -790,7 +790,7 @@
 		"type": "location",
 		"title": "Дворец Мермония",
 		"subtitle": "Верхний ярус",
-		"bg": "mermonia",
+		"bg": "mermonia_exterior",
 		"pin": [
 			0.353,
 			0.216

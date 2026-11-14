@@ -352,7 +352,12 @@
 		},
 		"thug_big": {
 			"title": "Громила",
-			"pid": "",
+			"pid": "duel_thug_big",
+			"portrait_moods": {
+				"attack": "angry",
+				"decisive": "angry",
+				"open": "surprised"
+			},
 			"balance": 28,
 			"regen": 2,
 			"decisive": "Удар дубинкой",
@@ -377,7 +382,11 @@
 		},
 		"thug_knife": {
 			"title": "Парень с ножом",
-			"pid": "",
+			"pid": "duel_thug_knife",
+			"portrait_moods": {
+				"feint": "smug",
+				"open": "worried"
+			},
 			"balance": 18,
 			"regen": 1,
 			"wounds": true,

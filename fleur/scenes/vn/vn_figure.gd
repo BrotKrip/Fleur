@@ -30,6 +30,7 @@ func setup(id: String, start_mood := "") -> void:
 	pid = id
 	mood = start_mood
 	portrait = Art.portrait(id, mood)
+	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	size = Vector2(420, 640)
 	pivot_offset = Vector2(210, 640)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE

@@ -1,4 +1,12 @@
 {
+	"char_ronova": {
+		"type": "person",
+		"look": "portrait",
+		"title": "Ронова",
+		"text": "Белые волосы, золотые глаза и алые крылья за спиной.",
+		"color": "#94435c",
+		"notes": "Персонаж будущего отдельного маршрута."
+	},
 	"npc_aurelie": {
 		"type": "person",
 		"look": "portrait",

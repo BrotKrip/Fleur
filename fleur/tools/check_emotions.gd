@@ -3,7 +3,6 @@ extends SceneTree
 ## Godot --headless --path fleur --script res://tools/check_emotions.gd
 ## Для игровых скриншотов и листов просмотра убрать --headless и добавить -- --screens=<папка>
 
-const CHARACTERS := ["char_charlotte", "char_josie", "char_clorinde", "char_tiori", "char_adrian", "char_louis", "char_marcel", "eloise"]
 const ART_ROOT := "res://assets/art/characters/"
 var failed := 0
 var output := ""
@@ -27,8 +26,10 @@ func _run() -> void:
 		push_error("Для --screens нужен запуск без --headless.")
 		quit(1)
 		return
-	create_timer(90.0).timeout.connect(func():
-		push_error("Проверка эмоций превысила 90 секунд.")
+	var catalog := _catalog()
+	var timeout := 90.0 + (catalog.size() * 3.0 if output != "" else 0.0)
+	create_timer(timeout).timeout.connect(func():
+		push_error("Проверка эмоций превысила отведённое время.")
 		quit(1))
 	var content = root.get_node("Content")
 	# При --script автозагрузки регистрируются после компиляции SceneTree.
@@ -51,22 +52,17 @@ func _run() -> void:
 			var file: String = art.mood_file(mood)
 			if pid != "" and file != "" and file != "neutral":
 				required[pid + "/" + file] = true
-	for key in required:
-		check(ResourceLoader.exists(ART_ROOT + key + ".png"), "Нет нужной эмоции: " + key)
+	for key: String in required:
+		var pieces := key.split("/", true, 1)
+		check(catalog.get(pieces[0], {}).has(pieces[1]), "Нет нужной эмоции: " + key)
 	for mood in ["smile", "serious"]:
 		check(ResourceLoader.exists(ART_ROOT + "char_tiori/" + mood + ".png"), "Нет дополнительной эмоции Тиори: " + mood)
 	var image_count := 0
-	for pid in CHARACTERS:
-		check(art.portrait(pid) != null, "Нет базового спрайта: " + pid)
-		for path in _images(pid):
-			var img := Image.load_from_file(ProjectSettings.globalize_path(path))
-			check(img != null and not img.is_empty(), "Не читается PNG: " + path)
-			if img == null or img.is_empty():
-				continue
-			check(img.detect_alpha() != Image.ALPHA_NONE, "PNG без прозрачности: " + path)
-			check(img.get_width() >= 800 and img.get_height() >= 1200, "Слишком маленький спрайт: " + path)
+	for pid: String in catalog:
+		for mood: String in catalog[pid]:
+			_check_image(art, pid, mood, catalog[pid][mood])
 			image_count += 1
-	print("ART COVERAGE: ", required.size(), " используемых эмоций; PNG: ", image_count)
+	print("ART COVERAGE: ", required.size(), " используемых эмоций; персонажей с вариантами: ", catalog.size(), "; PNG: ", image_count)
 	if failed > 0:
 		quit(1)
 		return
@@ -106,7 +102,7 @@ func _run() -> void:
 	check(_portrait_is(vn, "char_josie", "char_josie/laugh.png"), "@show Жози: неверная эмоция")
 	await _shot("scene_03_laugh")
 	if output != "":
-		await _gallery(game)
+		await _gallery(game, catalog)
 	print("EMOTIONS CHECK: ", "OK" if failed == 0 else "FAILED", " (", failed, ")")
 	quit(0 if failed == 0 else 1)
 
@@ -118,16 +114,49 @@ func _portrait_is(vn: Node, pid: String, suffix: String) -> bool:
 	return is_instance_valid(figure) and figure.portrait != null and figure.portrait.resource_path.ends_with(suffix)
 
 
-func _images(pid: String) -> Array[String]:
-	var paths: Array[String] = [ART_ROOT + pid + ".png"]
-	var dir := DirAccess.open(ART_ROOT + pid)
-	if dir:
-		var files := dir.get_files()
-		files.sort()
-		for file in files:
+func _catalog() -> Dictionary:
+	var catalog := {}
+	# Обе схемы имён из Art.portrait. Вложенный вариант имеет приоритет.
+	for file in DirAccess.get_files_at(ART_ROOT):
+		if file.ends_with(".png"):
+			var stem := file.get_basename()
+			var split := stem.rfind("_")
+			while split > 0:
+				var pid := stem.left(split)
+				if FileAccess.file_exists(ART_ROOT + pid + ".png"):
+					if not catalog.has(pid):
+						catalog[pid] = {}
+					catalog[pid][stem.substr(split + 1)] = ART_ROOT + file
+					break
+				split = pid.rfind("_")
+	for pid in DirAccess.get_directories_at(ART_ROOT):
+		if pid == "ref":
+			continue
+		for file in DirAccess.get_files_at(ART_ROOT + pid):
 			if file.ends_with(".png"):
-				paths.append(ART_ROOT + pid + "/" + file)
-	return paths
+				if not catalog.has(pid):
+					catalog[pid] = {}
+				catalog[pid][file.get_basename()] = ART_ROOT + pid + "/" + file
+	for pid: String in catalog:
+		var variants: Dictionary = catalog[pid]
+		var neutral: String = variants.get("neutral", ART_ROOT + pid + ".png")
+		variants.erase("neutral")
+		catalog[pid] = {"neutral": neutral}
+		catalog[pid].merge(variants)
+	return catalog
+
+
+func _check_image(art: Script, pid: String, mood: String, path: String) -> void:
+	var texture: Texture2D = art.portrait(pid, mood)
+	check(texture != null and texture.resource_path == path, "Art.portrait вернул неверный спрайт: " + path)
+	if texture != null:
+		# Проверяем рисунки по одному, затем отдаём память предыдущей текстуры.
+		art._textures.erase(texture.resource_path)
+	var img := Image.load_from_file(ProjectSettings.globalize_path(path))
+	check(img != null and not img.is_empty(), "Не читается PNG: " + path)
+	if img != null and not img.is_empty():
+		check(img.detect_alpha() != Image.ALPHA_NONE and img.get_used_rect().has_area(), "Пустой PNG или нет прозрачности: " + path)
+		check(img.get_width() >= 800 and img.get_height() >= 1200, "Слишком маленький спрайт: " + path)
 
 
 func _shot(name: String) -> void:
@@ -139,7 +168,7 @@ func _shot(name: String) -> void:
 	check(result == OK, "Не записан скриншот: " + name)
 
 
-func _gallery(game: Node) -> void:
+func _gallery(game: Node, catalog: Dictionary) -> void:
 	game.main.visible = false
 	var panel := ColorRect.new()
 	panel.color = Color("20333c")
@@ -147,8 +176,9 @@ func _gallery(game: Node) -> void:
 	panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	root.add_child(panel)
 	var view := root.get_visible_rect().size
-	for pid in CHARACTERS:
-		var paths := _images(pid)
+	for pid: String in catalog:
+		var paths: Array = catalog[pid].values()
+		var moods: Array = catalog[pid].keys()
 		for page in ceili(paths.size() / 4.0):
 			for child in panel.get_children():
 				child.queue_free()
@@ -165,7 +195,7 @@ func _gallery(game: Node) -> void:
 				image.size = Vector2(view.x / 4.0 - 20, view.y - 85)
 				panel.add_child(image)
 				var label := Label.new()
-				label.text = pid.trim_prefix("char_") + " / " + ("обычно" if index == 0 else paths[index].get_file().get_basename())
+				label.text = pid.trim_prefix("char_") + " / " + ("обычно" if index == 0 else str(moods[index]))
 				label.position = Vector2(col * view.x / 4.0 + 16, 15)
 				label.add_theme_font_size_override("font_size", 20)
 				panel.add_child(label)

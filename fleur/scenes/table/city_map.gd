@@ -1,6 +1,6 @@
 class_name CityMap
 extends Control
-## Лист с картой Кур-де-Фонтейна: город на воде, кольца каналов и крест гидромагистралей.
+## План Кур-де-Фонтейна и открытых окрестностей.
 ## Места — латунные булавки. Шляпа Флёра показывает, где он сейчас.
 
 signal pin_clicked(loc: String)
@@ -10,9 +10,13 @@ var hat_pos := Vector2.ZERO
 var _hat_target := Vector2.ZERO
 var _t := 0.0
 var _chart: Texture2D
+var _region_charts := {}
 
 const CHART_PATH := "res://assets/art/maps/fontaine_chart.png"
-
+const REGION_PINS := {
+	"loc_epiclese": Vector2(0.57, 0.68),
+	"loc_poisson": Vector2(0.53, 0.57),
+}
 
 const LABEL_FS := 12
 
@@ -21,6 +25,12 @@ func _ready() -> void:
 	pivot_offset = size / 2
 	rotation = -0.018
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	if ResourceLoader.exists(CHART_PATH):
+		_chart = load(CHART_PATH) as Texture2D
+	for loc: String in REGION_PINS:
+		var path := "res://assets/art/maps/%s_chart.png" % loc.trim_prefix("loc_")
+		if ResourceLoader.exists(path):
+			_region_charts[loc] = load(path) as Texture2D
 	hat_pos = pin_local(str(Game.state.get("here", "loc_apartment")))
 	_hat_target = hat_pos
 	resized.connect(func():
@@ -28,8 +38,6 @@ func _ready() -> void:
 		hat_pos = _hat_target
 		queue_redraw())
 	tooltip_text = ""
-	if ResourceLoader.exists(CHART_PATH):
-		_chart = load(CHART_PATH) as Texture2D
 
 
 ## Прямоугольник, в который вписан рисунок карты. Булавки задаются долями именно его,
@@ -44,9 +52,28 @@ func chart_rect() -> Rect2:
 
 
 func pin_local(loc: String) -> Vector2:
+	if _region_charts.has(loc):
+		var inset := _inset_image(loc)
+		return inset.position + inset.size * Vector2(REGION_PINS[loc])
 	var p = Content.def(loc).get("pin", [0.5, 0.5])
 	var r := chart_rect()
 	return r.position + Vector2(float(p[0]) * r.size.x, float(p[1]) * r.size.y)
+
+
+## У каждого оттиска есть поле изображения и собственная строка названия.
+func _inset_image(loc: String) -> Rect2:
+	var tex: Texture2D = _region_charts[loc]
+	var image_size := tex.get_size() * (108.0 / tex.get_width())
+	var origin := Vector2(size.x - image_size.x - 11, 52)
+	if loc == "loc_poisson":
+		origin = Vector2(11, size.y - image_size.y - 62)
+	return Rect2(origin, image_size)
+
+
+func _inset_frame(loc: String) -> Rect2:
+	var r := _inset_image(loc).grow(3)
+	r.size.y += 19
+	return r
 
 
 func locations() -> Array:
@@ -58,8 +85,18 @@ func locations() -> Array:
 
 
 func pin_at_local(p: Vector2) -> String:
-	for loc in locations():
-		if pin_local(loc).distance_to(p) < 22:
+	var locs := locations()
+	var nearest := ""
+	var best_distance := 22.0 * 22.0
+	for loc in locs:
+		var distance := pin_local(loc).distance_squared_to(p)
+		if distance < best_distance:
+			best_distance = distance
+			nearest = loc
+	if nearest != "":
+		return nearest
+	for loc in locs:
+		if _region_charts.has(loc) and _inset_frame(loc).has_point(p):
 			return loc
 	return ""
 
@@ -105,8 +142,20 @@ func _draw() -> void:
 	else:
 		_draw_procedural_chart()
 	_draw_cartouche()
+	for loc in locations():
+		if _region_charts.has(loc):
+			_draw_inset(loc)
 	_draw_pins()
 	_draw_hat()
+
+
+func _draw_inset(loc: String) -> void:
+	var r := _inset_frame(loc)
+	draw_rect(Rect2(r.position + Vector2(2, 3), r.size), Color(0.20, 0.16, 0.11, 0.24))
+	draw_rect(r, Color("f3e8cf"))
+	draw_rect(r, Color("8d7856"), false, 1.0)
+	draw_texture_rect(_region_charts[loc], _inset_image(loc), false)
+	draw_rect(_inset_image(loc), Color(0.40, 0.32, 0.21, 0.56), false, 0.8)
 
 
 func _draw_procedural_chart() -> void:
@@ -179,8 +228,15 @@ func _label_rects() -> Dictionary:
 		pins.append(Rect2(pin_local(loc) - Vector2(10, 10), Vector2(20, 20)))
 	var placed := {}
 	var used := []
+	for loc in locs:
+		if _region_charts.has(loc):
+			var inset := _inset_image(loc)
+			placed[loc] = Rect2(Vector2(inset.position.x, inset.end.y), Vector2(inset.size.x, 19))
+			used.append(_inset_frame(loc))
 	var bounds := Rect2(Vector2(6, 40), size - Vector2(12, 46))
 	for loc in locs:
+		if placed.has(loc):
+			continue
 		var p := pin_local(loc)
 		var fs := LABEL_FS + 2 if loc == hover_loc else LABEL_FS
 		var tw := f.get_string_size(Rules.title_of(loc, Game.state), HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 12
@@ -220,12 +276,13 @@ func _draw_pins() -> void:
 		var hov: bool = loc == hover_loc
 		var lr: Rect2 = labels[loc]
 		var near := Vector2(clampf(p.x, lr.position.x, lr.end.x), clampf(p.y, lr.position.y, lr.end.y))
-		if near.distance_to(p) > 16:
+		if near.distance_to(p) > 16 and not _region_charts.has(loc):
 			draw_line(p, near, Color(0.45, 0.33, 0.16, 0.7), 1.0, true)
 		draw_colored_polygon(Look.rrect(Rect2(lr.position + Vector2(1, 2), lr.size), 2), Color(0.18, 0.14, 0.08, 0.18))
 		draw_colored_polygon(Look.rrect(lr, 2), Color(0.98, 0.95, 0.87, 0.98 if hov else 0.94))
 		draw_rect(lr.grow(-0.5), Color(0.56, 0.43, 0.23, 0.75 if loc == here else 0.3), false, 0.8)
-		draw_string(f, lr.position + Vector2(0, 14), Rules.title_of(loc, Game.state), HORIZONTAL_ALIGNMENT_CENTER, lr.size.x, LABEL_FS + 2 if hov else LABEL_FS, Look.INK)
+		var fs := LABEL_FS + 2 if hov and not _region_charts.has(loc) else LABEL_FS
+		draw_string(f, lr.position + Vector2(0, 14), Rules.title_of(loc, Game.state), HORIZONTAL_ALIGNMENT_CENTER, lr.size.x, fs, Look.INK)
 	for loc in locations():
 		var p := pin_local(loc)
 		var hov: bool = loc == hover_loc

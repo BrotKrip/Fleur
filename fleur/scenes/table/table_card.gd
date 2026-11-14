@@ -27,6 +27,7 @@ const OBJECT_ART := {"bottle": "nectar_bottle", "crate": "nectar_crate", "hairpi
 var id := ""
 var d: Dictionary = {}
 var look := "note"
+var item_art: Texture2D
 var lift := 0.0
 var hovered := false
 var dragging := false
@@ -47,6 +48,8 @@ func setup(card_id: String) -> void:
 	id = card_id
 	d = Content.def(id)
 	look = str(d.get("look", "note"))
+	if d.get("type") == "item":
+		item_art = Art.prop(id)
 	seed_v = Look.hash_seed(id)
 	size = size_for(d)
 	pivot_offset = size / 2.0
@@ -172,13 +175,16 @@ func _draw() -> void:
 		for p in gp:
 			draw_colored_polygon(p, Color(1.0, 0.82, 0.35, 0.25 * glow))
 			Look.outline(self, p, Color(1.0, 0.85, 0.4, glow), 2.0)
-	if look == "object":
+	if item_art:
+		_draw_object_art(item_art, "", sh_off, Color(0.02, 0.01, 0.0, sh_alpha * 0.6))
+		_draw_object_art(item_art, "", Vector2.ZERO, Color.TRANSPARENT)
+	elif look == "object":
 		_draw_object(sh_off, Color(0.02, 0.01, 0.0, sh_alpha * 0.6))
 		_draw_object(Vector2.ZERO, Color(0, 0, 0, 0))
 	else:
 		Look.soft_shadow(self, sil, sh_off, sh_spread, sh_alpha)
 		call("_draw_" + look)
-	if hovered and not dragging and look in ["object", "label", "photo", "token", "trait"]:
+	if hovered and not dragging and (item_art or look in ["object", "label", "photo", "token", "trait"]):
 		_draw_name_tag()
 
 

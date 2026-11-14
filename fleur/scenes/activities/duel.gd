@@ -198,6 +198,7 @@ class EnemyView:
 		e = enemy
 		eng = engine
 		custom_minimum_size = Vector2(250, 384)
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		mouse_filter = Control.MOUSE_FILTER_STOP
 		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		disp_bal = float(e["balance"])
@@ -236,6 +237,10 @@ class EnemyView:
 		create_tween().tween_property(self, "stamp", 1.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 	func pop_intent() -> void:
+		var moods: Dictionary = e["def"].get("portrait_moods", {})
+		if not moods.is_empty():
+			var state := "open" if e["open"] else str(e["intent"].get("kind", ""))
+			_tex = Art.portrait(str(e["pid"]), str(moods.get(state, "")))
 		intent_pop = 0.4
 		create_tween().tween_property(self, "intent_pop", 1.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 

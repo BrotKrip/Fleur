@@ -60,7 +60,8 @@ func _go() -> void:
 	m.queue_redraw()
 	await RenderingServer.frame_post_draw
 	var img := get_viewport().get_texture().get_image()
-	var r := Rect2i(m.get_global_rect().grow(12))
+	var to_pixels: Transform2D = get_viewport().get_final_transform() * m.get_global_transform_with_canvas()
+	var r := Rect2i(to_pixels * Rect2(Vector2.ZERO, m.size).grow(12))
 	img = img.get_region(r.intersection(Rect2i(Vector2i.ZERO, img.get_size())))
 	img.save_png(out)
 	print("MAPSHOT ", out)

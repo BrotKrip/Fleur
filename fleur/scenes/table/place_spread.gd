@@ -130,7 +130,13 @@ func _draw() -> void:
 	Look.engraved_corners(self, Rect2(IMG_W + 6, 7, size.x - IMG_W - 14, size.y - 14), Color(0.46, 0.35, 0.17, 0.25), 12)
 	# картинка места
 	var img := Rect2(10, 10, IMG_W - 10, size.y - 20)
-	var bg := Content.background(str(Content.def(loc).get("bg", "")))
+	var bg_id := str(Content.def(loc).get("bg", ""))
+	var phase := int(Game.state.get("phase", 0))
+	if bg_id == "docks" and phase == 3:
+		bg_id = "docks_night"
+	elif bg_id == "apartment" and phase >= 2:
+		bg_id = "apartment_evening" if phase == 2 else "apartment_night"
+	var bg := Content.background(bg_id)
 	var cols: Array = bg.get("colors", ["#445566", "#223344", "#112233"])
 	var pts := Look.rrect(img, 3)
 	var top := Color(str(cols[0]))
@@ -141,7 +147,7 @@ func _draw() -> void:
 		var t := (p.y - img.position.y) / img.size.y
 		vcols.append(top.lerp(mid, t * 2.0) if t < 0.5 else mid.lerp(bot, (t - 0.5) * 2.0))
 	draw_polygon(pts, vcols)
-	var artwork := Art.background(str(Content.def(loc).get("bg", "")))
+	var artwork := Art.background(bg_id)
 	if artwork:
 		Look.draw_cover(self, artwork, img)
 		Look.fill_v(self, pts, Color(0.02, 0.04, 0.06, 0.78), Color(0.02, 0.04, 0.06, 0.04))

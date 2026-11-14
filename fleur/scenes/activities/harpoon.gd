@@ -670,6 +670,16 @@ func _end(outcome: String) -> void:
 	tl.theme_type_variation = "InkTitle"
 	tl.text = titles[outcome]
 	v.add_child(tl)
+	var coast := Art.background("morte")
+	if coast:
+		var postcard := TextureRect.new()
+		postcard.texture = coast
+		postcard.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		postcard.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		postcard.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		postcard.custom_minimum_size = Vector2(440, 230)
+		postcard.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		v.add_child(postcard)
 	if ended["summary"] != "":
 		var sl := Label.new()
 		sl.theme_type_variation = "Ink"

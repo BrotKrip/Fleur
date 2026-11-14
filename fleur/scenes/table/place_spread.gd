@@ -90,7 +90,8 @@ func refresh() -> void:
 		b.add_theme_font_size_override("font_size", 17)
 		var cost := Rules.cost_of(a, s)
 		var marks := " " + "◷".repeat(mini(cost, 4)) if cost > 0 else ""
-		b.text = "— " + str(a["title"]) + marks
+		var lead := "◆ " if str(a.get("intent", "")) == "main" else "— "
+		b.text = lead + str(a["title"]) + marks
 		b.disabled = not enabled
 		if not enabled:
 			b.tooltip_text = check["reason"]

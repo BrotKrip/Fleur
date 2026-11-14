@@ -6,6 +6,7 @@
 			"loc_lutes",
 			"loc_tiori",
 			"loc_docks",
+			"sl_intentions",
 			"char_josie",
 			"char_clorinde",
 			"char_tiori",
@@ -78,15 +79,27 @@
 		},
 		"vasari_rain": {
 			"label": "Пассаж Вазари, дождь",
-			"colors": ["#748597", "#546571", "#464957"]
+			"colors": [
+				"#748597",
+				"#546571",
+				"#464957"
+			]
 		},
 		"apartment_rain": {
 			"label": "Квартира, дождь за окном",
-			"colors": ["#798391", "#5d646a", "#775c4d"]
+			"colors": [
+				"#798391",
+				"#5d646a",
+				"#775c4d"
+			]
 		},
 		"vasari_fair": {
 			"label": "Вечерняя ярмарка на Пассаже Вазари",
-			"colors": ["#b49b9d", "#69586e", "#b7814e"]
+			"colors": [
+				"#b49b9d",
+				"#69586e",
+				"#b7814e"
+			]
 		},
 		"lutes": {
 			"label": "Кафе «Лютес»",
@@ -218,7 +231,11 @@
 		},
 		"epiclèse_exterior": {
 			"label": "Фонтан Люсин, перед «Эпиклезом»",
-			"colors": ["#79b1d0", "#c5c2a9", "#688772"]
+			"colors": [
+				"#79b1d0",
+				"#c5c2a9",
+				"#688772"
+			]
 		},
 		"epiclèse_foyer": {
 			"label": "Фойе «Эпиклеза»",
@@ -254,11 +271,19 @@
 		},
 		"mermonia_exterior": {
 			"label": "Верхний ярус, дворец Мермония",
-			"colors": ["#71a7c7", "#a6aba5", "#579599"]
+			"colors": [
+				"#71a7c7",
+				"#a6aba5",
+				"#579599"
+			]
 		},
 		"morte": {
 			"label": "Акватория Морт",
-			"colors": ["#85c3db", "#5a9da7", "#8cae84"]
+			"colors": [
+				"#85c3db",
+				"#5a9da7",
+				"#8cae84"
+			]
 		},
 		"mermonia": {
 			"label": "Дворец Мермония",

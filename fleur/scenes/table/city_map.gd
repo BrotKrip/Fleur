@@ -84,6 +84,27 @@ func locations() -> Array:
 	return out
 
 
+## 2 — сюжетное намерение доступно сейчас; 1 — место уже важно, но действие ждёт
+## подходящего времени/карты. Это не квестовый маркер, а пометка на личной карте Флёра.
+func _intent_state(loc: String) -> int:
+	var later := false
+	for aid in Content.actions:
+		var a: Dictionary = Content.actions[aid]
+		if str(a.get("intent", "")) != "main":
+			continue
+		var matches: bool = a.get("at") == loc or a.get("on") == loc
+		if not matches:
+			continue
+		var ctx := Rules.action_ctx(a, loc, {})
+		if not Rules.test(a.get("visible"), Game.state, ctx):
+			continue
+		var check := Rules.can_do(a, Game.state, ctx)
+		if bool(check.get("ok", false)) or bool(check.get("needs_slot", false)):
+			return 2
+		later = true
+	return 1 if later else 0
+
+
 func pin_at_local(p: Vector2) -> String:
 	var locs := locations()
 	var nearest := ""
@@ -292,6 +313,13 @@ func _draw_pins() -> void:
 		draw_circle(p + Vector2(2, 3), rad, Color(0, 0, 0, 0.35))
 		Look.brass_circle(self, p, rad)
 		draw_circle(p + Vector2(-1, -1), 1.6, Color(1.0, 0.95, 0.72, 0.85))
+		var intent := _intent_state(loc)
+		if intent > 0:
+			var mark := p + Vector2(-11, -10)
+			draw_circle(mark + Vector2(1, 1.5), 5.5, Color(0, 0, 0, 0.28))
+			draw_circle(mark, 5.0, Color("d7ad55"))
+			if intent == 1:
+				draw_circle(mark, 2.6, Color("efe3c4"))
 		if loc == here:
 			draw_arc(p, rad + 5, 0, TAU, 32, Look.WAX, 2.5, true)
 		if fresh:

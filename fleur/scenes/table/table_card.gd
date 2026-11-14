@@ -198,10 +198,20 @@ func _draw() -> void:
 		call("_draw_" + look)
 	if hovered and not dragging and (item_art or look in ["object", "label", "photo", "token", "trait"]):
 		_draw_name_tag()
+	if bool(inst().get("fresh", false)) and not dragging:
+		_draw_fresh_mark()
 
 
 func _f(kind: String) -> Font:
 	return Look.font(kind)
+
+
+func _draw_fresh_mark() -> void:
+	var c := Vector2(size.x - 12, 12)
+	draw_circle(c + Vector2(1.5, 2), 7.0, Color(0, 0, 0, 0.25))
+	draw_circle(c, 7.0, Look.WAX)
+	draw_circle(c, 3.2, Look.WAX.lightened(0.18))
+	draw_arc(c, 5.4, 0, TAU, 24, Look.WAX.lightened(0.28), 1.0, true)
 
 
 func _paper_grain(outline: PackedVector2Array, strength := 0.2) -> void:

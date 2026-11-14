@@ -116,7 +116,7 @@ func _ready() -> void:
 	hint_label.add_theme_font_size_override("font_size", 15)
 	hint_label.add_theme_color_override("font_color", Color(0.93, 0.85, 0.7, 0.55))
 	hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hint_label.text = "Колесо — ближе и дальше, правая кнопка или пустое место стола — сдвинуть вид, Home — вернуть.\nБулавка на карте — отправиться туда. Часы — переждать. Карту можно бросить на булавку, портрет или в ячейку."
+	hint_label.text = "Колесо — ближе и дальше, правая кнопка или пустое место стола — сдвинуть вид, Home — вернуть.\nБулавка — отправиться туда; золотая точка рядом — текущее сюжетное намерение, пустое кольцо — оно ждёт времени или подготовки.\nСургучная точка на карточке означает, что она новая. Карту можно бросить на булавку, портрет или в ячейку."
 
 	map = CityMap.new()
 	map.pin_clicked.connect(_travel)
@@ -844,6 +844,9 @@ func _toggle_note(card: TableCard) -> void:
 	note_card = card.id
 	card.focused = true
 	var s := Game.state
+	if s["cards"].has(card.id) and bool(s["cards"][card.id].get("fresh", false)):
+		s["cards"][card.id]["fresh"] = false
+		card.queue_redraw()
 	var d := card.d
 	var p := PanelContainer.new()
 	p.theme_type_variation = "Paper"

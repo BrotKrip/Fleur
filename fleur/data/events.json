@@ -156,30 +156,47 @@
 		"title": "Ответ на письмо",
 		"text": "«Шевалье, я прочла и номер, и твоё письмо. Приезжай в Берилл утром, когда сможешь. Я хочу поговорить с тобой за завтраком. Мама».",
 		"effects": [
-			{ "add": "inv_eloise_after_print" }
+			{
+				"add": "inv_eloise_after_print"
+			}
 		]
 	},
 	"ev_textile_opening": {
 		"when": {
-			"flag": ["eloise_after_print_done", "mermonia_seen"],
-			"noFlag": ["exhibition_signature_pending", "textile_opened"]
+			"flag": [
+				"eloise_after_print_done",
+				"mermonia_seen"
+			],
+			"noFlag": [
+				"exhibition_signature_pending",
+				"textile_opened"
+			]
 		},
 		"title": "Образцы привезли в «Дебор»",
 		"text": "Элоиза оставила сыну билет. На обороте короткая приписка. «Будешь в городе днём — загляни. Там очень неудобная стремянка».",
 		"effects": [
-			{ "add": "inv_textile_opening" }
+			{
+				"add": "inv_textile_opening"
+			}
 		]
 	},
 	"ev_awning_swatch_by_post": {
 		"when": {
-			"flag": ["eloise_after_print_done", "offered_awning_help"],
+			"flag": [
+				"eloise_after_print_done",
+				"offered_awning_help"
+			],
 			"noFlag": "awning_swatch_delivered",
 			"lacks": "it_awning_swatch",
 			"phase": "morning"
 		},
 		"title": "Образец из Берилла",
 		"text": "По просьбе сына матушка прислала в город холст для навеса в Пуассоне. Цену за локоть написала прямо на обёртке.",
-		"effects": [{ "add": "it_awning_swatch" }]
+		"effects": [
+			{
+				"add": "it_awning_swatch"
+			}
+		]
 	},
 	"ev_article_deadline_start": {
 		"when": {
@@ -257,6 +274,150 @@
 					"inv_duel_lamotte",
 					"loc_beaumont"
 				]
+			}
+		]
+	},
+	"ev_story_article_layout_ready": {
+		"when": {
+			"all": [
+				{
+					"flag": "homecoming_done"
+				},
+				{
+					"daysSince": [
+						"manor_done",
+						2
+					]
+				},
+				{
+					"flag": "furina_sketch_delivered"
+				},
+				{
+					"noFlag": "article_seen"
+				},
+				{
+					"lacks": "inv_article_layout"
+				}
+			]
+		},
+		"title": "Записка от Шарлотты",
+		"text": "«Полосу о ремёслах поставили в вёрстку. Если хочешь увидеть, что я оставила от твоих семейных легенд, заходи в редакцию днём. И не опаздывай: наборщик уже смотрит на меня с укором. — Ш.»",
+		"effects": [
+			{
+				"add": "inv_article_layout"
+			}
+		]
+	},
+	"ev_world_sumeru_news": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 2
+				},
+				{
+					"phase": "day"
+				},
+				{
+					"lacks": "rum_sumeru_hero"
+				}
+			]
+		},
+		"title": "Новости из Сумеру",
+		"text": "За соседним столом спорят двое купцов. Один уверяет, что светловолосая путешественница помогла освободить Дендро Архонта и разогнала прежних мудрецов. Второй поправляет: мудрецов не «разогнали», а отстранили. Для Флёра различие звучит исключительно академически.",
+		"effects": [
+			{
+				"add": "rum_sumeru_hero"
+			}
+		]
+	},
+	"ev_world_inazuma_news": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 6
+				},
+				{
+					"phase": "morning"
+				},
+				{
+					"lacks": "rum_inazuma_opening"
+				}
+			]
+		},
+		"title": "Инадзумский груз",
+		"text": "На причале разгружают ящики с печатями Рито. После отмены Сакоку инадзумские суда стали попадаться в Фонтейне заметно чаще. Портовые писари уже жалуются, что им пришлось выучить ещё один набор торговых печатей.",
+		"effects": [
+			{
+				"add": "rum_inazuma_opening"
+			}
+		]
+	},
+	"ev_world_halsey_docks": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 5
+				},
+				{
+					"phase": "day"
+				},
+				{
+					"noFlag": "halsey_docks_done"
+				},
+				{
+					"lacks": "note_halsey_docks"
+				}
+			]
+		},
+		"title": "Крик у нижних причалов",
+		"text": "С нижних грузовых лестниц донёсся свист, потом женский голос и чей-то совершенно неделовой крик: «Держи сумку!» Стража, как назло, была на верхней площадке.",
+		"effects": [
+			{
+				"add": "note_halsey_docks"
+			}
+		]
+	},
+	"ev_world_magicians_posters": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 15
+				},
+				{
+					"phase": "morning"
+				},
+				{
+					"lacks": "rum_magicians_premiere"
+				}
+			]
+		},
+		"title": "Новые афиши у Оперы",
+		"text": "На тумбах появились свежие листы: через несколько дней Лини и Линетт дают большое представление в «Эпиклезе». Билеты перепродают уже у аквабуса, хотя касса клянётся, что всё это безобразие началось не у неё.",
+		"effects": [
+			{
+				"add": "rum_magicians_premiere"
+			}
+		]
+	},
+	"ev_world_traveler_road": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 18
+				},
+				{
+					"phase": "morning"
+				},
+				{
+					"lacks": "rum_traveler_road"
+				}
+			]
+		},
+		"title": "Светловолосая путешественница",
+		"text": "Курьер из Сумеру утверждает, что видел на дороге к Фонтейну ту самую светловолосую героиню с маленькой летающей спутницей. За соседним столом немедленно поспорили, спасёт ли она по прибытии кого-нибудь ещё или хотя бы даст себе день пообедать.",
+		"effects": [
+			{
+				"add": "rum_traveler_road"
 			}
 		]
 	}

@@ -378,7 +378,8 @@
 		},
 		"phases": [
 			"evening"
-		]
+		],
+		"intent": "main"
 	},
 	"debor_drink": {
 		"at": "loc_debor",
@@ -390,11 +391,18 @@
 		"cost": 1,
 		"outcomes": [
 			{
-				"when": { "flag": ["first_arc_done", "batches_suspended"] },
+				"when": {
+					"flag": [
+						"first_arc_done",
+						"batches_suspended"
+					]
+				},
 				"text": "У Гастона под стойкой лежал лист с отцовской подписью. Он сверил с ним отметку на бутылке, которую принёс официант, и попросил отнести её в кладовую к остальным. Флёру налил арманьяку. «Этот, месье, можете хоть сейчас допить». За соседним столом уже просили счёт."
 			},
 			{
-				"when": { "flag": "first_arc_done" },
+				"when": {
+					"flag": "first_arc_done"
+				},
 				"text": "Гость у стойки вертел в руках бутылку, разыскивая метку с газетного рисунка. Гастон подвинул к нему лампу. Флёр сел подальше, заказал арманьяку и успел услышать только конец заказа. К рыбе пошло белое."
 			},
 			{
@@ -486,7 +494,8 @@
 				],
 				"required": true
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"meet_charlotte": {
 		"at": "loc_lutes",
@@ -515,7 +524,8 @@
 		},
 		"phases": [
 			"day"
-		]
+		],
+		"intent": "main"
 	},
 	"visit_chevreuse": {
 		"at": "loc_gardinage",
@@ -545,7 +555,8 @@
 		"phases": [
 			"morning",
 			"day"
-		]
+		],
+		"intent": "main"
 	},
 	"chevreuse_after_work": {
 		"at": "loc_gardinage",
@@ -598,7 +609,8 @@
 		"phases": [
 			"day",
 			"evening"
-		]
+		],
+		"intent": "main"
 	},
 	"mend_charlotte_clothes": {
 		"at": "loc_tiori",
@@ -622,7 +634,8 @@
 		"phases": [
 			"morning",
 			"day"
-		]
+		],
+		"intent": "main"
 	},
 	"give_clothes_back": {
 		"at": "loc_lutes",
@@ -653,7 +666,8 @@
 			"morning",
 			"day",
 			"evening"
-		]
+		],
+		"intent": "main"
 	},
 	"greet_josie": {
 		"at": "loc_apartment",
@@ -676,7 +690,8 @@
 		"phases": [
 			"evening",
 			"night"
-		]
+		],
+		"intent": "main"
 	},
 	"dinner_with_josie": {
 		"at": "loc_apartment",
@@ -705,7 +720,8 @@
 		},
 		"phases": [
 			"evening"
-		]
+		],
+		"intent": "main"
 	},
 	"depart_manor": {
 		"at": "loc_manor",
@@ -737,7 +753,8 @@
 		},
 		"phases": [
 			"morning"
-		]
+		],
+		"intent": "main"
 	},
 	"return_city": {
 		"at": "loc_apartment",
@@ -769,7 +786,8 @@
 			"night",
 			"morning",
 			"day"
-		]
+		],
+		"intent": "main"
 	},
 	"fair_josie": {
 		"at": "loc_vasari",
@@ -1128,26 +1146,18 @@
 		"visible": {
 			"all": [
 				{
-					"flag": "homecoming_done"
-				},
-				{
-					"daysSince": [
-						"manor_done",
-						2
-					]
+					"has": "inv_article_layout"
 				},
 				{
 					"noFlag": "article_seen"
-				},
-				{
-					"flag": "furina_sketch_delivered"
 				}
 			]
 		},
 		"phases": [
 			"morning",
 			"day"
-		]
+		],
+		"intent": "main"
 	},
 	"meet_verdier": {
 		"at": "loc_lutes",
@@ -1180,9 +1190,21 @@
 		"once": true,
 		"outcomes": [
 			{
-				"when": { "slot": ["city", "it_control_sample"] },
+				"when": {
+					"slot": [
+						"city",
+						"it_control_sample"
+					]
+				},
 				"effects": [
-					{ "scene": { "id": "emilie_samples", "ctx": { "sample": "warehouse" } } }
+					{
+						"scene": {
+							"id": "emilie_samples",
+							"ctx": {
+								"sample": "warehouse"
+							}
+						}
+					}
 				]
 			},
 			{
@@ -1225,7 +1247,8 @@
 				],
 				"required": true
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"samples_result": {
 		"at": "loc_perfume",
@@ -1248,7 +1271,8 @@
 		"phases": [
 			"morning",
 			"day"
-		]
+		],
+		"intent": "main"
 	},
 	"father_talk": {
 		"at": "loc_manor",
@@ -1290,7 +1314,8 @@
 				],
 				"required": true
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"ordinary_morning": {
 		"at": "loc_apartment",
@@ -1312,39 +1337,72 @@
 		},
 		"phases": [
 			"morning"
-		]
+		],
+		"intent": "main"
 	},
 	"eloise_after_print": {
 		"at": "loc_manor",
 		"title": "Позавтракать с матерью в Берилле",
-		"visible": { "has": "inv_eloise_after_print" },
-		"phases": ["morning"],
+		"visible": {
+			"has": "inv_eloise_after_print"
+		},
+		"phases": [
+			"morning"
+		],
 		"once": true,
 		"cost": 0,
 		"outcomes": [
-			{ "effects": [{ "scene": "eloise_after_print" }] }
-		]
+			{
+				"effects": [
+					{
+						"scene": "eloise_after_print"
+					}
+				]
+			}
+		],
+		"intent": "main"
 	},
 	"marcel_lunch": {
 		"at": "loc_debor",
 		"title": "Пообедать с дядей Марселем",
-		"visible": { "has": "inv_marcel_lunch" },
-		"phases": ["day"],
+		"visible": {
+			"has": "inv_marcel_lunch"
+		},
+		"phases": [
+			"day"
+		],
 		"once": true,
 		"cost": 0,
 		"outcomes": [
-			{ "effects": [{ "scene": "marcel_lunch" }] }
-		]
+			{
+				"effects": [
+					{
+						"scene": "marcel_lunch"
+					}
+				]
+			}
+		],
+		"intent": "main"
 	},
 	"textile_opening": {
 		"at": "loc_debor",
 		"title": "Зайти на выставку тканей",
-		"visible": { "has": "inv_textile_opening" },
-		"phases": ["day"],
+		"visible": {
+			"has": "inv_textile_opening"
+		},
+		"phases": [
+			"day"
+		],
 		"once": true,
 		"cost": 0,
 		"outcomes": [
-			{ "effects": [{ "scene": "textile_opening" }] }
+			{
+				"effects": [
+					{
+						"scene": "textile_opening"
+					}
+				]
+			}
 		]
 	},
 	"josie_dinner_repeat": {
@@ -1412,7 +1470,8 @@
 					}
 				]
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"exhibition_finish": {
 		"at": "loc_mermonia",
@@ -1799,7 +1858,8 @@
 					}
 				]
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"ledgers_morning": {
 		"at": "loc_apartment",
@@ -1823,7 +1883,8 @@
 					}
 				]
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"tiori_spectacles": {
 		"at": "loc_tiori",
@@ -1847,7 +1908,8 @@
 					}
 				]
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"furina_sketch_delivery": {
 		"at": "loc_mermonia",
@@ -1871,7 +1933,8 @@
 					}
 				]
 			}
-		]
+		],
+		"intent": "main"
 	},
 	"aurelie_window": {
 		"at": "loc_apartment",
@@ -1906,6 +1969,37 @@
 				"effects": [
 					{
 						"scene": "aurelie_window"
+					}
+				]
+			}
+		]
+	},
+	"halsey_docks": {
+		"at": "loc_docks",
+		"title": "Спуститься на крик у нижних причалов",
+		"desc": "У грузовых лестниц спор уже перестал быть спором. Кто-то зовёт стражу.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"has": "note_halsey_docks"
+				},
+				{
+					"noFlag": "halsey_docks_done"
+				}
+			]
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "halsey_docks"
 					}
 				]
 			}

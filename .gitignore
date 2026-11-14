@@ -1,0 +1,28 @@
+# Сам Godot (больше 100 МБ) — скачивается отдельно, см. README
+tools/godot/
+
+# Кэш импорта и служебные данные редактора Godot
+fleur/.godot/
+fleur/export_templates/
+fleur/feature_profiles/
+fleur/script_templates/
+fleur/text_editor_themes/
+
+# Готовые сборки
+fleur/export/
+build/
+
+# Рабочие снимки, логи и временные данные автопроверок
+output/
+tmp/
+*.log
+
+# Локальные настройки Claude Code
+.claude/settings.local.json
+
+# Мусор систем и редакторов
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
+*~

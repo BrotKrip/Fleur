@@ -18,6 +18,8 @@ edit.bat            открыть проект в редакторе Godot
 
 ## Запуск
 
+Godot в репозиторий не входит (больше 100 МБ, см. `.gitignore`). Скачайте Godot 4.7.2 для Windows с github.com/godotengine/godot/releases и положите оба файла — `Godot_v4.7.2-stable_win64.exe` и `Godot_v4.7.2-stable_win64_console.exe` — в `tools/godot/`.
+
 Запустите `play.bat`. Чтобы открыть проект в редакторе, запустите `edit.bat`.
 
 Из командной строки:

@@ -1,0 +1,90 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Safe save failed. This may be a permissions problem, but also may happen because you are running a paranoid antivirus. If this is the case, please switch to Windows Defender or disable the 'safe save' option in editor settings. This makes it work, but increases the risk of file corruption in a crash.
+   at: _close (drivers/windows/file_access_windows.cpp:277)
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Инициализация проекта (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Сканирование структуры файлов…[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Загрузка глобальных имен классов…[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Проверка GDExtensions…[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Создание скриптов автозагрузки…[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Инициализация плагинов…[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Начало сканирование файлов…[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Регистрация глобальных классов… (6 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | PlaceSpread[39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | TableCard[39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started Сканирование действий… (17 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | apartment.png[39m[0m
+[   5% ] [90m[1m_update_scan_actions[22m | apartment_night.png[39m[0m
+[  11% ] [90m[1m_update_scan_actions[22m | bar.png[39m[0m
+[  16% ] [90m[1m_update_scan_actions[22m | boutique.png[39m[0m
+[  22% ] [90m[1m_update_scan_actions[22m | cafe.png[39m[0m
+[  27% ] [90m[1m_update_scan_actions[22m | city.png[39m[0m
+[  33% ] [90m[1m_update_scan_actions[22m | coast.png[39m[0m
+[  38% ] [90m[1m_update_scan_actions[22m | manor.png[39m[0m
+[  44% ] [90m[1m_update_scan_actions[22m | warehouse.png[39m[0m
+[  50% ] [90m[1m_update_scan_actions[22m | char_adrian.png[39m[0m
+[  55% ] [90m[1m_update_scan_actions[22m | char_charlotte.png[39m[0m
+[  61% ] [90m[1m_update_scan_actions[22m | char_clorinde.png[39m[0m
+[  66% ] [90m[1m_update_scan_actions[22m | char_josie.png[39m[0m
+[  72% ] [90m[1m_update_scan_actions[22m | char_louis.png[39m[0m
+[  77% ] [90m[1m_update_scan_actions[22m | char_marcel.png[39m[0m
+[  83% ] [90m[1m_update_scan_actions[22m | char_tiori.png[39m[0m
+[  88% ] [90m[1m_update_scan_actions[22m | eloise.png[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started Импорт или повторный импорт ассетов (17 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[   5% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  11% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  16% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  22% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  27% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  33% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  38% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  44% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  50% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  55% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  61% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  66% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  72% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  77% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  83% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[  88% ] [90m[1mreimport[22m | Подготовка файлов к повторному импорту…[39m[0m
+[   0% ] [90m[1mreimport[22m | Выполнение предимпортных операций…[39m[0m
+[   0% ] [90m[1mreimport[22m | eloise.png[39m[0m
+[   5% ] [90m[1mreimport[22m | char_tiori.png[39m[0m
+[  11% ] [90m[1mreimport[22m | char_marcel.png[39m[0m
+[  16% ] [90m[1mreimport[22m | char_louis.png[39m[0m
+[  22% ] [90m[1mreimport[22m | char_josie.png[39m[0m
+[  27% ] [90m[1mreimport[22m | char_clorinde.png[39m[0m
+[  33% ] [90m[1mreimport[22m | char_charlotte.png[39m[0m
+[  38% ] [90m[1mreimport[22m | char_adrian.png[39m[0m
+[  44% ] [90m[1mreimport[22m | warehouse.png[39m[0m
+[  50% ] [90m[1mreimport[22m | manor.png[39m[0m
+[  55% ] [90m[1mreimport[22m | coast.png[39m[0m
+[  61% ] [90m[1mreimport[22m | city.png[39m[0m
+[  66% ] [90m[1mreimport[22m | cafe.png[39m[0m
+[  72% ] [90m[1mreimport[22m | boutique.png[39m[0m
+[  77% ] [90m[1mreimport[22m | bar.png[39m[0m
+[  83% ] [90m[1mreimport[22m | apartment_night.png[39m[0m
+[  88% ] [90m[1mreimport[22m | apartment.png[39m[0m
+[  94% ] [90m[1mreimport[22m | Завершение импорта активов…[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started Импорт или повторный импорт ассетов (17 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Выполнение операций после реимпорта…[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Загрузка редактора (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Загрузка макета редактора…[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Загрузка док-панели…[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m

@@ -1,0 +1,7 @@
+{
+  "name": "fleur",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Шевалье де ла Флёр — игра о жизни в Кур-де-Фонтейне (фанатский проект по Genshin Impact)",
+  "scripts": { "start": "node server.js" }
+}

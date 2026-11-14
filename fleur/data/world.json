@@ -1,0 +1,187 @@
+{
+	"start": {
+		"cards": [
+			"loc_apartment",
+			"loc_vasari",
+			"loc_lutes",
+			"loc_tiori",
+			"loc_docks",
+			"char_josie",
+			"char_charlotte",
+			"char_clorinde",
+			"char_tiori",
+			"char_adrian",
+			"char_louis",
+			"char_marcel",
+			"sl_family",
+			"sl_eye",
+			"it_rapier",
+			"it_hairpin",
+			"st_hangover"
+		],
+		"effects": [
+			{
+				"scene": "prologue"
+			}
+		]
+	},
+	"speakers": {
+		"fleur": {
+			"title": "Флёр",
+			"color": "#c9a94a"
+		}
+	},
+	"backgrounds": {
+		"apartment": {
+			"label": "Квартира, улица Изумрудных Фонарей",
+			"colors": [
+				"#1d2a4a",
+				"#3b2f4f",
+				"#6b4a2f"
+			]
+		},
+		"apartment_morning": {
+			"label": "Квартира, утро",
+			"colors": [
+				"#e8d6b8",
+				"#7a6a8a",
+				"#3b2a2a"
+			]
+		},
+		"apartment_evening": {
+			"label": "Квартира, вечер",
+			"colors": [
+				"#3a2a3a",
+				"#6a3a28",
+				"#1a1420"
+			]
+		},
+		"apartment_night": {
+			"label": "Квартира, ночь",
+			"colors": [
+				"#070b18",
+				"#16203b",
+				"#3a2a1a"
+			]
+		},
+		"vasari": {
+			"label": "Пассаж Вазари",
+			"colors": [
+				"#7fc6d8",
+				"#3a8ea6",
+				"#c9a94a"
+			]
+		},
+		"lutes": {
+			"label": "Кафе «Лютес»",
+			"colors": [
+				"#d9c7a3",
+				"#8a6a46",
+				"#3a6d7a"
+			]
+		},
+		"tiori": {
+			"label": "Дом Тиори",
+			"colors": [
+				"#f0d78a",
+				"#b5543a",
+				"#2a1f2a"
+			]
+		},
+		"docks": {
+			"label": "Нижние причалы",
+			"colors": [
+				"#9fd3e0",
+				"#2c6e8a",
+				"#0d2a3d"
+			]
+		},
+		"docks_night": {
+			"label": "Нижние причалы, ночь",
+			"colors": [
+				"#05070f",
+				"#0c2236",
+				"#04111c"
+			]
+		},
+		"warehouse": {
+			"label": "Склад у южной стены",
+			"colors": [
+				"#1a140e",
+				"#3a2a18",
+				"#0a0806"
+			]
+		},
+		"debor": {
+			"label": "«Дебор Отель»",
+			"colors": [
+				"#e2c78a",
+				"#7a4a2a",
+				"#20141a"
+			]
+		},
+		"debor_bar": {
+			"label": "Бар «Дебора»",
+			"colors": [
+				"#4a2a18",
+				"#7a4a22",
+				"#120a08"
+			]
+		},
+		"debor_hall": {
+			"label": "Большой зал «Дебора»",
+			"colors": [
+				"#f0dca0",
+				"#3a5a7a",
+				"#1a1422"
+			]
+		},
+		"steambird": {
+			"label": "Редакция «Паровой птицы»",
+			"colors": [
+				"#cfc6b8",
+				"#7a2f3a",
+				"#22181c"
+			]
+		}
+	},
+	"activity_results": {
+		"hunt": {
+			"texts": {
+				"win": "Добыча поднята на борт.",
+				"escaped": "Тварь ушла в глубину. Лодочник сказал, что так бывает с каждым, и явно не поверил сам себе.",
+				"lost": "Лодка перевернулась у самой стены. До причала пришлось добираться вплавь.",
+				"retreat": "Флёр вернул лодку, не дожидаясь, пока озеро решит за него."
+			},
+			"lost_effects": [
+				{
+					"add": "st_soaked"
+				}
+			]
+		}
+	},
+	"mood_aliases": {
+		"обычно": "neutral",
+		"нейтрально": "neutral",
+		"спокойно": "neutral",
+		"улыбка": "smile",
+		"радость": "happy",
+		"смех": "laugh",
+		"серьёзно": "serious",
+		"задумчиво": "thoughtful",
+		"грусть": "sad",
+		"печаль": "sad",
+		"злость": "angry",
+		"раздражение": "annoyed",
+		"удивление": "surprised",
+		"шок": "shocked",
+		"смущение": "embarrassed",
+		"испуг": "scared",
+		"тревога": "worried",
+		"усталость": "tired",
+		"ехидно": "smug",
+		"флирт": "flirty",
+		"решимость": "determined",
+		"скука": "bored"
+	}
+}

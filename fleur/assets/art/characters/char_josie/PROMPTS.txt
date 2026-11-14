@@ -1,0 +1,26 @@
+Generated using built-in image_gen, transparent_background=true.
+Edit target: ../ref/josie.png
+Each expression is a separate edit of this same reference, never of another generated expression.
+QA: all five outputs are 1038 x 1516 PNG, Format32bppArgb. Sampled alpha range is 0..255 in every file; transparent background is present.
+
+Use case: identity-preserve.
+Asset type: transparent PNG visual-novel sprite expression variant.
+Input image 1 is the EDIT TARGET and the sole authority for character identity, art style, outfit, colors and framing.
+Edit this exact image, do not redesign or redraw it in another style. Preserve Josie's exact face proportions, pale skin, blue eyes, very long white high ponytail and all blue diamond hair ornaments. Preserve the exact white-and-pale-blue double-breasted jacket, dark navy lapels and cuffs, cobalt necktie with white emblem, silver trim, shoulder cords, blue jewels, blue pleated skirt and white gloves. Preserve the original crisp painterly anime shading and linework, original lighting, pose angle and character scale.
+Keep the same portrait canvas/aspect ratio close to 2:3, same head position and top-of-head-to-thigh framing. All body parts and costume ornaments visible in the original remain visible. Do not zoom, recenter, crop tighter, change anatomy, make the character younger, add props or text. Non-sexual character expression sheet asset.
+Background must be truly transparent with clean alpha, not a checkerboard and not a solid color. Keep all original transparent space.
+
+serious.png
+Requested change: Change ONLY the face expression to SERIOUS: focused calm blue eyes looking at the viewer, slightly lowered eyebrows, a firm closed mouth, composed attentive determination. No smile, no tears, no exaggerated anger. Keep body, hands, clothing and hair exactly unchanged.
+
+sad.png
+Requested change: Change the expression to SAD: subtly downcast blue eyes, softly raised inner brows, a small closed melancholy mouth, no tears. Make only one restrained gesture change: both white-gloved hands meet loosely in front of the lower waist, fingers gently held together, preserving the original body angle and head position. Keep every costume detail and ornament intact, and keep the silhouette and framing as close to the original as possible.
+
+laugh.png
+Requested change: Change the expression to LAUGH: a warm spontaneous laugh, both eyes gently closed in natural smiling arcs, open smiling mouth, slightly lifted cheeks. One modest gesture change is permitted: relax the hand on the hip into a light open-handed gesture near the waist. Keep head position, head size and body angle unchanged, preserve every costume and hair detail. No cartoon tears or motion symbols.
+
+annoyed.png
+Requested change: Change ONLY the face expression to ANNOYED: brows lowered slightly inward, mildly narrowed blue eyes looking at the viewer, lips pressed in a small displeased line. A restrained aristocratic irritated expression, not rage or a caricature. Keep body, hands, clothing and hair exactly unchanged.
+
+surprised.png
+Requested change: Change ONLY the face expression to SURPRISED: blue eyes distinctly widened, eyebrows raised, mouth a small natural open oval, alert genuine surprise. Keep original face shape and identity, not an exaggerated cartoon. Keep body, hands, clothing and hair exactly unchanged.

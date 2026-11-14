@@ -7,7 +7,6 @@
 			"loc_tiori",
 			"loc_docks",
 			"char_josie",
-			"char_charlotte",
 			"char_clorinde",
 			"char_tiori",
 			"char_adrian",
@@ -16,7 +15,6 @@
 			"sl_family",
 			"sl_eye",
 			"it_rapier",
-			"it_hairpin",
 			"st_hangover"
 		],
 		"effects": [
@@ -142,6 +140,102 @@
 				"#cfc6b8",
 				"#7a2f3a",
 				"#22181c"
+			]
+		},
+		"gardinage": {
+			"label": "Палата Жардинаж",
+			"colors": [
+				"#504e50",
+				"#343b50",
+				"#a89771"
+			]
+		},
+		"practice": {
+			"label": "Площадка у мастерской",
+			"colors": [
+				"#658b81",
+				"#cfb88f",
+				"#5a473b"
+			]
+		},
+		"manor_interior": {
+			"label": "Поместье Флёров",
+			"colors": [
+				"#bdae8a",
+				"#5a4840",
+				"#9f8960"
+			]
+		},
+		"manor_cellar": {
+			"label": "Семейный погреб",
+			"colors": [
+				"#665a48",
+				"#3c3530",
+				"#a28b61"
+			]
+		},
+		"manor_dining": {
+			"label": "Столовая в поместье",
+			"colors": [
+				"#ad8962",
+				"#5a3d3a",
+				"#bba06a"
+			]
+		},
+		"vineyard": {
+			"label": "Виноградники в Берилле",
+			"colors": [
+				"#789a68",
+				"#b1c7b5",
+				"#8e7150"
+			]
+		},
+		"glass_workshop": {
+			"label": "Витражная мастерская",
+			"colors": [
+				"#7b9eab",
+				"#9d8275",
+				"#c3b37c"
+			]
+		},
+		"epiclèse_foyer": {
+			"label": "Фойе «Эпиклеза»",
+			"colors": [
+				"#617f85",
+				"#ae9670",
+				"#703e46"
+			]
+		},
+		"epiclèse_hall": {
+			"label": "Зал «Эпиклеза»",
+			"colors": [
+				"#623a40",
+				"#34353e",
+				"#a68c5d"
+			]
+		},
+		"poisson": {
+			"label": "Пуассон",
+			"colors": [
+				"#5f746e",
+				"#3b4f59",
+				"#a59369"
+			]
+		},
+		"perfume_shop": {
+			"label": "Мастерская Эмилии",
+			"colors": [
+				"#557364",
+				"#b5b1a0",
+				"#88707e"
+			]
+		},
+		"mermonia": {
+			"label": "Дворец Мермония",
+			"colors": [
+				"#688eaa",
+				"#6d695a",
+				"#a5c0c1"
 			]
 		}
 	},

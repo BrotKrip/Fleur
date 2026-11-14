@@ -140,7 +140,8 @@ func _ready() -> void:
 	add_child(box)
 	dialog_scroll = ScrollContainer.new()
 	dialog_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	dialog_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
+	# полосы прокрутки нет: шрифт реплики подбирается так, чтобы она помещалась целиком
+	dialog_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_SHOW_NEVER
 	dialog_scroll.mouse_filter = Control.MOUSE_FILTER_PASS
 	box.add_child(dialog_scroll)
 	text_label = Label.new()
@@ -274,6 +275,48 @@ func _layout() -> void:
 	choice_scroll.size = Vector2(choice_width, maxf(120.0, box.position.y - choice_top - 28.0))
 	for id in figures:
 		_place_figure(figures[id])
+	_fit_text()
+
+
+const TEXT_FS_MAX := 23
+const TEXT_FS_MIN := 14
+
+
+## Подбирает размер шрифта реплики: самый крупный (до 23), при котором текст целиком
+## помещается в окно диалога. Прокрутка остаётся только запасным вариантом для очень
+## длинных реплик и делается щелчком, без видимой полосы.
+func _fit_text() -> void:
+	if text_label == null or box == null or text_label.text == "":
+		return
+	var sb := box.get_theme_stylebox("panel")
+	var avail := box.size - Vector2(sb.get_margin(SIDE_LEFT) + sb.get_margin(SIDE_RIGHT), sb.get_margin(SIDE_TOP) + sb.get_margin(SIDE_BOTTOM))
+	if avail.x < 50 or avail.y < 20:
+		return
+	var font := text_label.get_theme_font("font")
+	var spacing := text_label.get_theme_constant("line_spacing")
+	var flags := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
+	var fs := TEXT_FS_MAX
+	while fs > TEXT_FS_MIN:
+		var lines := _wrapped_lines(font, text_label.text, avail.x - 4, fs, flags)
+		var h := lines * font.get_height(fs) + maxi(0, lines - 1) * spacing
+		if h <= avail.y:
+			break
+		fs -= 1
+	text_label.add_theme_font_size_override("font_size", fs)
+	text_label.custom_minimum_size = Vector2(0, minf(110.0, avail.y))
+
+
+func _wrapped_lines(font: Font, text: String, width: float, fs: int, flags: int) -> int:
+	var n := 0
+	for para in text.split("
+"):
+		var ts := TextServerManager.get_primary_interface()
+		var rid := ts.create_shaped_text()
+		ts.shaped_text_add_string(rid, para if para != "" else " ", font.get_rids(), fs)
+		var breaks := ts.shaped_text_get_line_breaks(rid, width, 0, flags)
+		n += maxi(1, breaks.size() / 2)
+		ts.free_rid(rid)
+	return n
 
 
 func _fit_location() -> void:
@@ -487,6 +530,7 @@ func _say(who: String, text: String) -> void:
 	dialog_scroll.scroll_vertical = 0
 	waiting = "click"
 	_layout()
+	_fit_text()
 	var speed := float(Game.settings["text_speed"])
 	if speed <= 0:
 		text_label.visible_characters = -1
@@ -512,8 +556,15 @@ func _process(delta: float) -> void:
 		input_hint.text = "1–9   ·   ВЫБРАТЬ ОТВЕТ"
 		if scroll_bar.max_value > scroll_bar.page:
 			input_hint.text += "   ·   КОЛЕСО — ВСЕ ВАРИАНТЫ"
+	elif not typing and _more_text_below():
+		input_hint.text = "ПРОБЕЛ / ЩЕЛЧОК   ·   ТЕКСТ НИЖЕ"
 	else:
 		input_hint.text = "ПРОБЕЛ / ЩЕЛЧОК   ·   ПРОДОЛЖИТЬ"
+
+
+func _more_text_below() -> bool:
+	var bar := dialog_scroll.get_v_scroll_bar()
+	return bar.value < floorf(bar.max_value - bar.page)
 
 
 func _advance() -> void:
@@ -522,6 +573,10 @@ func _advance() -> void:
 	if typing:
 		typing = false
 		text_label.visible_characters = -1
+		return
+	if _more_text_below():
+		var page := dialog_scroll.get_v_scroll_bar().page
+		dialog_scroll.scroll_vertical += maxi(1, floori(page) - text_label.get_line_height())
 		return
 	waiting = ""
 	i += 1
@@ -656,7 +711,7 @@ func _finish() -> void:
 	if _finished:
 		return
 	_finished = true
-	Game.finish_scene(api["changes"])
+	Game.finish_scene(api["changes"], str(scene.get("after", "")), history)
 
 
 ## Есть ли в выборе хотя бы один видимый вариант (для хаба — ещё не выбранный).

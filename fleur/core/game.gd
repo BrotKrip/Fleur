@@ -53,7 +53,7 @@ func to_table(opts: Dictionary = {}) -> void:
 	main.swap(load("res://scenes/table/table_screen.gd").new(), opts.get("title", ""))
 
 
-func enter_scene(id: String, ctx: Dictionary) -> void:
+func enter_scene(id: String, ctx: Dictionary, history: Array = [], changes: Array = []) -> void:
 	var scene: Dictionary = Content.scenes.get(id, {})
 	if scene.is_empty():
 		push_error("Нет сцены " + id)
@@ -61,11 +61,26 @@ func enter_scene(id: String, ctx: Dictionary) -> void:
 	mode = "vn"
 	var vn = load("res://scenes/vn/vn_screen.gd").new()
 	vn.setup(scene, ctx)
+	vn.history = history
+	vn.api["changes"].append_array(changes)
 	main.swap(vn, "")
 
 
-func finish_scene(changes: Array, after_title := "Что изменилось") -> void:
-	pending_return = {"title": after_title, "text": "", "changes": changes}
+func finish_scene(changes: Array, continuation: String, history: Array) -> void:
+	if not continuation.is_empty():
+		var next := {"type": "scene", "id": continuation, "ctx": {}}
+		if state["queue"].is_empty():
+			next["history"] = history
+			next["changes"] = changes
+			# В сохранении следующая сцена ещё лежит в очереди.
+			if settings["autosave"]:
+				state["queue"].append(next)
+				_write_slot("auto")
+				state["queue"].pop_front()
+			start_queue_item(next)
+			return
+		state["queue"].append(next)
+	pending_return = {"title": "Что изменилось", "text": "", "changes": changes}
 	to_table()
 
 
@@ -110,7 +125,7 @@ func next_flow_item() -> Dictionary:
 
 func start_queue_item(q: Dictionary) -> void:
 	if q["type"] == "scene":
-		enter_scene(q["id"], q.get("ctx", {}))
+		enter_scene(q["id"], q.get("ctx", {}), q.get("history", []), q.get("changes", []))
 	elif q["type"] == "activity":
 		enter_activity(q)
 
@@ -147,6 +162,10 @@ func _slot_path(slot: String) -> String:
 func save_slot(slot: String) -> bool:
 	if mode != "table" or state.is_empty():
 		return false
+	return _write_slot(slot)
+
+
+func _write_slot(slot: String) -> bool:
 	DirAccess.make_dir_recursive_absolute(SAVE_DIR)
 	var f := FileAccess.open(_slot_path(slot), FileAccess.WRITE)
 	if f == null:

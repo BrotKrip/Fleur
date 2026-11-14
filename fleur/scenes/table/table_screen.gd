@@ -19,7 +19,7 @@ var sheet_layer: Control
 var note_layer: Control
 var hint_label: Label
 var notebook: DeskProp
-var plaque: DeskProp
+var plaque: Button
 var inkwell: DeskProp
 var blotter: Control
 
@@ -137,8 +137,9 @@ func _ready() -> void:
 	notebook = DeskProp.new("notebook")
 	notebook.activated.connect(Dialogs.journal)
 	add_child(notebook)
-	plaque = DeskProp.new("plaque")
-	plaque.activated.connect(Dialogs.pause)
+	plaque = _brass_button("Меню", Vector2(120, 44))
+	plaque.tooltip_text = "Меню, сохранение, настройки (Esc)"
+	plaque.pressed.connect(Dialogs.pause)
 	add_child(plaque)
 
 	cards_layer = Control.new()
@@ -147,31 +148,7 @@ func _ready() -> void:
 	world.add_child(cards_layer)
 	add_child(hint_label)
 
-	tidy_btn = Button.new()
-	var brass := StyleBoxFlat.new()
-	brass.bg_color = Color("b8924f")
-	brass.border_color = Color("5a4120")
-	brass.set_border_width_all(2)
-	brass.set_corner_radius_all(4)
-	brass.content_margin_left = 14
-	brass.content_margin_right = 14
-	brass.content_margin_top = 5
-	brass.content_margin_bottom = 5
-	brass.shadow_color = Color(0, 0, 0, 0.45)
-	brass.shadow_size = 4
-	brass.shadow_offset = Vector2(1, 3)
-	var brass_h := brass.duplicate() as StyleBoxFlat
-	brass_h.bg_color = Color("d2ab62")
-	tidy_btn.add_theme_stylebox_override("normal", brass)
-	tidy_btn.add_theme_stylebox_override("hover", brass_h)
-	tidy_btn.add_theme_stylebox_override("pressed", brass_h)
-	tidy_btn.add_theme_stylebox_override("focus", brass_h)
-	for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
-		tidy_btn.add_theme_color_override(c, Color("2a1c0c"))
-	tidy_btn.add_theme_font_override("font", Look.font("serif_bold"))
-	tidy_btn.add_theme_font_size_override("font_size", 15)
-	tidy_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	tidy_btn.text = "Прибрать стол"
+	tidy_btn = _brass_button("Прибрать стол", Vector2(164, 44))
 	tidy_btn.tooltip_text = "Разложить вещи по местам: люди к людям, слухи и улики к уликам."
 	tidy_btn.pressed.connect(_tidy)
 	add_child(tidy_btn)
@@ -210,6 +187,33 @@ func _ready() -> void:
 	_apply_light(true)
 
 
+func _brass_button(caption: String, footprint: Vector2) -> Button:
+	var button := Button.new()
+	button.text = caption
+	button.custom_minimum_size = footprint
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.add_theme_font_override("font", Look.font("serif_bold"))
+	button.add_theme_font_size_override("font_size", 16)
+	var plate := Art.prop("desk_plaque")
+	if plate:
+		var brass := StyleBoxTexture.new()
+		brass.texture = plate
+		brass.texture_margin_left = 23
+		brass.texture_margin_right = 23
+		brass.texture_margin_top = 9
+		brass.texture_margin_bottom = 9
+		var hover := brass.duplicate() as StyleBoxTexture
+		hover.modulate_color = Color(1.12, 1.10, 1.04)
+		var pressed := brass.duplicate() as StyleBoxTexture
+		pressed.modulate_color = Color(0.86, 0.85, 0.80)
+		button.add_theme_stylebox_override("normal", brass)
+		button.add_theme_stylebox_override("hover", hover)
+		button.add_theme_stylebox_override("pressed", pressed)
+		for key in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+			button.add_theme_color_override(key, Color("302110"))
+	return button
+
+
 func on_shown() -> void:
 	sync_cards(true)
 	if not Game.pending_return.is_empty():
@@ -246,12 +250,12 @@ func _layout_fixed() -> void:
 	# на столе (в мире)
 	map.position = Vector2(30, 30)
 	spread.position = Vector2(500, 34)
-	inkwell.position = Vector2(1240, 380)
+	inkwell.position = Vector2(1168, 302)
 	# на экране
 	dial.position = Vector2(ts.x - 310, 28)
 	notebook.position = Vector2(ts.x - 170, ts.y - 180)
 	plaque.position = Vector2(34, ts.y - 72)
-	tidy_btn.position = Vector2(166, ts.y - 64)
+	tidy_btn.position = Vector2(166, ts.y - 72)
 	hint_label.position = Vector2(ts.x * 0.5 - 330, ts.y - 64)
 	hint_label.visible = bool(Game.settings["hints"])
 	blotter.queue_redraw()
@@ -264,7 +268,7 @@ func _draw_blotter() -> void:
 	var edge := Look.rrect(r, 17)
 	Look.soft_shadow(blotter, edge, Vector2(3, 8), 10, 0.7)
 	Look.fill_v(blotter, edge, Color("273d3b"), Color("182928"))
-	Look.texture_polygon(blotter, edge, Art.surface("leather"), 1.0, Color(0.86, 0.91, 0.87, 0.56))
+	Look.texture_polygon(blotter, edge, Art.surface("blotter_leather"), 1.0, Color(0.84, 0.89, 0.90, 0.56))
 	Look.fill_v(blotter, edge, Color(0.03, 0.10, 0.09, 0.02), Color(0.01, 0.04, 0.04, 0.24))
 	Look.outline(blotter, edge, Color("0c1b1c"), 3.0)
 	Look.outline(blotter, Look.rrect(r.grow(-9), 11), Color(0.67, 0.55, 0.32, 0.45), 1.0)

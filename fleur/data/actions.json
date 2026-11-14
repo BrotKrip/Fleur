@@ -208,7 +208,7 @@
 					"noFlag": "clorinde_met"
 				},
 				{
-					"flag": "prologue_done"
+					"flag": "city_night_finished"
 				}
 			]
 		},
@@ -354,7 +354,7 @@
 	"debor_bar_meet": {
 		"at": "loc_debor",
 		"title": "Встретиться с Шарлоттой и Гастоном",
-		"desc": "Разговор о поставках, а не публичное обвинение.",
+		"desc": "Взять бутылку из Берилла. Гастон обещал показать, какой «Нектар» подают в отеле.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -389,6 +389,14 @@
 		],
 		"cost": 1,
 		"outcomes": [
+			{
+				"when": { "flag": ["first_arc_done", "batches_suspended"] },
+				"text": "У Гастона под стойкой лежал лист с отцовской подписью. Он сверил с ним отметку на бутылке, которую принёс официант, и попросил отнести её в кладовую к остальным. Флёру налил арманьяку. «Этот, месье, можете хоть сейчас допить». За соседним столом уже просили счёт."
+			},
+			{
+				"when": { "flag": "first_arc_done" },
+				"text": "Гость у стойки вертел в руках бутылку, разыскивая метку с газетного рисунка. Гастон подвинул к нему лампу. Флёр сел подальше, заказал арманьяку и успел услышать только конец заказа. К рыбе пошло белое."
+			},
 			{
 				"text": "Гастон узнал его, показал свободный столик и принёс заказ. Сегодня Флёр не задавал вопросов о поставках. Соседняя компания спорила о театре; через некоторое время он присоединился и успел изменить мнение дважды."
 			}
@@ -540,9 +548,9 @@
 		]
 	},
 	"chevreuse_after_work": {
-		"at": "loc_apartment",
-		"title": "Принять Шеврёз после смены",
-		"desc": "",
+		"at": "loc_gardinage",
+		"title": "Застать Шеврёз к концу смены",
+		"desc": "Капитан обещала освободиться вечером. У жаровни помнят её заказ.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -565,7 +573,7 @@
 	"meet_aurelie": {
 		"at": "loc_vasari",
 		"title": "Посидеть у фонтана",
-		"desc": "Каштаны, солнце и женщина с книгой на соседней скамье.",
+		"desc": "После жаркой Палаты у фонтана свободна скамейка. На ней сидит женщина с книгой.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -580,7 +588,7 @@
 		"visible": {
 			"all": [
 				{
-					"flag": "opening_done"
+					"flag": "chevreuse_visited"
 				},
 				{
 					"noFlag": "tiori_encountered"
@@ -595,7 +603,7 @@
 	"mend_charlotte_clothes": {
 		"at": "loc_tiori",
 		"title": "Отнести Тиори испорченную одежду",
-		"desc": "",
+		"desc": "Тиори видела Флёра у фонтана. Теперь придётся объяснить, откуда у него чужой наряд.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -608,7 +616,8 @@
 			}
 		],
 		"visible": {
-			"has": "task_clothes"
+			"has": "task_clothes",
+			"flag": "tiori_encountered"
 		},
 		"phases": [
 			"morning",
@@ -666,8 +675,7 @@
 		},
 		"phases": [
 			"evening",
-			"night",
-			"morning"
+			"night"
 		]
 	},
 	"dinner_with_josie": {
@@ -702,7 +710,7 @@
 	"depart_manor": {
 		"at": "loc_manor",
 		"title": "Отправиться в поместье с Шарлоттой",
-		"desc": "Выезд утром, визит с ночёвкой. Обычные городские дела можно закончить до поездки.",
+		"desc": "Утренний рейс в Берилл. Матушка ждёт к обеду. С Жози стоит проститься дома.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -721,6 +729,9 @@
 				},
 				{
 					"noFlag": "manor_done"
+				},
+				{
+					"flag": "josie_arrived"
 				}
 			]
 		},
@@ -731,7 +742,7 @@
 	"return_city": {
 		"at": "loc_apartment",
 		"title": "Вернуться из поместья",
-		"desc": "Завершить поездку, разобрать дорожные вещи и передать подарки Жози.",
+		"desc": "Успеть к обратному рейсу вместе с Шарлоттой. Дома ждут Жози и привезённые из Берилла подарки.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -754,6 +765,8 @@
 			]
 		},
 		"phases": [
+			"evening",
+			"night",
 			"morning",
 			"day"
 		]
@@ -847,7 +860,7 @@
 	},
 	"courier_help": {
 		"at": "loc_apartment",
-		"title": "Разобраться с перепутанным письмом",
+		"title": "Забрать свёрток у соседних ворот",
 		"desc": "",
 		"cost": 0,
 		"once": true,
@@ -890,6 +903,9 @@
 				},
 				{
 					"noFlag": "theatre_seen"
+				},
+				{
+					"flag": "furina_sketch_delivered"
 				}
 			]
 		},
@@ -1037,7 +1053,7 @@
 		"visible": {
 			"all": [
 				{
-					"flag": "opening_done"
+					"flag": "josie_arrived"
 				},
 				{
 					"noFlag": "cards_evening_done"
@@ -1097,7 +1113,7 @@
 	"read_family_article": {
 		"at": "loc_steambird",
 		"title": "Зайти к Шарлотте в редакцию",
-		"desc": "Статья о семейных ремёслах готова. Можно спокойно закончить другие дела и прийти позже.",
+		"desc": "Шарлотта просила зайти к вёрстке. После утренних поручений в городе можно застать её над газетной полосой.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -1122,6 +1138,9 @@
 				},
 				{
 					"noFlag": "article_seen"
+				},
+				{
+					"flag": "furina_sketch_delivered"
 				}
 			]
 		},
@@ -1156,10 +1175,16 @@
 	"emilie_samples": {
 		"at": "loc_perfume",
 		"title": "Попросить сравнить образцы",
-		"desc": "",
+		"desc": "Принести записи и бутылки. Эмилия оставляет складскую пломбу для независимой проверки.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
+			{
+				"when": { "slot": ["city", "it_control_sample"] },
+				"effects": [
+					{ "scene": { "id": "emilie_samples", "ctx": { "sample": "warehouse" } } }
+				]
+			},
 			{
 				"effects": [
 					{
@@ -1289,6 +1314,39 @@
 			"morning"
 		]
 	},
+	"eloise_after_print": {
+		"at": "loc_manor",
+		"title": "Позавтракать с матерью в Берилле",
+		"visible": { "has": "inv_eloise_after_print" },
+		"phases": ["morning"],
+		"once": true,
+		"cost": 0,
+		"outcomes": [
+			{ "effects": [{ "scene": "eloise_after_print" }] }
+		]
+	},
+	"marcel_lunch": {
+		"at": "loc_debor",
+		"title": "Пообедать с дядей Марселем",
+		"visible": { "has": "inv_marcel_lunch" },
+		"phases": ["day"],
+		"once": true,
+		"cost": 0,
+		"outcomes": [
+			{ "effects": [{ "scene": "marcel_lunch" }] }
+		]
+	},
+	"textile_opening": {
+		"at": "loc_debor",
+		"title": "Зайти на выставку тканей",
+		"visible": { "has": "inv_textile_opening" },
+		"phases": ["day"],
+		"once": true,
+		"cost": 0,
+		"outcomes": [
+			{ "effects": [{ "scene": "textile_opening" }] }
+		]
+	},
 	"josie_dinner_repeat": {
 		"at": "loc_apartment",
 		"title": "Поужинать с Жози",
@@ -1327,7 +1385,7 @@
 			]
 		},
 		"once": true,
-		"cost": 1,
+		"cost": 0,
 		"slots": [
 			{
 				"id": "estate",
@@ -1348,16 +1406,9 @@
 		],
 		"outcomes": [
 			{
-				"text": "Он положил рядом запись Анри и чек Гастона. Совпадали торговое название и герб; различались линия доводки, номер и место выпуска. В выписке он оставил только это. Разницу хотелось назвать подозрительной, но пока она была просто разницей.",
 				"effects": [
 					{
-						"flag": "bottles_compared"
-					},
-					{
-						"add": "info_compare"
-					},
-					{
-						"remove": "task_compare"
+						"scene": "compare_bottles"
 					}
 				]
 			}
@@ -1537,7 +1588,7 @@
 				},
 				"cost": 0,
 				"title": "Только имя",
-				"text": "— У вас есть имя друга семьи и ничего, кроме имени, — Шарлотта откладывает карандаш. — Так пишут анонимки, а не статьи.",
+				"text": "— У тебя есть имя друга семьи и ничего, кроме имени, — Шарлотта откладывает карандаш. — Так пишут анонимки, а не статьи.",
 				"effects": [
 					{
 						"flag": "accuse_marcel_refused"
@@ -1553,7 +1604,7 @@
 				},
 				"cost": 0,
 				"title": "Не та подпись",
-				"text": "— Луи-Марк подписывает ведомости, — говорит Шарлотта. — Распоряжение подписал не он. Вы хотите, чтобы виноватым оказался тот, с кем проще поссориться?",
+				"text": "— Луи-Марк подписывает ведомости, — говорит Шарлотта. — Распоряжение подписал не он. Ты хочешь, чтобы виноватым оказался тот, с кем проще поссориться?",
 				"effects": [
 					{
 						"flag": "accuse_louis_tried"
@@ -1719,6 +1770,142 @@
 					},
 					{
 						"scene": "lamotte_after"
+					}
+				]
+			}
+		]
+	},
+	"city_josie_sofa": {
+		"at": "loc_apartment",
+		"title": "Побыть с Жози после поездки",
+		"desc": "Распаковать вещи, пока сестра дожидается своего подарка.",
+		"visible": {
+			"flag": "homecoming_done",
+			"noFlag": "city_night_finished"
+		},
+		"phases": [
+			"morning",
+			"day",
+			"evening",
+			"night"
+		],
+		"cost": 0,
+		"once": true,
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "city_josie_sofa"
+					}
+				]
+			}
+		]
+	},
+	"ledgers_morning": {
+		"at": "loc_apartment",
+		"title": "Разобрать отцовские книги",
+		"desc": "Свести цифры из Берилла, пока помнишь, что показывал отец.",
+		"visible": {
+			"flag": "city_night_finished",
+			"noFlag": "ledgers_read"
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"cost": 0,
+		"once": true,
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "ledgers_morning"
+					}
+				]
+			}
+		]
+	},
+	"tiori_spectacles": {
+		"at": "loc_tiori",
+		"title": "Заказать у Тиори очки для Фурины",
+		"desc": "Рассказать хозяйке мастерской о ночной беседе и предложить заказ.",
+		"visible": {
+			"flag": "ledgers_read",
+			"noFlag": "furina_sketch_ready"
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"cost": 0,
+		"once": true,
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "tiori_spectacles"
+					}
+				]
+			}
+		]
+	},
+	"furina_sketch_delivery": {
+		"at": "loc_mermonia",
+		"title": "Отнести рисунок и спросить о приёме",
+		"desc": "Исполнить уговор с Тиори и выяснить, как добраться до Нёвиллета.",
+		"visible": {
+			"flag": "furina_sketch_ready",
+			"noFlag": "furina_sketch_delivered"
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"cost": 0,
+		"once": true,
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "furina_sketch_delivery"
+					}
+				]
+			}
+		]
+	},
+	"aurelie_window": {
+		"at": "loc_apartment",
+		"title": "Принять Орели с готовым витражом",
+		"desc": "При утреннем свете самое время увидеть её стекло в собственном доме.",
+		"visible": {
+			"flag": "glass_commissioned",
+			"noFlag": "aurelie_window_done",
+			"any": [
+				{
+					"daysSince": [
+						"aurelie_agreed",
+						2
+					]
+				},
+				{
+					"counterLt": [
+						"day:aurelie_agreed",
+						1
+					]
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"cost": 0,
+		"once": true,
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "aurelie_window"
 					}
 				]
 			}

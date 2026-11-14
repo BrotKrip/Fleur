@@ -11,6 +11,35 @@ func _ready() -> void:
 func _go() -> void:
 	var out := ""
 	var table_dir := ""
+	var vnline := ""
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--vnline="):
+			vnline = a.substr(9)
+	if vnline != "":
+		# --vnline=<сцена>|<кусок реплики>|<файл.png>: снимок окна диалога на этой реплике
+		var parts := vnline.split("|")
+		Game.settings["autosave"] = false
+		Game.settings["text_speed"] = 0
+		await get_tree().create_timer(0.8).timeout
+		Game.new_game()
+		Game.state["queue"] = []
+		Game.enter_scene(parts[0], {})
+		await get_tree().create_timer(1.5).timeout
+		var vn = Game.main.screen
+		for k in 400:
+			if parts[1] in vn.text_label.text:
+				break
+			if vn.waiting == "choice":
+				(vn.choices.get_child(0) as Button).emit_signal("pressed")
+			else:
+				vn._advance()
+			await get_tree().process_frame
+		await get_tree().create_timer(0.3).timeout
+		var bar = vn.dialog_scroll.get_v_scroll_bar()
+		print("VNLINE font=%d overflow=%s" % [vn.text_label.get_theme_font_size("font_size"), str(bar.max_value > bar.page + 1)])
+		await _save_full(parts[2])
+		get_tree().quit()
+		return
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--mapshot="):
 			out = a.substr(10)

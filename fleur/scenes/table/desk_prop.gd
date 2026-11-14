@@ -1,7 +1,7 @@
 class_name DeskProp
 extends Control
 ## Мелкие вещи на столе, через которые доступны служебные функции:
-## записная книжка (журнал), латунная табличка (меню), чернильница (украшение).
+## Записная книжка открывает журнал. Чернильница служит украшением.
 
 signal activated
 
@@ -21,11 +21,8 @@ func _ready() -> void:
 			size = Vector2(130, 150)
 			tooltip_text = "Записная книжка: что было"
 			rotation = 0.12
-		"plaque":
-			size = Vector2(120, 44)
-			tooltip_text = "Меню, сохранение, настройки (Esc)"
 		"inkwell":
-			size = Vector2(110, 90)
+			size = Vector2(192, 72)
 	pivot_offset = size / 2
 	mouse_filter = Control.MOUSE_FILTER_STOP if kind != "inkwell" else Control.MOUSE_FILTER_IGNORE
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -46,12 +43,10 @@ func _gui_input(e: InputEvent) -> void:
 func _draw() -> void:
 	var lift := Vector2(0, -3) if hovered else Vector2.ZERO
 	var artwork := Art.prop(kind)
-	if artwork and kind in ["notebook", "inkwell"]:
-		var area := Rect2(Vector2(6, 2) + lift, size - Vector2(12, 6))
-		if kind == "inkwell":
-			area = Rect2(0, -26, 110, 116)
-		# Тень повторяет альфу самого предмета, а не прямоугольник картинки.
-		draw_sprite(self, artwork, Rect2(area.position + Vector2(5, 7), area.size), Color(0.01, 0.015, 0.02, 0.42))
+	if artwork:
+		var area := Rect2(Vector2(4, 2) + lift, size - Vector2(8, 6))
+		var off := Vector2(2, 3) if kind == "inkwell" else Vector2(4, 6)
+		draw_sprite(self, artwork, Rect2(area.position + off, area.size), Color(0.015, 0.012, 0.008, 0.42))
 		var drawn := draw_sprite(self, artwork, area, Color(1.08, 1.04, 0.97) if hovered else Color.WHITE)
 		if kind == "notebook":
 			var cx := drawn.position.x + drawn.size.x * 0.46
@@ -69,24 +64,17 @@ func _draw() -> void:
 			# карандаш
 			draw_line(Vector2(0, 130) + lift, Vector2(118, 112) + lift, Color("c9a23a"), 6.0, true)
 			draw_line(Vector2(118, 112) + lift, Vector2(128, 110) + lift, Color("2a2018"), 3.0, true)
-		"plaque":
-			var r2 := Rect2(Vector2(2, 2) + lift, size - Vector2(4, 4))
-			var p2 := Look.rrect(r2, 4)
-			Look.soft_shadow(self, p2, Vector2(3, 5), 5, 0.5)
-			Look.fill_v(self, p2, Look.BRASS.lightened(0.15 if hovered else 0.0), Look.BRASS_DARK)
-			Look.outline(self, Look.rrect(r2.grow(-4), 3), Color(1, 0.9, 0.6, 0.5))
-			for sx in [10.0, size.x - 10.0]:
-				draw_circle(Vector2(sx, size.y / 2) + lift, 3, Look.BRASS_DARK)
-			Look.text_c(self, Look.font("serif_bold"), size.x / 2, size.y / 2 + 6 + lift.y, "Меню", 16, Color("2a1d0c"))
 		"inkwell":
-			var c := Vector2(55, 52)
-			draw_circle(c + Vector2(6, 9), 32, Color(0, 0, 0, 0.35))
-			draw_circle(c, 32, Color("1a2230"))
-			draw_circle(c, 25, Color("0b0f18"))
-			draw_circle(c + Vector2(-10, -10), 8, Color(1, 1, 1, 0.12))
-			Look.brass_circle(self, c, 12)
-			draw_polyline(PackedVector2Array([c + Vector2(4, -4), c + Vector2(30, -40), c + Vector2(48, -66)]), Color("e8e2d6"), 4.0, true)
-			draw_polyline(PackedVector2Array([c + Vector2(26, -34), c + Vector2(44, -50), c + Vector2(52, -70), c + Vector2(36, -58)]), Color("f2eee6"), 6.0, true)
+			var tray := Look.rrect(Rect2(4, 3, size.x - 8, size.y - 7), 8)
+			Look.soft_shadow(self, tray, Vector2(2, 3), 3, 0.45)
+			Look.fill_v(self, tray, Color("344253"), Color("202a38"))
+			Look.outline(self, tray, Look.BRASS, 2)
+			var c := Vector2(41, size.y / 2)
+			draw_circle(c, 24, Color("243859"), true, -1, true)
+			draw_circle(c, 16, Look.BRASS, true, -1, true)
+			draw_circle(c, 12, Color("0a1120"), true, -1, true)
+			draw_line(Vector2(82, 51), Vector2(158, 27), Look.BRASS, 3, true)
+			draw_colored_polygon(PackedVector2Array([Vector2(106, 44), Vector2(124, 28), Vector2(169, 17), Vector2(157, 31), Vector2(130, 42)]), Color("dfcfab"))
 
 
 ## Область видимого предмета: прозрачные поля PNG не влияют на размер на столе.

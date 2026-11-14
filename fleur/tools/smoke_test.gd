@@ -390,6 +390,9 @@ func _run() -> void:
 	expect(not s["cards"].has("dl_article"), "срок снят после статьи")
 	for f in ["louis_talk_done", "father_talk_done", "first_arc_done", "arc_epilogue_seen", "louis_warehouse_asked", "father_warehouse_asked"]:
 		expect(s["flags"].get(f, false), "не дошли до " + f)
+	for f in ["chevreuse_office_shared", "josie_arrived", "city_night_finished", "clorinde_button_night",
+			"ledgers_read", "furina_sketch_ready", "furina_sketch_delivered", "article_seen"]:
+		expect(s["flags"].get(f, false), "пропущен эпизод до расследования: " + f)
 	await shot("table_epilogue")
 	var used := PackedStringArray()
 	for k in s["counters"]:

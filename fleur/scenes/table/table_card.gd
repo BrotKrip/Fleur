@@ -28,6 +28,8 @@ var id := ""
 var d: Dictionary = {}
 var look := "note"
 var item_art: Texture2D
+var token_art: Texture2D
+var book_cover: Texture2D
 var lift := 0.0
 var hovered := false
 var dragging := false
@@ -48,6 +50,10 @@ func setup(card_id: String) -> void:
 	id = card_id
 	d = Content.def(id)
 	look = str(d.get("look", "note"))
+	if look == "token" or look == "trait":
+		token_art = Art.prop(id)
+	if look == "book":
+		book_cover = Art.prop(id)
 	if d.get("type") == "item":
 		item_art = Art.prop(id)
 	seed_v = Look.hash_seed(id)
@@ -151,6 +157,12 @@ func silhouette() -> PackedVector2Array:
 		"note":
 			return Look.torn_rect(r, seed_v, true, false, 4.0)
 		"token":
+			if token_art:
+				var octagon := PackedVector2Array()
+				for i in 8:
+					var ray := Vector2.from_angle(PI / 8.0 + i * TAU / 8.0)
+					octagon.append(Vector2(size.x / 2, 47) + ray * 42 / cos(PI / 8.0))
+				return octagon
 			return Look.ellipse(Vector2(size.x / 2, 48), Vector2(42, 42), 36)
 		"trait":
 			return Look.ellipse(Vector2(size.x / 2, 50), Vector2(46, 46), 40)
@@ -431,6 +443,18 @@ func _draw_folder() -> void:
 # ---- переплёт (сюжетные линии)
 func _draw_book() -> void:
 	var r := Rect2(Vector2.ZERO, size)
+	if book_cover:
+		draw_texture_rect(book_cover, r, false)
+		# Центр наборной полосы смещён вправо на половину ширины корешка.
+		var font := _f("serif_bold")
+		var heading := title()
+		var font_size := 18
+		var width := size.x - 37.0
+		var text_height := font.get_multiline_string_size(heading, HORIZONTAL_ALIGNMENT_CENTER, width, font_size).y
+		var baseline := Vector2(22, size.y * 0.60 - text_height / 2.0 + font.get_ascent(font_size))
+		draw_multiline_string(font, baseline + Vector2(0, 1), heading, HORIZONTAL_ALIGNMENT_CENTER, width, font_size, -1, Color("211a13"))
+		draw_multiline_string(font, baseline, heading, HORIZONTAL_ALIGNMENT_CENTER, width, font_size, -1, Color("f7e3b2"))
+		return
 	var base: Color = BOOK_COLORS.get(id, Color("3e2a1c"))
 	var cover := Look.rrect(r, 7)
 	Look.fill_v(self, cover, base.lightened(0.12), base.darkened(0.35))
@@ -447,42 +471,51 @@ func _draw_book() -> void:
 	draw_colored_polygon(PackedVector2Array([Vector2(size.x - 40, size.y - 2), Vector2(size.x - 30, size.y - 2), Vector2(size.x - 30, size.y + 20), Vector2(size.x - 35, size.y + 14), Vector2(size.x - 40, size.y + 20)]), Color("8e1f22"))
 
 
-# ---- жетон (состояния Флёра)
+# ---- эмалевые жетоны подходов и состояний
 func _draw_token() -> void:
-	var c := Vector2(size.x / 2, 48)
-	var mood := str(d.get("mood", "good"))
-	var inner := Color("3f6a5a") if mood == "good" else Color("6e3a33")
-	draw_circle(c, 42, Look.BRASS_DARK)
-	draw_circle(c, 39, Look.BRASS)
-	draw_circle(c, 33, inner.darkened(0.2))
-	draw_circle(c, 31, inner)
-	draw_arc(c, 36, 0, TAU, 48, Color(1, 0.9, 0.6, 0.5), 1.0, true)
-	draw_circle(c + Vector2(-12, -14), 12, Color(1, 1, 1, 0.08))
-	_draw_glyph(str(d.get("glyph", "")), c, Color("f1e3c0"))
-	Look.text_c(self, _f("hand"), size.x / 2, 108, title(), 12, Color("f1e3c0"), size.x + 30)
-	if lifetime_phrase() != "":
-		Look.text_c(self, _f("serif_italic"), size.x / 2, 121, lifetime_phrase(), 10, Color(0.95, 0.85, 0.65, 0.75), size.x + 20)
+	var c := Vector2(size.x / 2, 47)
+	var enamel := Color("6e3a33") if d.get("mood") == "bad" else Color("3f6a5a")
+	_draw_enamel(c, 42.0, enamel, Color.WHITE)
+	_draw_token_caption(title(), 104, 15, _f("serif_bold"), Color("fff0ce"))
+	var duration := lifetime_phrase()
+	if duration != "":
+		_draw_token_caption(duration, 121, 14, _f("sans"), Color("ffd3a4") if urgent() else Color("f0dfbd"))
 
 
-# ---- печатка подхода Флёра (Обаяние, Клинок, Фамилия, Кошелёк, Откровенность)
 func _draw_trait() -> void:
 	var c := Vector2(size.x / 2, 50)
 	var rest := int(inst().get("rest", 0))
 	var enamel := Color(str(d.get("color", "#2a3f6a")))
-	var k := 0.45 if rest > 0 else 1.0
-	draw_circle(c, 46, Look.BRASS_DARK.darkened(0.2))
-	draw_circle(c, 43, Look.BRASS.lerp(Color(0.4, 0.38, 0.34), 1.0 - k))
-	for i in 24:
-		var a := TAU * i / 24.0
-		draw_circle(c + Vector2.from_angle(a) * 40, 1.6, Look.BRASS_DARK)
-	draw_circle(c, 34, enamel.darkened(0.25).lerp(Color(0.25, 0.24, 0.23), 1.0 - k))
-	draw_circle(c, 31, enamel.lerp(Color(0.3, 0.29, 0.28), 1.0 - k))
-	draw_circle(c + Vector2(-11, -13), 11, Color(1, 1, 1, 0.1 * k))
-	_draw_glyph(str(d.get("glyph", "")), c, Color("f4e6c2").lerp(Color("9a9080"), 1.0 - k))
-	Look.text_c(self, _f("serif_bold"), size.x / 2, 113, title(), 13, Color("f1e3c0") if rest == 0 else Color(0.8, 0.75, 0.66, 0.8), size.x + 30)
+	var tint := Color("87817b") if rest > 0 else Color.WHITE
+	_draw_enamel(c, 46.0, enamel, tint)
+	_draw_token_caption(title(), 114, 15, _f("serif_bold"), Color("fff0ce"))
 	if rest > 0:
-		draw_arc(c, 47, -PI / 2, -PI / 2 + TAU * (1.0 - float(rest) / maxf(1.0, float(d.get("recharge", 3)))), 40, Color(0.95, 0.8, 0.45, 0.9), 3.0, true)
-		Look.text_c(self, _f("serif_italic"), size.x / 2, 128, "восстанавливается", 10, Color(0.95, 0.85, 0.65, 0.8), size.x + 30)
+		var ready := clampf(1.0 - float(rest) / maxf(1.0, float(d.get("recharge", 3))), 0, 1)
+		draw_arc(c, 47, 0, TAU, 64, Color("46392e"), 3.0, true)
+		if ready > 0:
+			draw_arc(c, 47, -PI / 2, -PI / 2 + TAU * ready, 64, Color("f5d58e"), 3.0, true)
+		_draw_token_caption(PHASE_UNTIL[(int(state()["phase"]) + rest) % 4], 130, 14, _f("sans"), Color("f0dfbd"))
+
+
+func _draw_enamel(c: Vector2, radius: float, enamel: Color, tint: Color) -> void:
+	if token_art:
+		var half := Vector2.ONE * (radius + 1.0)
+		draw_texture_rect(token_art, Rect2(c - half, half * 2.0), false, tint)
+		return
+	# Для добавленных автором жетонов без индивидуального рисунка.
+	draw_circle(c, radius, Look.BRASS_DARK * tint)
+	draw_circle(c, radius - 2, Look.BRASS * tint)
+	draw_circle(c, radius - 5, enamel * tint)
+	_draw_glyph(str(d.get("glyph", "")), c, Color("f1e3c0") * tint)
+
+
+func _draw_token_caption(caption: String, baseline: int, font_size: int, font: Font, color: Color) -> void:
+	var width := size.x + 6.0
+	while font_size > 11 and font.get_string_size(caption, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > width:
+		font_size -= 1
+	var origin := Vector2((size.x - width) * 0.5, baseline)
+	draw_string_outline(font, origin, caption, HORIZONTAL_ALIGNMENT_CENTER, width, font_size, 3, Color("1d241fed"))
+	draw_string(font, origin, caption, HORIZONTAL_ALIGNMENT_CENTER, width, font_size, color)
 
 
 func _draw_glyph(g: String, c: Vector2, col: Color) -> void:

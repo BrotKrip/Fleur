@@ -6,13 +6,20 @@ extends Control
 signal wait_requested
 
 const PHASE_ANGLES := [-PI * 0.75, -PI * 0.25, PI * 0.25, PI * 0.75]
+const CLOCK_CENTER := Vector2(100, 105)
+const CALENDAR := Rect2(194, 32, 94, 121)
+const WEEKDAYS := ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
 
 var hand_angle := 0.0
 var hovered := false
 var _t := 0.0
+var _clock: Texture2D
+var _calendar: Texture2D
 
 
 func _ready() -> void:
+	_clock = Art.prop("desk_chronometer")
+	_calendar = Art.prop("desk_calendar")
 	size = Vector2(290, 210)
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -35,7 +42,7 @@ func refresh() -> void:
 
 func _gui_input(e: InputEvent) -> void:
 	if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-		if Vector2(100, 105).distance_to(e.position) < 92:
+		if CLOCK_CENTER.distance_to(e.position) < 92:
 			wait_requested.emit()
 		accept_event()
 
@@ -46,77 +53,71 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var c := Vector2(100, 105)
 	var phase := int(Game.state["phase"])
-	# календарь
-	var cal := Rect2(196, 30, 84, 104)
-	var calp := Look.rrect(cal, 3)
-	Look.soft_shadow(self, calp, Vector2(4, 6), 6, 0.5)
-	Look.fill_v(self, calp, Color("f7f1e2"), Color("e7dcc5"))
-	Look.texture_polygon(self, calp, Art.surface("paper"), 1.0, Color(1, 1, 1, 0.72))
-	for y in [cal.end.y + 2, cal.end.y + 4]:
-		draw_line(Vector2(cal.position.x + 3, y), Vector2(cal.end.x - 3, y), Color(0.64, 0.55, 0.40, 0.8), 1.0, true)
-	draw_colored_polygon(Look.rrect(Rect2(cal.position, Vector2(cal.size.x, 24)), 3), Color("8c2a22"))
-	for x in [cal.position.x + 13, cal.end.x - 13]:
-		draw_circle(Vector2(x, cal.position.y + 4), 2.6, Color("4d2219"))
-		draw_line(Vector2(x, cal.position.y - 4), Vector2(x, cal.position.y + 4), Color("bda67b"), 2.0, true)
-	var wd: String = ["ПОНЕДЕЛЬНИК", "ВТОРНИК", "СРЕДА", "ЧЕТВЕРГ", "ПЯТНИЦА", "СУББОТА", "ВОСКРЕСЕНЬЕ"][(int(Game.state["day"]) - 1) % 7]
-	Look.text_c(self, Look.font("serif"), cal.get_center().x, cal.position.y + 17, wd, 10, Color("f3d9c0"))
-	Look.text_c(self, Look.font("serif_bold"), cal.get_center().x, cal.position.y + 78, str(int(Game.state["day"])), 46, Color("3a1a14"))
-	Look.text_c(self, Look.font("serif_italic"), cal.get_center().x, cal.position.y + 98, Rules.PHASES[phase].to_lower(), 13, Look.INK_SOFT)
+	_draw_calendar(int(Game.state["day"]), phase)
+	_draw_clock(phase)
 
-	# корпус часов
-	var lift := 3.0 if hovered else 0.0
-	Look.soft_shadow(self, Look.ellipse(c, Vector2(92, 92), 80), Vector2(4, 7 + lift), 8, 0.6)
-	Look.fill_v(self, Look.ellipse(c, Vector2(92, 92), 96), Color("d3b36d"), Color("5c401d"))
-	draw_arc(c, 91, -2.8, -0.2, 64, Color("e6ce91"), 1.2, true)
-	draw_circle(c, 86, Color("594021"))
-	Look.fill_v(self, Look.ellipse(c, Vector2(84, 84), 96), Color("e8d29a"), Color("92703a"))
-	draw_circle(c, 79, Color("5c442b"))
-	draw_circle(c, 77, Color("f2e8d0"))
-	Look.texture_polygon(self, Look.ellipse(c, Vector2(77, 77), 80), Art.surface("paper"), 1.0, Color(1, 1, 1, 0.72))
-	# Насечка металлического обода и тонкая минутная шкала под стеклом.
-	for i in 60:
-		var a := TAU * i / 60.0
-		var dir := Vector2(sin(a), -cos(a))
-		draw_line(c + dir * 87, c + dir * 90, Color(0.27, 0.19, 0.08, 0.32), 1.0, true)
-	# сектора частей дня
-	var cols := [Color("f2d9a0"), Color("f7f0c8"), Color("e8a76a"), Color("4a5578")]
+
+func _draw_calendar(day: int, phase: int) -> void:
+	var center_x := CALENDAR.get_center().x
+	Look.soft_shadow(self, Look.rrect(CALENDAR.grow(-1), 3), Vector2(3, 5), 4, 0.45)
+	if _calendar:
+		draw_texture_rect(_calendar, CALENDAR, false)
+	else:
+		draw_rect(CALENDAR, Color("f3e6c8"))
+		draw_rect(Rect2(CALENDAR.position, Vector2(CALENDAR.size.x, 16)), Color("78362b"))
+	var weekday: String = WEEKDAYS[posmod(day - 1, WEEKDAYS.size())]
+	Look.text_c(self, Look.font("sans"), center_x, CALENDAR.position.y + 39, weekday, 13, Color("673a30"), CALENDAR.size.x - 10)
+	Look.text_c(self, Look.font("serif"), center_x, CALENDAR.position.y + 90, str(day), 51, Color("34271e"), CALENDAR.size.x - 12)
+	Look.text_c(self, Look.font("serif_italic"), center_x, CALENDAR.end.y - 9, Rules.PHASES[phase].to_lower(), 14, Color("544032"), CALENDAR.size.x - 20)
+
+
+func _draw_clock(phase: int) -> void:
+	var c := CLOCK_CENTER
+	Look.soft_shadow(self, Look.ellipse(c, Vector2(90, 90), 72), Vector2(3, 5), 6, 0.47)
+	if _clock:
+		draw_texture_rect(_clock, Rect2(c - Vector2(92, 92), Vector2(184, 184)), false)
+	else:
+		draw_circle(c, 92, Color("9e7950"), true, -1, true)
+		draw_circle(c, 78, Color("eadcc0"), true, -1, true)
+	# Отдельное поле для каждой части дня; стрелка движется внутри свободного центра.
 	for i in 4:
-		var a0: float = PHASE_ANGLES[i] - PI / 4
-		var pts := PackedVector2Array([c])
-		for k in 17:
-			var a := a0 + (PI / 2) * k / 16.0
-			pts.append(c + Vector2(cos(a), sin(a)) * 74)
-		var col: Color = cols[i]
-		col.a = 0.95 if i == phase else 0.35
-		draw_colored_polygon(pts, col)
-		draw_line(c, c + Vector2(cos(a0), sin(a0)) * 76, Color(0.4, 0.3, 0.15, 0.5), 1.0)
-		var lp := c + Vector2(cos(PHASE_ANGLES[i]), sin(PHASE_ANGLES[i])) * 50
-		var tc := Look.INK if i != 3 or i != phase else Color("e8e0f0")
-		if i == 3 and i == phase:
-			tc = Color("eef0ff")
-		Look.text_c(self, Look.font("serif_bold" if i == phase else "serif"), lp.x, lp.y + 6, Rules.PHASES[i], 15 if i == phase else 13, tc)
-	for i in 60:
-		var a := TAU * i / 60.0
-		var dir := Vector2(sin(a), -cos(a))
-		draw_line(c + dir * (67 if i % 5 == 0 else 71), c + dir * 74, Color(0.27, 0.23, 0.17, 0.60), 1.4 if i % 5 == 0 else 0.75, true)
-	draw_arc(c, 64, 0, TAU, 96, Color(0.47, 0.37, 0.23, 0.2), 1.0, true)
-	# символы солнца и луны
-	var sun := c + Vector2(cos(PHASE_ANGLES[1]), sin(PHASE_ANGLES[1])) * 28
-	draw_circle(sun, 6, Color(0.85, 0.6, 0.15, 0.8))
-	var moon := c + Vector2(cos(PHASE_ANGLES[3]), sin(PHASE_ANGLES[3])) * 28
-	draw_circle(moon, 6, Color(0.9, 0.9, 1.0, 0.85))
-	draw_circle(moon + Vector2(3, -2), 5, cols[3] if phase != 3 else Color("4a5578"))
-	# стрелка
-	var tip := c + Vector2(cos(hand_angle), sin(hand_angle)) * 66
-	var tail := c - Vector2(cos(hand_angle), sin(hand_angle)) * 15
-	draw_line(tail + Vector2(1.5, 2), tip + Vector2(1.5, 2), Color(0.1, 0.07, 0.03, 0.23), 5.0, true)
-	draw_line(tail, tip, Color("2a1f17"), 4.0, true)
-	draw_line(c, tip - Vector2(cos(hand_angle), sin(hand_angle)) * 8, Color("9b8152"), 1.0, true)
-	draw_colored_polygon(PackedVector2Array([tip + Vector2(cos(hand_angle + 2.6), sin(hand_angle + 2.6)) * 10, tip + Vector2(cos(hand_angle), sin(hand_angle)) * 6, tip + Vector2(cos(hand_angle - 2.6), sin(hand_angle - 2.6)) * 10]), Color("2a1f17"))
-	Look.brass_circle(self, c, 8)
-	# блик стекла
-	draw_arc(c, 70, -2.6, -1.6, 20, Color(1, 1, 1, 0.35), 4.0, true)
+		var dir := Vector2.from_angle(PHASE_ANGLES[i])
+		var mark := c + Vector2(signf(dir.x) * 35, signf(dir.y) * 34)
+		var ink := Color("715239") if i == phase else Color("525051")
+		_draw_phase_mark(mark - Vector2(0, 7), i, ink)
+		Look.text_c(self, Look.font("serif_bold" if i == phase else "serif"), mark.x, mark.y + 13, Rules.PHASES[i], 16, Color("302b2a"), 53)
+	var direction := Vector2.from_angle(hand_angle)
+	draw_arc(c, 69, hand_angle - 0.10, hand_angle + 0.10, 12, Color("87643d"), 1.4, true)
+	var side := direction.orthogonal()
+	var hand := PackedVector2Array([c - direction * 11, c + direction * 8 + side * 3.3, c + direction * 25, c + direction * 8 - side * 3.3])
+	draw_colored_polygon(hand, Color("233f4a"))
+	draw_line(c, c + direction * 21, Color("c3a46a"), 1.15, true)
+	draw_circle(c, 4.8, Color("66482e"), true, -1, true)
+	draw_circle(c, 3.5, Color("cbaa67"), true, -1, true)
+	draw_circle(c - Vector2(0.8, 0.8), 1.4, Color("eedd98"), true, -1, true)
 	if hovered:
-		draw_arc(c, 95 + sin(_t * 4.0) * 1.5, 0, TAU, 64, Color(1, 0.85, 0.45, 0.6), 2.0, true)
+		draw_arc(c, 92, 0, TAU, 96, Color(1, 0.88, 0.63, 0.54 + sin(_t * 3.0) * 0.08), 1.8, true)
+
+
+func _draw_phase_mark(p: Vector2, phase: int, ink: Color) -> void:
+	# Эмблемы выгравированы на эмали: восход, полуденное солнце, закат и серп луны.
+	if phase == 3:
+		draw_arc(p, 7, deg_to_rad(69), deg_to_rad(291), 24, ink, 1.3, true)
+		draw_arc(p + Vector2(5, 0), 7, deg_to_rad(111), deg_to_rad(249), 16, ink, 1.3, true)
+		return
+	if phase == 1:
+		draw_arc(p, 4, 0, TAU, 18, ink, 1.2, true)
+		for k in 8:
+			var ray := Vector2.from_angle(k * TAU / 8)
+			draw_line(p + ray * 6, p + ray * 8, ink, 1.2, true)
+		return
+	var horizon := p + Vector2(0, 2)
+	draw_arc(horizon, 4.5, PI, TAU, 16, ink, 1.25, true)
+	draw_line(horizon - Vector2(9, 0), horizon + Vector2(9, 0), ink, 1.2, true)
+	if phase == 0:
+		for k in 3:
+			var ray := Vector2.from_angle(-PI * 0.75 + k * PI * 0.25)
+			draw_line(horizon + ray * 6, horizon + ray * 8.3, ink, 1.1, true)
+	else:
+		draw_line(horizon + Vector2(-5, 3), horizon + Vector2(5, 3), ink, 1.1, true)

@@ -1,6 +1,4 @@
 @id charlotte_article
-@title Что можно напечатать
-@after Что можно напечатать
 
 @bg steambird
 @show char_charlotte right
@@ -32,5 +30,5 @@ N: Флёр заметил рядом свежий номер с материа�
 char_charlotte: Ты не обязан оставаться до ночи. Я закончу.
 fleur: Знаю. Мне пока лучше здесь.
 N: Она пододвинула ему корректуру другой заметки и попросила проверить две фамилии. Он проверил. Через некоторое время они заказали ужин, съели его над чистым краем стола и вернулись к работе. Когда Флёр уходил, Шарлотта проводила его до двери и на секунду сжала ему руку. Он ничего не стал из этого делать.
-@do [{"flag":["first_arc_done","slice_done"]},{"remove":"note_charlotte_result"},{"add":"it_article_proof"},{"relAdd":["char_charlotte","Доверие"]},{"wait":1}]
+@do [{"flag":["first_arc_done","slice_done"]},{"remove":"dl_article"},{"add":"it_article_proof"},{"relAdd":["char_charlotte","Доверие"]},{"wait":1}]
 @end

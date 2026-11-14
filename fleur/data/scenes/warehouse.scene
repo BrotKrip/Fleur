@@ -1,6 +1,4 @@
 @id warehouse
-@title В рабочее время
-@after В рабочее время
 
 @bg docks
 @show char_charlotte right

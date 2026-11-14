@@ -372,9 +372,19 @@ static func brass_circle(ci: CanvasItem, c: Vector2, r: float) -> void:
 	ci.draw_circle(c + Vector2(-r * 0.25, -r * 0.3), r * 0.45, Color(1, 0.92, 0.6, 0.35))
 
 
+## Текст по центру. Если не помещается в ширину — сначала чуть уменьшается шрифт,
+## потом переносится на вторую строку; обрезки посреди слова не бывает.
 static func text_c(ci: CanvasItem, f: Font, center_x: float, y: float, s: String, size: int, col: Color, width := -1.0) -> void:
 	var w := width if width > 0 else 2000.0
-	ci.draw_string(f, Vector2(center_x - w / 2.0, y), s, HORIZONTAL_ALIGNMENT_CENTER, w, size, col)
+	var fs := size
+	var min_fs := maxi(8, int(round(size * 0.78)))
+	while fs > min_fs and f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > w:
+		fs -= 1
+	if f.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x <= w or width <= 0:
+		ci.draw_string(f, Vector2(center_x - w / 2.0, y), s, HORIZONTAL_ALIGNMENT_CENTER, w, fs, col)
+		return
+	var lh := f.get_height(fs) * 0.92
+	ci.draw_multiline_string(f, Vector2(center_x - w / 2.0, y - lh * 0.5), s, HORIZONTAL_ALIGNMENT_CENTER, w, fs, 2, col)
 
 
 static func hash_seed(s: String) -> int:

@@ -15,7 +15,13 @@
 			"sl_family",
 			"sl_eye",
 			"it_rapier",
-			"st_hangover"
+			"st_hangover",
+			"arue",
+			"ap_charm",
+			"ap_blade",
+			"ap_name",
+			"ap_purse",
+			"ap_candor"
 		],
 		"effects": [
 			{

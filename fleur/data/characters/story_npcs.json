@@ -16,7 +16,15 @@
 			"trim": "ddd2ea",
 			"eyes": "969caa",
 			"hat": "bun"
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"morning": "loc_damoville",
+					"day": "loc_damoville"
+				}
+			}
+		]
 	},
 	"npc_henri": {
 		"type": "person",

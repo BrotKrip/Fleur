@@ -64,7 +64,7 @@ func _ready() -> void:
 	heading.add_child(kicker)
 	var title := Label.new()
 	_title = title
-	title.text = "Шевалье\nде ла Флёр"
+	title.text = "Послевкусие"
 	title.add_theme_font_override("font", Look.font("serif"))
 	title.add_theme_font_size_override("font_size", 68)
 	title.add_theme_color_override("font_color", Color("f4e8ca"))

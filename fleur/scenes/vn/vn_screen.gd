@@ -11,6 +11,8 @@ var ctx: Dictionary
 var api: Dictionary
 var nodes: Array
 var labels := {}
+var hub_at := -1        # индекс последнего хаба тем, куда ведёт @back
+var hub_taken := {}     # "индекс:метка" уже выбранных тем
 var i := 0
 var history: Array = []
 
@@ -110,7 +112,8 @@ func _ready() -> void:
 	add_child(place_label)
 	scene_label = Label.new()
 	scene_label.position = Vector2(56, 52)
-	scene_label.text = get_title()
+	scene_label.text = ""
+	scene_label.visible = false
 	scene_label.add_theme_font_override("font", Look.font("serif_italic"))
 	scene_label.add_theme_font_size_override("font_size", 14)
 	scene_label.add_theme_color_override("font_color", Color("d6c7a8"))
@@ -358,7 +361,18 @@ func _run() -> void:
 				_set_mood(str(n["s"]), str(n["as"]))
 			_say(str(n["s"]), Rules.txt(n.get("t"), s, ctx))
 			return
+		elif n.has("back"):
+			if hub_at < 0:
+				push_error("VN: @back без @hub")
+				i += 1
+			else:
+				i = hub_at
 		elif n.has("choice"):
+			if n.get("hub", false):
+				hub_at = i
+				if not _has_options(n["choice"], true):
+					i += 1
+					continue
 			_show_choice(n["choice"])
 			return
 		else:
@@ -556,12 +570,26 @@ func _show_choice(opts: Array) -> void:
 	paper_focus.set_border_width_all(2)
 	var grain := Art.surface("paper")
 	var n := 0
+	var hub: bool = nodes[i].get("hub", false)
+	var hub_i := i
 	for o in opts:
+		if hub and hub_taken.has("%d:%s" % [hub_i, o.get("goto", "")]):
+			continue
 		if not Rules.test(o.get("when"), s, ctx):
+			continue
+		# Вариант с подходом Флёра: виден, только если карта подхода есть; пока она отдыхает — недоступен.
+		var ap := str(o.get("ap", ""))
+		if ap != "" and not s["cards"].has(ap):
 			continue
 		n += 1
 		var b := Button.new()
 		b.text = Rules.txt(o.get("t"), s, ctx)
+		if ap != "":
+			b.text = "[%s]  %s" % [Rules.title_of(ap, s), b.text]
+			if Rules.is_resting(s, ap):
+				b.disabled = true
+				b.text += "   — сейчас не получится"
+				b.tooltip_text = "%s ещё не восстановилось. Карта снова будет готова через некоторое время." % Rules.title_of(ap, s)
 		b.accessibility_name = "%d. %s" % [n, b.text]
 		b.draw.connect(Decor.choice_badge.bind(b, n, grain))
 		b.alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -579,12 +607,19 @@ func _show_choice(opts: Array) -> void:
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		var opt: Dictionary = o
 		var label_text := Rules.txt(o.get("t"), s, ctx)
+		var btn := b
 		b.pressed.connect(func():
+			if btn.disabled:
+				return
 			for c in choices.get_children():
 				c.queue_free()
 			waiting = ""
 			_layout()
 			history.append(["→", label_text])
+			if hub:
+				hub_taken["%d:%s" % [hub_i, opt.get("goto", "")]] = true
+			if str(opt.get("ap", "")) != "":
+				Rules.spend_approach(Game.state, str(opt["ap"]), api)
 			Rules.apply(opt.get("effects"), Game.state, ctx, api)
 			i = labels[opt["goto"]] if opt.has("goto") else i + 1
 			_run())
@@ -621,4 +656,19 @@ func _finish() -> void:
 	if _finished:
 		return
 	_finished = true
-	Game.finish_scene(api["changes"], str(scene.get("after", "После разговора")))
+	Game.finish_scene(api["changes"])
+
+
+## Есть ли в выборе хотя бы один видимый вариант (для хаба — ещё не выбранный).
+func _has_options(opts: Array, hub: bool) -> bool:
+	var s := Game.state
+	for o in opts:
+		if hub and hub_taken.has("%d:%s" % [i, o.get("goto", "")]):
+			continue
+		if not Rules.test(o.get("when"), s, ctx):
+			continue
+		var ap := str(o.get("ap", ""))
+		if ap != "" and not s["cards"].has(ap):
+			continue
+		return true
+	return false

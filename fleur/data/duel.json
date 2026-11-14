@@ -1,0 +1,769 @@
+{
+	"_comment": "Фехтование. cards — приёмы Флёра (fx: hit, hits [n, раз], guard, balance, self_balance, prepare, feint, pierce, counter, initiative, panache, break, draw, energy). decks — основа и особенности поединка по контексту. unlocks — что добавляют привычки. opponents — противники и их намерения. duels — конкретные поединки, решающие приёмы и последствия.",
+	"fleur": {
+		"balance": 22,
+		"regen": 1
+	},
+	"cards": {
+		"lunge": {
+			"title": "Выпад",
+			"cost": 1,
+			"kind": "attack",
+			"fx": {
+				"hit": 6
+			},
+			"text": "Удар 6."
+		},
+		"parry": {
+			"title": "Парад",
+			"cost": 1,
+			"kind": "guard",
+			"fx": {
+				"guard": 5
+			},
+			"text": "Защита 5."
+		},
+		"feint": {
+			"title": "Финт",
+			"cost": 1,
+			"kind": "skill",
+			"fx": {
+				"feint": true,
+				"prepare": 3,
+				"panache": 1
+			},
+			"text": "Следующий удар сильнее на 3 и проходит сквозь защиту. Блеск +1."
+		},
+		"flourish": {
+			"title": "Росчерк",
+			"cost": 1,
+			"kind": "attack",
+			"fx": {
+				"hit": 4,
+				"panache": 2
+			},
+			"text": "Удар 4. Блеск +2. Красиво — и Флёр это знает."
+		},
+		"step_back": {
+			"title": "Разорвать дистанцию",
+			"cost": 1,
+			"kind": "guard",
+			"fx": {
+				"balance": 4,
+				"guard": 3
+			},
+			"text": "Равновесие +4, защита 3. Возвращает стойку, даже если Флёр раскрыт."
+		},
+		"seize": {
+			"title": "Перехват",
+			"cost": 2,
+			"kind": "attack",
+			"fx": {
+				"hit": 6,
+				"initiative": true
+			},
+			"text": "Забрать инициативу, затем удар 6."
+		},
+		"drill": {
+			"title": "Учебная связка",
+			"cost": 1,
+			"kind": "attack",
+			"fx": {
+				"guard": 3,
+				"hit": 3
+			},
+			"text": "Защита 3 и удар 3. Скучно, надёжно, Клоринде нравится."
+		},
+		"salute": {
+			"title": "Салют публике",
+			"cost": 0,
+			"kind": "skill",
+			"fx": {
+				"panache": 2,
+				"self_balance": 1
+			},
+			"text": "Блеск +2. Равновесие −1: пока кланяешься, стойка не ждёт."
+		},
+		"showy_lunge": {
+			"title": "Эффектный выпад",
+			"cost": 2,
+			"kind": "attack",
+			"fx": {
+				"hit": 10,
+				"panache": 2
+			},
+			"text": "Удар 10. Блеск +2."
+		},
+		"hard_blow": {
+			"title": "Жёсткий удар",
+			"cost": 1,
+			"kind": "attack",
+			"fx": {
+				"hit": 8,
+				"self_balance": 1
+			},
+			"text": "Удар 8. Равновесие −1. Здесь не до красоты."
+		},
+		"pommel": {
+			"title": "Удар гардой",
+			"cost": 1,
+			"kind": "skill",
+			"fx": {
+				"break": 4
+			},
+			"text": "Сбить равновесие на 4 в обход защиты."
+		},
+		"riposte": {
+			"title": "Контратака",
+			"cost": 1,
+			"kind": "guard",
+			"fx": {
+				"guard": 4,
+				"counter": 5
+			},
+			"text": "Защита 4. Если противник атакует в свой ход — ответный удар 5."
+		},
+		"measure": {
+			"title": "Чувство дистанции",
+			"cost": 0,
+			"kind": "skill",
+			"fx": {
+				"draw": 1,
+				"balance": 2
+			},
+			"text": "Взять карту. Равновесие +2."
+		},
+		"cascade": {
+			"title": "Каскад",
+			"cost": 2,
+			"kind": "attack",
+			"fx": {
+				"hits": [
+					3,
+					3
+				],
+				"panache": 1
+			},
+			"text": "Три удара по 3 — третий считается серией. Блеск +1."
+		},
+		"precise": {
+			"title": "Точный укол",
+			"cost": 1,
+			"kind": "attack",
+			"fx": {
+				"hit": 6,
+				"pierce": true
+			},
+			"text": "Удар 6 сквозь защиту."
+		},
+		"tip_wrist": {
+			"title": "Кисть ниже",
+			"cost": 1,
+			"kind": "attack",
+			"fx": {
+				"hit": 5,
+				"prepare": 2
+			},
+			"text": "Удар 5, следующий удар +2. Совет Клоринды: на палец ниже."
+		}
+	},
+	"decks": {
+		"base": [
+			"lunge",
+			"lunge",
+			"lunge",
+			"parry",
+			"parry",
+			"parry",
+			"feint",
+			"flourish",
+			"step_back",
+			"seize"
+		],
+		"training": {
+			"remove": [
+				"flourish",
+				"seize"
+			],
+			"add": [
+				"drill",
+				"drill"
+			]
+		},
+		"honor": {
+			"add": [
+				"salute",
+				"showy_lunge"
+			]
+		},
+		"street": {
+			"remove": [
+				"flourish",
+				"feint"
+			],
+			"add": [
+				"hard_blow",
+				"hard_blow",
+				"pommel"
+			]
+		}
+	},
+	"unlocks": [
+		{
+			"when": {
+				"counterGte": [
+					"duel:training",
+					1
+				]
+			},
+			"add": [
+				"riposte"
+			],
+			"text": "Тренировки с Клориндой: контратака."
+		},
+		{
+			"when": {
+				"counterGte": [
+					"duel:training",
+					3
+				]
+			},
+			"add": [
+				"measure"
+			],
+			"text": "Тренировки с Клориндой: чувство дистанции."
+		},
+		{
+			"when": {
+				"counterGte": [
+					"duel:honor",
+					1
+				]
+			},
+			"add": [
+				"cascade"
+			],
+			"text": "Поединки на публике: каскад."
+		},
+		{
+			"when": {
+				"counterGte": [
+					"duel:street",
+					1
+				]
+			},
+			"add": [
+				"precise"
+			],
+			"text": "Настоящие схватки: точный укол."
+		},
+		{
+			"when": {
+				"flag": "talk:char_clorinde:it_rapier:0"
+			},
+			"add": [
+				"tip_wrist"
+			],
+			"text": "Совет Клоринды о кисти."
+		}
+	],
+	"opponents": {
+		"clorinde": {
+			"title": "Клоринда",
+			"pid": "char_clorinde",
+			"balance": 46,
+			"regen": 4,
+			"reads": 2,
+			"counter_n": 11,
+			"decisive": "Касание",
+			"style": "Читает соперника: после двух атак подряд встаёт в контрстойку — ответит на атаку, а если её не будет, сама выйдет в выпад.",
+			"pattern": [
+				{
+					"kind": "attack",
+					"n": 11,
+					"label": "Выпад"
+				},
+				{
+					"kind": "press",
+					"n": 9,
+					"label": "Сближение"
+				},
+				{
+					"kind": "feint",
+					"n": 6,
+					"unsettle": 2,
+					"label": "Финт"
+				},
+				{
+					"kind": "attack",
+					"n": 13,
+					"label": "Выпад в темп"
+				},
+				{
+					"kind": "guard",
+					"n": 10,
+					"label": "Глухая защита"
+				},
+				{
+					"kind": "attack",
+					"n": 7,
+					"label": "Двойной укол",
+					"count": 2
+				}
+			]
+		},
+		"lamotte": {
+			"title": "Виконт де Ламотт",
+			"pid": "viscount",
+			"balance": 40,
+			"regen": 3,
+			"fury_on_block": 3,
+			"shuffle": true,
+			"decisive": "Укол в плечо",
+			"style": "Горячится: каждый отбитый удар злит его сильнее, но стойку он держит плохо.",
+			"pattern": [
+				{
+					"kind": "attack",
+					"n": 12,
+					"label": "Выпад"
+				},
+				{
+					"kind": "taunt",
+					"fury": 2,
+					"guard": 6,
+					"label": "Вызов публике"
+				},
+				{
+					"kind": "attack",
+					"n": 17,
+					"label": "Яростный выпад"
+				},
+				{
+					"kind": "attack",
+					"n": 9,
+					"label": "Выпад"
+				},
+				{
+					"kind": "attack",
+					"n": 18,
+					"label": "Атака напролом"
+				}
+			]
+		},
+		"thug_big": {
+			"title": "Громила",
+			"pid": "",
+			"balance": 28,
+			"regen": 2,
+			"decisive": "Удар дубинкой",
+			"style": "Бьёт тяжело и медленно.",
+			"pattern": [
+				{
+					"kind": "attack",
+					"n": 11,
+					"label": "Замах"
+				},
+				{
+					"kind": "guard",
+					"n": 6,
+					"label": "Пригнулся"
+				},
+				{
+					"kind": "attack",
+					"n": 13,
+					"label": "Удар с размаху"
+				}
+			]
+		},
+		"thug_knife": {
+			"title": "Парень с ножом",
+			"pid": "",
+			"balance": 18,
+			"regen": 1,
+			"wounds": true,
+			"decisive": "Нож",
+			"style": "Быстрый. Если пробьёт защиту — это уже настоящая рана.",
+			"pattern": [
+				{
+					"kind": "attack",
+					"n": 6,
+					"label": "Два тычка",
+					"count": 2
+				},
+				{
+					"kind": "feint",
+					"n": 3,
+					"unsettle": 2,
+					"label": "Финт"
+				},
+				{
+					"kind": "attack",
+					"n": 8,
+					"label": "Удар ножом"
+				}
+			]
+		}
+	},
+	"duels": {
+		"clorinde_training": {
+			"title": "Тренировка с Клориндой",
+			"context": "training",
+			"bg": "practice",
+			"enemies": [
+				"clorinde"
+			],
+			"max_rounds": 8,
+			"intro": "Тренировочное оружие, песок после дождя, никаких зрителей. Здесь работают только безопасные приёмы — и Клоринда, которая читает каждое движение.",
+			"finishers": [
+				{
+					"id": "clean_touch",
+					"title": "Чистое касание",
+					"outcome": "win",
+					"text": "Обозначить укол — этого достаточно."
+				}
+			],
+			"outcomes": {
+				"win": [
+					{
+						"summary": "Касание засчитала даже Клоринда. Она коротко кивнула и тут же предложила второй обмен — уже в своём темпе.",
+						"effects": [
+							{
+								"flag": "duel_clorinde_won"
+							},
+							{
+								"relAdd": [
+									"char_clorinde",
+									"Отметила касание"
+								]
+							},
+							{
+								"add": "st_sharp"
+							}
+						]
+					}
+				],
+				"loss": [
+					{
+						"min_broke": 1,
+						"summary": "Клоринда закончила касанием. Но один обмен Флёр выиграл чисто — и запомнил его ярче поражения.",
+						"effects": [
+							{
+								"add": "st_sharp"
+							}
+						]
+					},
+					{
+						"summary": "Клоринда закончила обмен касанием, быстро и без снисхождения.",
+						"effects": [
+							{
+								"add": "st_sharp"
+							}
+						]
+					}
+				],
+				"time": [
+					{
+						"summary": "Время вышло. Клоринда опустила оружие первой — не потому, что устала.",
+						"effects": [
+							{
+								"add": "st_sharp"
+							}
+						]
+					}
+				],
+				"yield": [
+					{
+						"summary": "Флёр поднял руку, признавая обмен. Клоринда кивнула: так тоже нужно уметь."
+					}
+				]
+			}
+		},
+		"lamotte_honor": {
+			"title": "Дело чести",
+			"context": "honor",
+			"bg": "practice",
+			"enemies": [
+				"lamotte"
+			],
+			"max_rounds": 12,
+			"intro": "Площадка за «Бомонтом», двое секундантов и больше зрителей, чем требовалось. Виконт горяч и держит стойку хуже, чем думает. Чем закончить — решать Флёру.",
+			"finishers": [
+				{
+					"id": "clean_touch",
+					"title": "Чистое касание",
+					"outcome": "clean",
+					"text": "Укол — и поклон. Без зрелища."
+				},
+				{
+					"id": "disarm",
+					"title": "Обезоружить",
+					"outcome": "disarm",
+					"text": "Шпага виконта улетает на песок."
+				},
+				{
+					"id": "throat",
+					"title": "Клинок к горлу",
+					"outcome": "throat",
+					"text": "Остановить остриё у самого воротника."
+				},
+				{
+					"id": "buttons",
+					"title": "Срезать все пуговицы",
+					"outcome": "humiliate",
+					"panache": 5,
+					"text": "Нужен Блеск 5. Публика будет в восторге. Виконт — нет."
+				}
+			],
+			"outcomes": {
+				"clean": [
+					{
+						"summary": "Флёр обозначил укол и опустил клинок. Зрители ждали большего и разошлись разочарованными. Виконт, отдышавшись, поклонился ниже, чем того требовал этикет.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_respect"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									"viscount",
+									"Уважает"
+								]
+							}
+						]
+					}
+				],
+				"disarm": [
+					{
+						"summary": "Шпага виконта легла на песок. Флёр подал её рукоятью вперёд. Публика похлопала из вежливости, виконт — из искренности.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_respect"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									"viscount",
+									"Уважает"
+								]
+							}
+						]
+					}
+				],
+				"throat": [
+					{
+						"summary": "Остриё остановилось у воротника. Виконт побледнел и признал поражение. Уважение в его взгляде было смешано со страхом — и оба чувства он запомнит.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_respect"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									[
+										"viscount",
+										"Уважает"
+									],
+									[
+										"viscount",
+										"Побаивается"
+									]
+								]
+							}
+						]
+					}
+				],
+				"humiliate": [
+					{
+						"summary": "Пуговицы виконта посыпались на песок одна за другой. Публика аплодировала стоя. Виконт ушёл, придерживая камзол, и ни разу не обернулся.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_humiliated"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									"viscount",
+									"Затаил обиду"
+								]
+							},
+							{
+								"add": "rum_buttons"
+							}
+						]
+					}
+				],
+				"loss": [
+					{
+						"summary": "Укол в плечо, неглубокий и обидный. Виконт получил своё удовлетворение и, кажется, не знал, что с ним делать.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_won"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									"viscount",
+									"Удовлетворён"
+								]
+							}
+						]
+					}
+				],
+				"time": [
+					{
+						"summary": "Секунданты развели их, когда стало ясно, что ни один не уступит. Ничья устроила всех, кроме публики.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_draw"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									"viscount",
+									"Ничья"
+								]
+							}
+						]
+					}
+				],
+				"yield": [
+					{
+						"summary": "Флёр опустил клинок и при всех признал, что за картами поступил дурно. Виконт помедлил — и протянул руку.",
+						"effects": [
+							{
+								"flag": [
+									"lamotte_duel_done",
+									"lamotte_reconciled"
+								]
+							},
+							{
+								"relRemove": [
+									"viscount",
+									"Не знакомы"
+								]
+							},
+							{
+								"relAdd": [
+									"viscount",
+									"Примирение"
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"docks_street": {
+			"title": "Схватка на причалах",
+			"context": "street",
+			"bg": "docks",
+			"enemies": [
+				"thug_big",
+				"thug_knife"
+			],
+			"max_rounds": 10,
+			"intro": "Двое, переулок и никакого этикета. Здесь бьют жёстко, и рана будет настоящей. Победа — когда оба обезоружены или на земле.",
+			"finishers": [
+				{
+					"id": "disarm",
+					"title": "Обезоружить",
+					"outcome": "win",
+					"removes": true,
+					"text": "Выбить оружие — этот больше не опасен."
+				},
+				{
+					"id": "knockdown",
+					"title": "Сбить с ног",
+					"outcome": "win",
+					"removes": true,
+					"text": "Подсечка и гарда — пусть полежит."
+				}
+			],
+			"outcomes": {
+				"win": [
+					{
+						"summary": "Оба больше не опасны. Флёр отряхнул рукав и только потом заметил, что рука дрожит."
+					}
+				],
+				"wound": [
+					{
+						"summary": "Флёр ушёл, зажимая порез. Камзол придётся выбросить, руку — лечить.",
+						"effects": [
+							{
+								"add": "st_wounded"
+							}
+						]
+					}
+				],
+				"loss": [
+					{
+						"summary": "Флёр ушёл, зажимая порез. Камзол придётся выбросить, руку — лечить.",
+						"effects": [
+							{
+								"add": "st_wounded"
+							}
+						]
+					}
+				],
+				"time": [
+					{
+						"summary": "На шум прибежали патрульные, и нападавшие растворились в переулках."
+					}
+				],
+				"yield": [
+					{
+						"summary": "Флёр отступил к освещённой улице. Иногда это и есть победа."
+					}
+				]
+			}
+		}
+	}
+}

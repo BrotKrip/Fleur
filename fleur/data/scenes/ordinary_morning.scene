@@ -1,6 +1,4 @@
 @id ordinary_morning
-@title Завтрак всё равно нужен
-@after Завтрак всё равно нужен
 
 @bg apartment_morning
 @if {"noFlag":"josie_arrived"} -> alone

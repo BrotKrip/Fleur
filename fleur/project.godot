@@ -3,8 +3,8 @@ config_version=5
 
 [application]
 
-config/name="Шевалье де ла Флёр"
-config/description="Жизнь Шевалье де ла Флёра в Кур-де-Фонтейне. Фанатский проект по миру Genshin Impact."
+config/name="Послевкусие"
+config/description="Послевкусие: жизнь Шевалье де ла Флёра в Кур-де-Фонтейне. Фанатский проект по миру Genshin Impact."
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 

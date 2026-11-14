@@ -1,6 +1,4 @@
 @id manor_arrival
-@title Матушка подготовилась
-@after Матушка подготовилась
 
 @bg manor_interior
 @show eloise left

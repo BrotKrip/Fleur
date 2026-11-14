@@ -24,7 +24,15 @@
 			"hat_color": "181818",
 			"eyes": "6aa8e0",
 			"long": true
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"morning": "loc_poisson",
+					"day": "loc_poisson"
+				}
+			}
+		]
 	},
 	"char_silver": {
 		"type": "person",
@@ -303,7 +311,7 @@
 		"color": "#8a3a5a",
 		"text": "Капитан Особого патруля при Палате Жардинаж. Повязка со звездой на глазу, мушкет на плече и репутация, которой родители пугают детей: «Веди себя хорошо, а то заберёт патруль». Нанимает бывших воров ловить воров, платит информаторам и, по слухам, прячет в форме жареные пирожки.",
 		"rel": [
-			"Слышал"
+			"Давняя близость"
 		],
 		"notes": "Выросла у Серой реки, отец служил в жандармерии. Не любит гардемеков. Тиори — её негласный информатор. Любит книги, где справедливость побеждает.",
 		"placeholder": {
@@ -315,7 +323,15 @@
 			"eyes": "9a6ab8",
 			"long": true,
 			"eyepatch": true
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"morning": "loc_gardinage",
+					"day": "loc_gardinage"
+				}
+			}
+		]
 	},
 	"char_emilie": {
 		"type": "person",
@@ -343,7 +359,15 @@
 			"eyes": "6a9a6a",
 			"bob": true,
 			"glasses": true
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"morning": "loc_perfume",
+					"day": "loc_perfume"
+				}
+			}
+		]
 	},
 	"char_escoffier": {
 		"type": "person",
@@ -369,7 +393,14 @@
 			"hat_color": "ffffff",
 			"eyes": "6ab0e0",
 			"long": true
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"evening": "loc_debor"
+				}
+			}
+		]
 	},
 	"char_lumine": {
 		"type": "person",

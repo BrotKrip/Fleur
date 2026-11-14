@@ -14,6 +14,8 @@ var _chart: Texture2D
 const CHART_PATH := "res://assets/art/maps/fontaine_chart.png"
 
 
+const LABEL_FS := 12
+
 func _ready() -> void:
 	size = Vector2(440, 420)
 	pivot_offset = size / 2
@@ -21,14 +23,30 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	hat_pos = pin_local(str(Game.state.get("here", "loc_apartment")))
 	_hat_target = hat_pos
+	resized.connect(func():
+		_hat_target = pin_local(str(Game.state.get("here", "loc_apartment")))
+		hat_pos = _hat_target
+		queue_redraw())
 	tooltip_text = ""
 	if ResourceLoader.exists(CHART_PATH):
 		_chart = load(CHART_PATH) as Texture2D
 
 
+## Прямоугольник, в который вписан рисунок карты. Булавки задаются долями именно его,
+## а не всего листа: иначе при вписывании с сохранением пропорций они съезжают в море.
+func chart_rect() -> Rect2:
+	var area := Rect2(Vector2(4, 42), size - Vector2(8, 48))
+	if _chart == null:
+		return area
+	var chart_size := _chart.get_size()
+	chart_size *= minf(area.size.x / chart_size.x, area.size.y / chart_size.y)
+	return Rect2(area.get_center() - chart_size / 2.0, chart_size)
+
+
 func pin_local(loc: String) -> Vector2:
 	var p = Content.def(loc).get("pin", [0.5, 0.5])
-	return Vector2(float(p[0]) * size.x, float(p[1]) * size.y)
+	var r := chart_rect()
+	return r.position + Vector2(float(p[0]) * r.size.x, float(p[1]) * r.size.y)
 
 
 func locations() -> Array:
@@ -83,11 +101,7 @@ func _draw() -> void:
 	Look.fill_v(self, sheet, Color("efe3c4"), Color("dccaa0"))
 	if _chart:
 		# Пропорции исходного плана важны для дворца, аквабусных линий и порта.
-		var area := Rect2(Vector2(4, 42), size - Vector2(8, 48))
-		var chart_size := _chart.get_size()
-		var scale_factor := minf(area.size.x / chart_size.x, area.size.y / chart_size.y)
-		chart_size *= scale_factor
-		draw_texture_rect(_chart, Rect2(area.get_center() - chart_size / 2.0, chart_size), false)
+		draw_texture_rect(_chart, chart_rect(), false)
 	else:
 		_draw_procedural_chart()
 	_draw_cartouche()
@@ -154,30 +168,69 @@ func _draw_cartouche() -> void:
 	Look.text_c(self, Look.font("serif"), rc.x, rc.y - 26, "С", 12, Color("6a5030"))
 
 
+## Подписи раскладываются по очереди сверху вниз: под булавкой, над ней, справа или слева —
+## где не закрывают уже положенные подписи и чужие булавки.
+func _label_rects() -> Dictionary:
+	var f := Look.font("serif")
+	var locs := locations()
+	locs.sort_custom(func(a, b): return pin_local(a).y < pin_local(b).y)
+	var pins := []
+	for loc in locs:
+		pins.append(Rect2(pin_local(loc) - Vector2(10, 10), Vector2(20, 20)))
+	var placed := {}
+	var used := []
+	var bounds := Rect2(Vector2(6, 40), size - Vector2(12, 46))
+	for loc in locs:
+		var p := pin_local(loc)
+		var fs := LABEL_FS + 2 if loc == hover_loc else LABEL_FS
+		var tw := f.get_string_size(Rules.title_of(loc, Game.state), HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 12
+		var sz := Vector2(tw, 19)
+		var best := Rect2()
+		var best_score := INF
+		# кольца вокруг булавки: чем дальше, тем дороже; закрытая булавка или чужая подпись — ещё дороже
+		for ring in [0, 1, 2, 3]:
+			var d: float = 11.0 + float(ring) * 20.0
+			for k in 8:
+				var dir := Vector2.from_angle(PI / 2 + k * TAU / 8)
+				var c := p + dir * Vector2(d + tw / 2, d + sz.y / 2)
+				var r := Rect2(c - sz / 2, sz)
+				r.position = r.position.clamp(bounds.position, bounds.end - sz)
+				var score: float = float(ring) * 3.0 + k * 0.1
+				for u in used:
+					if r.grow(2).intersects(u):
+						score += 40.0
+				for pr in pins:
+					if r.grow(1).intersects(pr):
+						score += 25.0
+				if score < best_score:
+					best_score = score
+					best = r
+		placed[loc] = best
+		used.append(best)
+	return placed
+
+
 func _draw_pins() -> void:
 	var here := str(Game.state.get("here", ""))
+	var labels := _label_rects()
+	var f := Look.font("serif")
+	# сначала все подписи (с тонкой ниткой к булавке, если подпись пришлось отодвинуть), потом булавки поверх
 	for loc in locations():
 		var p := pin_local(loc)
 		var hov: bool = loc == hover_loc
-		var title := Rules.title_of(loc, Game.state)
-		var people: Array = Rules.people_at(Game.state, loc)
-		var fresh: bool = Game.state["cards"][loc].get("fresh", false)
-		# подпись на бумажке
-		var f := Look.font("serif")
-		var fs := 15 if hov else 13
-		var tw := f.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x + 14
-		var label_x := clampf(p.x - tw / 2, 8.0, size.x - tw - 8.0)
-		var lr := Rect2(Vector2(label_x, p.y + 12), Vector2(tw, 21))
+		var lr: Rect2 = labels[loc]
+		var near := Vector2(clampf(p.x, lr.position.x, lr.end.x), clampf(p.y, lr.position.y, lr.end.y))
+		if near.distance_to(p) > 16:
+			draw_line(p, near, Color(0.45, 0.33, 0.16, 0.7), 1.0, true)
 		draw_colored_polygon(Look.rrect(Rect2(lr.position + Vector2(1, 2), lr.size), 2), Color(0.18, 0.14, 0.08, 0.18))
 		draw_colored_polygon(Look.rrect(lr, 2), Color(0.98, 0.95, 0.87, 0.98 if hov else 0.94))
 		draw_rect(lr.grow(-0.5), Color(0.56, 0.43, 0.23, 0.75 if loc == here else 0.3), false, 0.8)
-		draw_string(f, lr.position + Vector2(0, 15), title, HORIZONTAL_ALIGNMENT_CENTER, tw, fs, Look.INK)
-		if hov and people.size() > 0:
-			var names := []
-			for pid in people:
-				names.append(Rules.title_of(pid, Game.state))
-			Look.text_c(self, Look.font("hand"), p.x, lr.end.y + 15, "здесь: " + ", ".join(PackedStringArray(names)), 12, Color("2d3a5a"), 260)
-		# булавка
+		draw_string(f, lr.position + Vector2(0, 14), Rules.title_of(loc, Game.state), HORIZONTAL_ALIGNMENT_CENTER, lr.size.x, LABEL_FS + 2 if hov else LABEL_FS, Look.INK)
+	for loc in locations():
+		var p := pin_local(loc)
+		var hov: bool = loc == hover_loc
+		var people: Array = Rules.people_at(Game.state, loc)
+		var fresh: bool = Game.state["cards"][loc].get("fresh", false)
 		var rad := 9.0 if hov else 7.5
 		draw_circle(p + Vector2(2, 3), rad, Color(0, 0, 0, 0.35))
 		Look.brass_circle(self, p, rad)
@@ -189,6 +242,15 @@ func _draw_pins() -> void:
 		if people.size() > 0 and not hov:
 			draw_circle(p + Vector2(10, -9), 6, Color("2d3a5a"))
 			Look.text_c(self, Look.font("sans"), p.x + 10, p.y - 5, str(people.size()), 10, Color.WHITE, 20)
+	# кто здесь — поверх всего, у наведённой булавки
+	if hover_loc != "" and labels.has(hover_loc):
+		var people: Array = Rules.people_at(Game.state, hover_loc)
+		if people.size() > 0:
+			var names := []
+			for pid in people:
+				names.append(Rules.title_of(pid, Game.state))
+			var lr: Rect2 = labels[hover_loc]
+			Look.text_c(self, Look.font("hand"), lr.get_center().x, lr.end.y + 15, "здесь: " + ", ".join(PackedStringArray(names)), 12, Color("2d3a5a"), 260)
 
 
 func _draw_hat() -> void:

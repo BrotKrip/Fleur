@@ -23,6 +23,47 @@ var plaque: DeskProp
 var inkwell: DeskProp
 var blotter: Control
 
+## Большой стол: всё физическое (карта города, открытка места, вещи) лежит в world,
+## которое двигает камера. Часы, записная книжка, меню и листы остаются на экране.
+const WORLD := Vector2(2400, 1400)
+const ZOOM_MIN := 0.55
+const ZOOM_MAX := 1.35
+## Зоны стола: куда ложатся новые вещи и как раскладывает «Прибрать».
+const ZONES := {
+	"person": Rect2(40, 560, 1240, 600),
+	"approach": Rect2(40, 1190, 860, 190),
+	"rumor": Rect2(1330, 560, 1030, 520), "info": Rect2(1330, 560, 1030, 520), "clue": Rect2(1330, 560, 1030, 520),
+	"item": Rect2(930, 1190, 980, 190),
+	"invitation": Rect2(1940, 1100, 420, 280), "event": Rect2(1940, 1100, 420, 280),
+	"affair": Rect2(1400, 40, 600, 330), "storyline": Rect2(1400, 40, 600, 330),
+	"deadline": Rect2(1720, 400, 300, 160),
+	"state": Rect2(2050, 420, 300, 140),
+	"world": Rect2(1330, 400, 380, 160),
+}
+const ZONE_ORDER := ["affair", "storyline", "deadline", "state", "world", "person", "rumor", "info", "clue", "invitation", "event", "item", "approach"]
+
+var world: Control
+var backdrop: ColorRect
+var tidy_btn: Button
+var cam_pos := Vector2(720, 405)     # точка стола в центре экрана
+var cam_zoom := 1.0
+var cam_target := Vector2(720, 405)
+var zoom_target := 1.0
+var _shake := 0.0
+var _panning := false
+var _pan_moved := false
+var _pan_from := Vector2.ZERO
+var _user_cam_time := -10.0          # когда игрок сам двигал камеру (режиссура ему не мешает)
+var _clock := 0.0
+var _cam_vel := Vector2.ZERO        # скорость камеры (плавное затухание, без рывков)
+var _zoom_vel := 0.0
+var _smooth := 0.2                  # время сглаживания: короткое для игрока, длинное для режиссуры
+var _anchor_screen := Vector2.ZERO  # масштаб «к курсору»: эта точка стола держится под курсором
+var _anchor_world := Vector2.ZERO
+var _anchored := false
+var _drag_vel := Vector2.ZERO       # для инерции после перетаскивания
+var _arrived: Array = []             # карты, прилетевшие за последнюю синхронизацию
+
 var nodes: Dictionary = {}      # id -> TableCard
 var sheet: ActionSheet = null
 var note: Control = null
@@ -39,8 +80,19 @@ func _ready() -> void:
 	modulate_node = CanvasModulate.new()
 	add_child(modulate_node)
 
+	backdrop = ColorRect.new()
+	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	backdrop.color = Color("1c120b")
+	add_child(backdrop)
+	world = Control.new()
+	world.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world.size = WORLD
+	add_child(world)
+
 	bg = ColorRect.new()
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
+	bg.position = Vector2(-700, -500)
+	bg.size = WORLD + Vector2(1400, 1000)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	wood = ShaderMaterial.new()
 	wood.shader = load("res://shaders/wood.gdshader")
@@ -49,27 +101,26 @@ func _ready() -> void:
 		wood.set_shader_parameter("walnut", walnut)
 		wood.set_shader_parameter("has_material", true)
 	bg.material = wood
-	add_child(bg)
+	world.add_child(bg)
 	blotter = Control.new()
-	blotter.set_anchors_preset(Control.PRESET_FULL_RECT)
+	blotter.size = WORLD
 	blotter.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	blotter.draw.connect(_draw_blotter)
-	add_child(blotter)
+	world.add_child(blotter)
 
 	inkwell = DeskProp.new("inkwell")
-	add_child(inkwell)
+	world.add_child(inkwell)
 
 	hint_label = Label.new()
 	hint_label.add_theme_font_override("font", Look.font("hand"))
 	hint_label.add_theme_font_size_override("font_size", 15)
 	hint_label.add_theme_color_override("font_color", Color(0.93, 0.85, 0.7, 0.55))
 	hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hint_label.text = "Вещи можно раскладывать как угодно. Булавка на карте — отправиться туда.\nЧасы — переждать. Карту можно бросить на булавку или в ячейку дела."
-	add_child(hint_label)
+	hint_label.text = "Колесо — ближе и дальше, правая кнопка или пустое место стола — сдвинуть вид, Home — вернуть.\nБулавка на карте — отправиться туда. Часы — переждать. Карту можно бросить на булавку, портрет или в ячейку."
 
 	map = CityMap.new()
 	map.pin_clicked.connect(_travel)
-	add_child(map)
+	world.add_child(map)
 
 	spread = PlaceSpread.new()
 	spread.action_chosen.connect(func(a):
@@ -77,7 +128,7 @@ func _ready() -> void:
 	spread.person_clicked.connect(func(pid):
 		if nodes.has(pid):
 			_toggle_note(nodes[pid]))
-	add_child(spread)
+	world.add_child(spread)
 
 	dial = TimeDial.new()
 	dial.wait_requested.connect(_on_wait)
@@ -91,9 +142,39 @@ func _ready() -> void:
 	add_child(plaque)
 
 	cards_layer = Control.new()
-	cards_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
+	cards_layer.size = WORLD
 	cards_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(cards_layer)
+	world.add_child(cards_layer)
+	add_child(hint_label)
+
+	tidy_btn = Button.new()
+	var brass := StyleBoxFlat.new()
+	brass.bg_color = Color("b8924f")
+	brass.border_color = Color("5a4120")
+	brass.set_border_width_all(2)
+	brass.set_corner_radius_all(4)
+	brass.content_margin_left = 14
+	brass.content_margin_right = 14
+	brass.content_margin_top = 5
+	brass.content_margin_bottom = 5
+	brass.shadow_color = Color(0, 0, 0, 0.45)
+	brass.shadow_size = 4
+	brass.shadow_offset = Vector2(1, 3)
+	var brass_h := brass.duplicate() as StyleBoxFlat
+	brass_h.bg_color = Color("d2ab62")
+	tidy_btn.add_theme_stylebox_override("normal", brass)
+	tidy_btn.add_theme_stylebox_override("hover", brass_h)
+	tidy_btn.add_theme_stylebox_override("pressed", brass_h)
+	tidy_btn.add_theme_stylebox_override("focus", brass_h)
+	for c in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		tidy_btn.add_theme_color_override(c, Color("2a1c0c"))
+	tidy_btn.add_theme_font_override("font", Look.font("serif_bold"))
+	tidy_btn.add_theme_font_size_override("font_size", 15)
+	tidy_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	tidy_btn.text = "Прибрать стол"
+	tidy_btn.tooltip_text = "Разложить вещи по местам: люди к людям, слухи и улики к уликам."
+	tidy_btn.pressed.connect(_tidy)
+	add_child(tidy_btn)
 
 	lamp_rect = ColorRect.new()
 	lamp_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -114,6 +195,12 @@ func _ready() -> void:
 
 	resized.connect(_layout_fixed)
 	_layout_fixed()
+	_home_camera(true)
+	if Game.pending_return.size() > 0:
+		# возвращение из сцены: общий план, потом камера подъезжает к столу
+		cam_zoom = zoom_target * 0.82
+		_smooth = 0.7
+		_apply_camera()
 
 	# Карты, пришедшие из сцены/активности, появятся с анимацией после затемнения
 	for c in Game.pending_return.get("changes", []):
@@ -148,26 +235,32 @@ func table_size() -> Vector2:
 	return size if size.x > 10 else get_viewport_rect().size
 
 
+func world_size() -> Vector2:
+	return WORLD
+
+
 func _layout_fixed() -> void:
 	var ts := table_size()
-	wood.set_shader_parameter("size", ts)
+	wood.set_shader_parameter("size", bg.size)
 	lamp_mat.set_shader_parameter("size", ts)
+	# на столе (в мире)
 	map.position = Vector2(30, 30)
 	spread.position = Vector2(500, 34)
+	inkwell.position = Vector2(1240, 380)
+	# на экране
 	dial.position = Vector2(ts.x - 310, 28)
 	notebook.position = Vector2(ts.x - 170, ts.y - 180)
 	plaque.position = Vector2(34, ts.y - 72)
-	inkwell.position = Vector2(ts.x - 430, 40)
-	hint_label.position = Vector2(ts.x * 0.5 - 300, ts.y - 64)
+	tidy_btn.position = Vector2(166, ts.y - 64)
+	hint_label.position = Vector2(ts.x * 0.5 - 330, ts.y - 64)
 	hint_label.visible = bool(Game.settings["hints"])
 	blotter.queue_redraw()
+	_clamp_camera()
+	_apply_camera()
 
 
 func _draw_blotter() -> void:
-	var ts := table_size()
-	var r := Rect2(26, 310, ts.x - 224, ts.y - 400)
-	if r.size.x < 100 or r.size.y < 100:
-		return
+	var r := Rect2(20, 400, WORLD.x - 40, WORLD.y - 420)
 	var edge := Look.rrect(r, 17)
 	Look.soft_shadow(blotter, edge, Vector2(3, 8), 10, 0.7)
 	Look.fill_v(blotter, edge, Color("273d3b"), Color("182928"))
@@ -192,70 +285,93 @@ func _draw_blotter() -> void:
 
 
 func _reserved() -> Array:
-	var out := [
+	return [
 		Rect2(map.position, map.size).grow(6),
 		Rect2(spread.position, spread.size).grow(8),
-		Rect2(dial.position, dial.size),
-		Rect2(notebook.position, notebook.size).grow(30),
-		Rect2(plaque.position, plaque.size),
-		Rect2(hint_label.position, Vector2(640, 50)),
+		Rect2(inkwell.position, inkwell.size),
 	]
-	return out
 
 
-func _anchor_for(d: Dictionary) -> Vector2:
-	var ts := table_size()
-	match str(d.get("type", "")):
-		"person":
-			return Vector2(40, 470)
-		"invitation", "event":
-			return Vector2(ts.x * 0.42, ts.y - 260)
-		"rumor", "info", "clue":
-			return Vector2(ts.x * 0.36, 330)
-		"item":
-			return Vector2(ts.x * 0.62, ts.y - 240)
-		"state":
-			return Vector2(ts.x - 140, 260)
-		"world":
-			return Vector2(ts.x * 0.6, 330)
-		"affair", "storyline":
-			return Vector2(ts.x - 520, 262)
-	return Vector2(ts.x * 0.5, ts.y * 0.5)
+func _zone_for(d: Dictionary) -> Rect2:
+	return ZONES.get(str(d.get("type", "")), Rect2(900, 600, 600, 500))
 
 
-func _free_spot(card_size: Vector2, anchor: Vector2, ignore_id := "") -> Vector2:
-	var ts := table_size()
-	var bounds := Rect2(Vector2(20, 20), ts - Vector2(40, 40) - card_size)
-	var reserved := _reserved()
-	var occupied := []
+func _occupied(ignore_id := "") -> Array:
+	var out := []
 	for id in nodes:
 		if id == ignore_id:
 			continue
 		var n: TableCard = nodes[id]
 		var lay = Game.state["layout"].get(id)
 		var p0 := n.position if lay == null else Vector2(float(lay[0]), float(lay[1]))
-		occupied.append(Rect2(p0, n.size).grow(-8))
-	var step := 26.0
-	for ring in range(0, 40):
-		var count := maxi(1, ring * 8)
-		for k in count:
-			var a := TAU * k / count
-			var p := anchor + Vector2(cos(a), sin(a) * 0.8) * ring * step
-			p = p.clamp(bounds.position, bounds.end)
-			var rect := Rect2(p, card_size)
-			var ok := true
-			for rr in reserved:
-				if rr.intersects(rect):
+		out.append(Rect2(p0, n.size).grow(-6))
+	return out
+
+
+## Первое свободное место в зоне, рядами слева направо; если зона заполнена — поблизости.
+func _grid_spot(card_size: Vector2, zone: Rect2, occupied: Array) -> Vector2:
+	var reserved := _reserved()
+	var step := card_size + Vector2(12, 14)
+	var bounds := Rect2(Vector2(16, 16), WORLD - Vector2(32, 32) - card_size)
+	var cols := maxi(1, int((zone.size.x - card_size.x) / step.x) + 1)
+	var rows := maxi(1, int((zone.size.y - card_size.y) / step.y) + 1)
+	var tries := []
+	for r in rows + 6:
+		for c in cols:
+			tries.append(zone.position + Vector2(c * step.x, r * step.y))
+	for k in range(1, 6):
+		for r in rows:
+			tries.append(zone.position + Vector2(cols * step.x + (k - 1) * step.x, r * step.y))
+	for p in tries:
+		p = p.clamp(bounds.position, bounds.end)
+		var rect := Rect2(p, card_size)
+		var ok := true
+		for rr in reserved:
+			if rr.intersects(rect):
+				ok = false
+				break
+		if ok:
+			for oc in occupied:
+				if oc.intersects(rect):
 					ok = false
 					break
-			if ok:
-				for oc in occupied:
-					if oc.intersects(rect):
-						ok = false
-						break
-			if ok:
-				return p
-	return (anchor + Vector2(randf_range(-40, 40), randf_range(-40, 40))).clamp(bounds.position, bounds.end)
+		if ok:
+			return p
+	return (zone.position + Vector2(randf_range(0, 60), randf_range(0, 60))).clamp(bounds.position, bounds.end)
+
+
+func _free_spot(card_size: Vector2, zone: Rect2, ignore_id := "") -> Vector2:
+	return _grid_spot(card_size, zone, _occupied(ignore_id))
+
+
+## «Прибрать стол»: всё по своим зонам, ровными рядами.
+func _tidy() -> void:
+	if _reading:
+		return
+	_close_note()
+	_close_sheet()
+	var ids := []
+	for id in nodes:
+		if nodes[id].get_parent() == cards_layer:
+			ids.append(id)
+	ids.sort_custom(func(a, b):
+		var ta := ZONE_ORDER.find(str(nodes[a].d.get("type", "")))
+		var tb := ZONE_ORDER.find(str(nodes[b].d.get("type", "")))
+		if ta != tb:
+			return ta < tb
+		return Rules.title_of(a, Game.state) < Rules.title_of(b, Game.state))
+	var occupied := []
+	var tw := create_tween().set_parallel()
+	var i := 0
+	for id in ids:
+		var card: TableCard = nodes[id]
+		var target := _grid_spot(card.size, _zone_for(card.d), occupied)
+		occupied.append(Rect2(target, card.size).grow(-6))
+		card.rest_rot = randf_range(-0.02, 0.02)
+		_save_layout_at(card, target)
+		tw.tween_property(card, "position", target, 0.55).set_delay(i * 0.012).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		i += 1
+	focus_rect(Rect2(Vector2.ZERO, WORLD), 0.9)
 
 
 func _save_layout(card: TableCard) -> void:
@@ -276,13 +392,17 @@ func sync_cards(animate: bool) -> void:
 	for id in nodes.keys():
 		if not s["cards"].has(id):
 			_remove_node(id, animate)
+	_arrived.clear()
 	for id in want:
 		if not nodes.has(id):
 			_add_node(id, animate)
+			if animate:
+				_arrived.append(id)
 		else:
 			nodes[id].queue_redraw()
 	if animate:
 		_hidden_until_shown.clear()
+		_show_arrivals()
 	map.queue_redraw()
 	spread.refresh()
 	if sheet:
@@ -303,13 +423,13 @@ func _add_node(id: String, animate: bool) -> void:
 		target = Vector2(float(lay[0]), float(lay[1]))
 		card.rest_rot = float(lay[2])
 	else:
-		target = _free_spot(card.size, _anchor_for(card.d), id)
+		target = _free_spot(card.size, _zone_for(card.d), id)
 		card.rest_rot = randf_range(-0.07, 0.07)
 		_save_layout_at(card, target)
 	card.rotation = card.rest_rot
 	if animate:
-		var ts := table_size()
-		card.position = Vector2(target.x, ts.y + 60)
+		# прилетает из-за нижнего края экрана, где бы ни стояла камера
+		card.position = Vector2(target.x, screen_to_world(Vector2(0, table_size().y + 80)).y)
 		card.rotation = card.rest_rot + randf_range(-0.5, 0.5)
 		card.lift = 1.0
 		var tw := create_tween()
@@ -317,6 +437,25 @@ func _add_node(id: String, animate: bool) -> void:
 		tw.tween_property(card, "position", target, 0.65).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	else:
 		card.position = target
+
+
+## Режиссура: если новые вещи легли за краем кадра, камера едет к ним.
+func _show_arrivals() -> void:
+	if _arrived.is_empty():
+		return
+	var r := Rect2()
+	var first := true
+	for id in _arrived:
+		var lay = Game.state["layout"].get(id)
+		if lay == null or not nodes.has(id):
+			continue
+		var cr := Rect2(Vector2(float(lay[0]), float(lay[1])), nodes[id].size)
+		r = cr if first else r.merge(cr)
+		first = false
+	if first:
+		return
+	if not _visible_rect().grow(-30).encloses(r):
+		focus_rect(r.merge(Rect2(r.get_center() - Vector2(500, 300), Vector2(1000, 600))))
 
 
 func _save_layout_at(card: TableCard, p: Vector2) -> void:
@@ -368,8 +507,19 @@ func _on_wait() -> void:
 # ---------------------------------------------------------------- ввод с карт
 
 func _gui_input(e: InputEvent) -> void:
-	if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-		_close_note()
+	if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
+		if e.pressed:
+			_panning = true
+			_pan_moved = false
+			_pan_from = e.position
+		else:
+			if _panning and not _pan_moved:
+				_close_note()
+			if _panning:
+				_end_pan()
+			_panning = false
+	elif e is InputEventMouseMotion and _panning:
+		_pan_by(e.relative)
 
 
 func _on_picked(card: TableCard) -> void:
@@ -392,14 +542,25 @@ func _on_dropped(card: TableCard) -> void:
 			card.reparent(cards_layer, true)
 			card.base_scale = 1.0
 			sheet.refresh()
+	# на папку дела — подшить улику
+	var case_id := _case_under(gp, card)
+	if case_id != "":
+		_return_card(card)
+		_file_into(case_id, card.id)
+		return
+	# на портрет человека — разговор на эту тему
+	var person := _person_under(gp, card)
+	if person != "":
+		_return_card(card)
+		_talk_with(person, card.id)
+		return
 	# на булавку карты города
 	var loc := map.pin_at_global(gp)
 	if loc != "":
 		_return_card(card)
 		_travel(loc, card.id)
 		return
-	var ts := table_size()
-	card.position = card.position.clamp(Vector2(-card.size.x * 0.4, -card.size.y * 0.4), ts - card.size * 0.6)
+	card.position = card.position.clamp(Vector2(-card.size.x * 0.4, -card.size.y * 0.4), WORLD - card.size * 0.6)
 	card.rest_rot += randf_range(-0.03, 0.03)
 	_save_layout(card)
 
@@ -465,6 +626,9 @@ func _travel(loc: String, with_card := "") -> void:
 		map.move_hat(loc)
 		_close_sheet()
 		spread.refresh()
+		var place := Rect2(map.position, map.size).merge(Rect2(spread.position, spread.size))
+		if not _visible_rect().encloses(place):
+			focus_rect(place.grow(40))
 		for id in nodes:
 			nodes[id].queue_redraw()
 	if with_card != "":
@@ -505,11 +669,16 @@ func _choose_action(a: Dictionary, where: String, preset := {}) -> void:
 		_after(Game.do_action(act, w, slots)))
 	sheet.cancelled.connect(_close_sheet)
 	sheet_layer.add_child(sheet)
+	# Размер листа становится известен не сразу (контейнеры раскладываются на следующих кадрах),
+	# поэтому место считается по минимальному размеру и пересчитывается при каждом изменении.
+	var placed := sheet
+	sheet.resized.connect(func(): _place_sheet(placed))
+	_place_sheet(sheet)
 	await get_tree().process_frame
 	if sheet == null:
 		return
-	var ts := table_size()
-	sheet.position = Vector2((ts.x - sheet.size.x) / 2, maxf(300, ts.y - sheet.size.y - 40))
+	_place_sheet(sheet)
+	_frame_candidates()
 	sheet.modulate.a = 0
 	create_tween().tween_property(sheet, "modulate:a", 1.0, 0.2)
 	for slot_id in preset:
@@ -519,6 +688,26 @@ func _choose_action(a: Dictionary, where: String, preset := {}) -> void:
 				if sb.slot["id"] == slot_id:
 					_put_in_slot(nodes[cid], sb)
 	_highlight_candidates()
+
+
+func _frame_candidates() -> void:
+	if sheet == null:
+		return
+	var r := Rect2()
+	var first := true
+	for sb in sheet.slot_boxes:
+		for id in Rules.slot_candidates(sb.slot, Game.state, sheet.ctx()):
+			if nodes.has(id) and nodes[id].get_parent() == cards_layer:
+				var cr := Rect2(nodes[id].position, nodes[id].size)
+				r = cr if first else r.merge(cr)
+				first = false
+	if first or _visible_rect().grow(-20).encloses(r):
+		return
+	# лист закрывает низ экрана: подходящие карты показываем в верхней части кадра
+	var ts := table_size()
+	var fit := r.grow(80)
+	fit.size.y += (sheet.size.y + 60) / maxf(cam_zoom, 0.1)
+	focus_rect(fit, 1.0, true)
 
 
 func _highlight_candidates() -> void:
@@ -590,6 +779,9 @@ func _read(title: String, text: String, changes: Array, kind: String, then: Call
 	if text != "":
 		var l := sh.add_text(text)
 		l.add_theme_font_size_override("font_size", 19)
+	for c in changes:
+		if c.get("kind") in ["stage", "expire"]:
+			shake(5.0)
 	var lines := _changes_lines(changes)
 	if lines.size() > 0:
 		sh.add_rule()
@@ -629,6 +821,12 @@ func _changes_lines(changes: Array) -> Array:
 				out.append([Rules.title_of(c["id"], s) + " — больше не здесь", Color("5a5048")])
 			"rel":
 				out.append([Rules.title_of(c["who"], s) + (": теперь " if c["add"] else ": уже не ") + str(c["tag"]).to_lower(), Color("2d3a5a")])
+			"spent":
+				out.append([Rules.title_of(c["id"], s) + " — понадобится время, чтобы снова на это рассчитывать", Color("6a5a40")])
+			"filed":
+				out.append(["Подшито в дело: " + Rules.title_of(c["id"], s), Color("5a3c14")])
+			"stage":
+				out.append(["Дело выросло: «" + Rules.title_of(c["id"], s) + "»", Color("8a2020")])
 	return out
 
 
@@ -684,12 +882,36 @@ func _toggle_note(card: TableCard) -> void:
 			lines.append("Между ними: " + ", ".join(PackedStringArray(rels)).to_lower())
 		extra.text = "\n".join(PackedStringArray(lines))
 		v.add_child(extra)
+	if d.has("stages"):
+		var filed := Rules.case_filed(s, card.id)
+		var cl := Label.new()
+		cl.theme_type_variation = "Hand"
+		cl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		cl.custom_minimum_size.x = 320
+		var st := Rules.case_stage(s, card.id)
+		var names := PackedStringArray()
+		for e in filed:
+			names.append(Rules.title_of(e, s))
+		cl.text = "Стадия %d из %d — %s." % [st + 1, d["stages"].size(), str(d["stages"][st].get("mark", "")).to_lower()]
+		cl.text += ("
+Подшито: " + ", ".join(names) + ".") if names.size() > 0 else "
+Пока ничего не подшито. Улику можно бросить прямо на папку."
+		v.add_child(cl)
 	if card.lifetime_phrase() != "":
 		var lt := Label.new()
 		lt.theme_type_variation = "Hand"
 		lt.add_theme_color_override("font_color", Look.BAD if card.urgent() else Color("2d3a5a"))
 		lt.text = "Это ненадолго: " + card.lifetime_phrase() + "."
 		v.add_child(lt)
+	if d.get("type") == "person" and Rules.where_is(s, card.id) == s["here"] and Content.actions.has("talk"):
+		var tb := Button.new()
+		tb.theme_type_variation = "InkButton"
+		tb.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		tb.text = "→ Поговорить. Тему — любую карту со стола"
+		var pid := card.id
+		tb.pressed.connect(func():
+			_talk_with(pid, ""))
+		v.add_child(tb)
 	var acts := Rules.actions_for(s, card.id)
 	if acts.size() > 0:
 		var r := ColorRect.new()
@@ -757,3 +979,313 @@ func _toast(text: String) -> void:
 	tw.tween_interval(1.8)
 	tw.tween_property(p, "modulate:a", 0.0, 0.4)
 	tw.tween_callback(p.queue_free)
+
+
+
+# ---------------------------------------------------------------- разговоры
+
+## Портрет человека под точкой (кроме перетаскиваемой карты).
+func _person_under(gp: Vector2, dragged: TableCard) -> String:
+	var best := ""
+	var best_idx := -1
+	for id in nodes:
+		var n: TableCard = nodes[id]
+		if n == dragged or n.get_parent() != cards_layer or str(n.d.get("type")) != "person":
+			continue
+		if n.get_global_rect().has_point(gp) and n.get_index() > best_idx:
+			best = id
+			best_idx = n.get_index()
+	return best
+
+
+## Открыть лист разговора: собеседник и (если есть) тема или подход уже лежат в ячейках.
+func _talk_with(pid: String, card_id: String) -> void:
+	var s := Game.state
+	if not Content.actions.has("talk"):
+		return
+	if Rules.where_is(s, pid) != s["here"]:
+		var where = Rules.where_is(s, pid)
+		_toast("%s сейчас не здесь%s." % [Rules.title_of(pid, s), (" — " + Rules.title_of(where, s)) if where != null else ""])
+		return
+	var preset := {"who": pid}
+	if card_id != "" and card_id != pid:
+		if str(Content.def(card_id).get("type")) == "approach":
+			if Rules.is_resting(s, card_id):
+				_toast(Rules.title_of(card_id, s) + " ещё не восстановилось.")
+			else:
+				preset["approach"] = card_id
+		else:
+			preset["topic"] = card_id
+	_choose_action(Content.actions["talk"], s["here"], preset)
+
+
+func _place_sheet(sh) -> void:
+	if sh == null or not is_instance_valid(sh) or sh != sheet:
+		return
+	var ts := table_size()
+	var sz: Vector2 = sh.get_combined_minimum_size().max(sh.size)
+	var y := clampf(ts.y - sz.y - 40, 90, maxf(90, ts.y - sz.y - 10))
+	sh.position = Vector2(roundf((ts.x - sz.x) / 2), roundf(y))
+
+
+func _case_under(gp: Vector2, dragged: TableCard) -> String:
+	if dragged.d.has("stages"):
+		return ""
+	for id in nodes:
+		var n: TableCard = nodes[id]
+		if n != dragged and n.get_parent() == cards_layer and n.d.has("stages") and n.get_global_rect().has_point(gp):
+			return id
+	return ""
+
+
+func _case_action(case_id: String) -> Dictionary:
+	for aid in Content.actions:
+		var a: Dictionary = Content.actions[aid]
+		if a.get("case", false) and a.get("on") == case_id:
+			return a
+	return {}
+
+
+## Открыть лист «Подшить в дело» с папкой и уликой в ячейках.
+func _file_into(case_id: String, card_id: String) -> void:
+	var a := _case_action(case_id)
+	if a.is_empty() or not Rules.test(a.get("visible"), Game.state, Rules.action_ctx(a, case_id, {})):
+		_toast("Это дело уже закрыто.")
+		return
+	if Game.state["flags"].get("filed:" + card_id, false):
+		_toast(Rules.title_of(card_id, Game.state) + " уже в деле.")
+		return
+	_choose_action(a, case_id, {"case": case_id, "evidence": card_id})
+
+
+# ---------------------------------------------------------------- камера и режиссура
+
+func screen_to_world(sp: Vector2) -> Vector2:
+	return (sp - world.position) / cam_zoom
+
+
+func world_to_screen(wp: Vector2) -> Vector2:
+	return wp * cam_zoom + world.position
+
+
+func _home_rect() -> Rect2:
+	return Rect2(0, 0, 1440, 900)
+
+
+func _fit_zoom(r: Rect2) -> float:
+	var ts := table_size()
+	return clampf(minf(ts.x / r.size.x, ts.y / r.size.y), ZOOM_MIN, ZOOM_MAX)
+
+
+func _home_camera(instant := false) -> void:
+	var r := _home_rect()
+	zoom_target = _fit_zoom(r)
+	cam_target = r.get_center()
+	if instant:
+		cam_zoom = zoom_target
+		cam_pos = cam_target
+	_clamp_camera()
+	_apply_camera()
+
+
+## Показать область стола. Если игрок только что сам двигал камеру, не перехватываем её.
+func focus_rect(r: Rect2, zoom_mul := 1.0, force := false) -> void:
+	if not force and _clock - _user_cam_time < 2.5:
+		return
+	if not Game.settings.get("camera_direction", true) and not force:
+		return
+	zoom_target = clampf(_fit_zoom(r.grow(60)) * zoom_mul, ZOOM_MIN, ZOOM_MAX)
+	zoom_target = minf(zoom_target, maxf(cam_zoom, 1.0))
+	cam_target = r.get_center()
+	_anchored = false
+	_smooth = 0.55
+	_clamp_camera()
+
+
+## Видна ли область целиком при нынешней камере.
+func _visible_rect() -> Rect2:
+	var ts := table_size()
+	return Rect2(screen_to_world(Vector2.ZERO), ts / cam_zoom)
+
+
+func shake(amount := 6.0) -> void:
+	if Game.settings.get("camera_direction", true):
+		_shake = maxf(_shake, amount)
+
+
+func _pan_by(screen_delta: Vector2) -> void:
+	if screen_delta.length() > 0.5:
+		_pan_moved = true
+	# перетаскивание — один к одному, без запаздывания; скорость запоминаем для инерции
+	_anchored = false
+	var d := screen_delta / cam_zoom
+	cam_pos -= d
+	cam_target = cam_pos
+	_cam_vel = Vector2.ZERO
+	_drag_vel = _drag_vel.lerp(-d / maxf(get_process_delta_time(), 0.001), 0.35)
+	_user_cam_time = _clock
+	_clamp_camera()
+	cam_pos = cam_target
+	_apply_camera()
+
+
+## Отпустили стол после перетаскивания: вид немного доезжает по инерции и мягко останавливается.
+func _end_pan() -> void:
+	if _pan_moved and _drag_vel.length() > 60.0:
+		_smooth = 0.32
+		cam_target = cam_pos + _drag_vel.limit_length(2600.0) * 0.12
+		_clamp_camera()
+	_drag_vel = Vector2.ZERO
+
+
+func _zoom_at(screen_point: Vector2, factor: float) -> void:
+	# точка стола под курсором держится под курсором на всём пути масштабирования
+	if not _anchored or _anchor_screen.distance_to(screen_point) > 2.0:
+		_anchor_world = screen_to_world(screen_point)
+		_anchor_screen = screen_point
+	_anchored = true
+	zoom_target = clampf(zoom_target * factor, ZOOM_MIN, ZOOM_MAX)
+	_smooth = 0.16
+	_user_cam_time = _clock
+
+
+func _clamp_camera() -> void:
+	var ts := table_size()
+	var half := ts / 2.0 / zoom_target
+	var margin := Vector2(160, 120)
+	var lo := half - margin
+	var hi := WORLD - half + margin
+	for k in 2:
+		if lo[k] > hi[k]:
+			cam_target[k] = WORLD[k] / 2.0
+		else:
+			cam_target[k] = clampf(cam_target[k], lo[k], hi[k])
+
+
+func _apply_camera() -> void:
+	if world == null:
+		return
+	var ts := table_size()
+	var off := Vector2.ZERO
+	if _shake > 0.05:
+		off = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake
+	world.scale = Vector2.ONE * cam_zoom
+	# без округления до пикселя: при плавном движении и масштабе оно давало дрожь
+	world.position = ts / 2.0 - cam_pos * cam_zoom + off
+
+
+## Плавное приближение к цели с затуханием скорости (без рывка в начале и в конце).
+static func _damp(cur: float, target: float, vel: float, smooth: float, dt: float) -> Vector2:
+	var omega := 2.0 / maxf(0.0001, smooth)
+	var x := omega * dt
+	var e := 1.0 / (1.0 + x + 0.48 * x * x + 0.235 * x * x * x)
+	var change := cur - target
+	var temp := (vel + omega * change) * dt
+	return Vector2(target + (change + temp) * e, (vel - omega * temp) * e)
+
+
+func _process(delta: float) -> void:
+	_clock += delta
+	var moved := cam_pos.distance_to(cam_target) > 0.05 or absf(cam_zoom - zoom_target) > 0.0002 \
+		or _shake > 0.05 or _cam_vel.length() > 0.5 or absf(_zoom_vel) > 0.0005
+	if not moved or _panning:
+		if _panning:
+			_drag_vel = _drag_vel.lerp(Vector2.ZERO, 1.0 - exp(-6.0 * delta))
+		return
+	var z := _damp(cam_zoom, zoom_target, _zoom_vel, _smooth, delta)
+	cam_zoom = z.x
+	_zoom_vel = z.y
+	if _anchored:
+		# пока идёт масштаб к курсору, центр вычисляется так, чтобы точка под курсором не уплывала
+		var ts := table_size()
+		cam_pos = _anchor_world - (_anchor_screen - ts / 2.0) / cam_zoom
+		var keep := cam_pos
+		cam_target = cam_pos
+		_clamp_camera()
+		cam_pos = cam_target
+		if keep.distance_to(cam_pos) > 0.5 or absf(cam_zoom - zoom_target) < 0.0005:
+			_anchored = false
+		_cam_vel = Vector2.ZERO
+	else:
+		var px := _damp(cam_pos.x, cam_target.x, _cam_vel.x, _smooth, delta)
+		var py := _damp(cam_pos.y, cam_target.y, _cam_vel.y, _smooth, delta)
+		cam_pos = Vector2(px.x, py.x)
+		_cam_vel = Vector2(px.y, py.y)
+	_shake = lerpf(_shake, 0.0, 1.0 - exp(-9.0 * delta))
+	_apply_camera()
+
+
+func _over_hud(sp: Vector2) -> bool:
+	if Game.main.has_overlay():
+		return true
+	for layer in [sheet_layer, note_layer]:
+		for c in layer.get_children():
+			if c is Control and c.visible and c.get_global_rect().has_point(sp):
+				return true
+	for c in [dial, notebook, plaque, tidy_btn]:
+		if c.get_global_rect().has_point(sp):
+			return true
+	return false
+
+
+func _input(e: InputEvent) -> void:
+	if not is_visible_in_tree() or Game.mode != "table":
+		return
+	var wheel: bool = e is InputEventMouseButton and e.button_index in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]
+	if wheel and _over_scrollable():
+		return
+	if e is InputEventMouseButton and e.pressed and not _over_hud(e.position):
+		if e.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_zoom_at(e.position, 1.1)
+			get_viewport().set_input_as_handled()
+		elif e.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_zoom_at(e.position, 1.0 / 1.1)
+			get_viewport().set_input_as_handled()
+		elif e.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+			_panning = true
+			_pan_moved = false
+	elif e is InputEventMouseButton and not e.pressed and e.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+		if _panning:
+			_end_pan()
+		_panning = false
+	elif e is InputEventMouseMotion and _panning and (e.button_mask & (MOUSE_BUTTON_MASK_RIGHT | MOUSE_BUTTON_MASK_MIDDLE)):
+		_pan_by(e.relative)
+	elif e is InputEventKey and e.pressed and not e.echo:
+		var step := 160.0 / cam_zoom
+		match e.keycode:
+			KEY_HOME:
+				_user_cam_time = -10.0
+				_anchored = false
+				_smooth = 0.45
+				_home_camera()
+			KEY_A, KEY_LEFT:
+				cam_target.x -= step
+			KEY_D, KEY_RIGHT:
+				cam_target.x += step
+			KEY_W, KEY_UP:
+				cam_target.y -= step
+			KEY_S, KEY_DOWN:
+				cam_target.y += step
+			KEY_EQUAL, KEY_KP_ADD:
+				zoom_target = clampf(zoom_target * 1.12, ZOOM_MIN, ZOOM_MAX)
+			KEY_MINUS, KEY_KP_SUBTRACT:
+				zoom_target = clampf(zoom_target / 1.12, ZOOM_MIN, ZOOM_MAX)
+			_:
+				return
+		_anchored = false
+		_smooth = 0.22
+		_user_cam_time = _clock
+		_clamp_camera()
+
+
+## Курсор над списком, который есть куда прокручивать (дела на открытке, длинная записка).
+func _over_scrollable() -> bool:
+	var c := get_viewport().gui_get_hovered_control()
+	while c != null and c != self:
+		if c is ScrollContainer:
+			var sc := c as ScrollContainer
+			var bar := sc.get_v_scroll_bar()
+			if bar and bar.max_value - bar.page > 1.0:
+				return true
+		c = c.get_parent_control()
+	return false

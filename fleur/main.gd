@@ -52,6 +52,10 @@ func _ready() -> void:
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--smoke"):
 			add_child(load("res://tools/smoke_test.gd").new())
+		elif a.begins_with("--mapshot") or a.begins_with("--tableshot"):
+			add_child(load("res://tools/map_shot.gd").new())
+		elif a.begins_with("--duelsim"):
+			add_child(load("res://tools/duel_sim.gd").new())
 		elif a.begins_with("--gallery"):
 			overlay_layer.add_child(load("res://tools/gallery.gd").new())
 

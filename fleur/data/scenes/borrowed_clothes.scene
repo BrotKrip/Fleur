@@ -1,6 +1,4 @@
 @id borrowed_clothes
-@title Временно в чужих брюках
-@after Временно в чужих брюках
 
 @bg apartment_morning
 @if {"flag":"charlotte_slept_separately"} -> sofa

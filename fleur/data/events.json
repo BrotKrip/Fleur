@@ -89,7 +89,8 @@
 					"loc_poisson",
 					"loc_epiclese",
 					"loc_mermonia",
-					"note_exhibition"
+					"note_exhibition",
+					"gaston"
 				]
 			}
 		]
@@ -143,6 +144,85 @@
 		"effects": [
 			{
 				"add": "note_epilogue"
+			}
+		]
+	},
+	"ev_article_deadline_start": {
+		"when": {
+			"all": [
+				{
+					"flag": "samples_left"
+				},
+				{
+					"noFlag": "first_arc_done"
+				}
+			]
+		},
+		"title": "Записка из «Паровой птицы»",
+		"text": "«Редактор ставит материал о „Нектаре“ в номер через шесть дней. Я напечатаю то, что смогу подтвердить к этому сроку. Лучше — с тобой. Ш.»",
+		"effects": [
+			{
+				"add": "dl_article"
+			}
+		]
+	},
+	"ev_article_deadline": {
+		"manual": true,
+		"when": {
+			"noFlag": "first_arc_done"
+		},
+		"effects": [
+			{
+				"flag": "article_printed"
+			}
+		]
+	},
+	"ev_article_deadline_morning": {
+		"when": {
+			"all": [
+				{
+					"flag": "article_printed"
+				},
+				{
+					"noFlag": "first_arc_done"
+				},
+				{
+					"phase": "morning"
+				}
+			]
+		},
+		"effects": [
+			{
+				"scene": "article_deadline"
+			}
+		]
+	},
+	"ev_lamotte_challenge": {
+		"when": {
+			"all": [
+				{
+					"flag": "card_cheat_seen"
+				},
+				{
+					"flag": "cards_evening_done"
+				},
+				{
+					"phase": "morning"
+				},
+				{
+					"noFlag": "lamotte_duel_done"
+				}
+			]
+		},
+		"title": "Записка от виконта",
+		"text": "Виконт де Ламотт просит о встрече на площадке за «Бомонтом» — «по поводу последней партии в „Деборе“». Секундантов он не упоминает, но, очевидно, подразумевает.",
+		"effects": [
+			{
+				"add": [
+					"viscount",
+					"inv_duel_lamotte",
+					"loc_beaumont"
+				]
 			}
 		]
 	}

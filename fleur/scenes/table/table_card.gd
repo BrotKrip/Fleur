@@ -12,7 +12,7 @@ const SIZES := {
 	"portrait": Vector2(140, 212), "envelope": Vector2(190, 128), "calendar": Vector2(124, 150),
 	"clipping": Vector2(168, 124), "note": Vector2(156, 176), "photo": Vector2(144, 172),
 	"label": Vector2(156, 118), "folder": Vector2(214, 156), "book": Vector2(154, 204),
-	"token": Vector2(100, 122), "telegram": Vector2(236, 86), "card": Vector2(170, 100),
+	"token": Vector2(100, 122), "trait": Vector2(108, 132), "telegram": Vector2(236, 86), "card": Vector2(170, 100),
 }
 const OBJECT_SIZES := {
 	"rapier": Vector2(310, 74), "hairpin": Vector2(110, 52), "bottle": Vector2(226, 84),
@@ -74,6 +74,8 @@ func inst() -> Dictionary:
 
 
 func title() -> String:
+	if d.has("stages"):
+		return Rules.title_of(id, state())
 	return Rules.txt(d.get("title"), state())
 
 
@@ -147,6 +149,8 @@ func silhouette() -> PackedVector2Array:
 			return Look.torn_rect(r, seed_v, true, false, 4.0)
 		"token":
 			return Look.ellipse(Vector2(size.x / 2, 48), Vector2(42, 42), 36)
+		"trait":
+			return Look.ellipse(Vector2(size.x / 2, 50), Vector2(46, 46), 40)
 		"portrait", "book":
 			return Look.rrect(r, 7)
 		"label":
@@ -174,7 +178,7 @@ func _draw() -> void:
 	else:
 		Look.soft_shadow(self, sil, sh_off, sh_spread, sh_alpha)
 		call("_draw_" + look)
-	if hovered and not dragging and look in ["object", "label", "photo", "token"]:
+	if hovered and not dragging and look in ["object", "label", "photo", "token", "trait"]:
 		_draw_name_tag()
 
 
@@ -235,7 +239,12 @@ func _draw_portrait() -> void:
 	var rels: Array = state()["rel"].get(id, [])
 	if rels.size() > 0:
 		var shown := rels.slice(maxi(0, rels.size() - 2))
-		Look.text_c(self, _f("hand"), size.x / 2, 203, " · ".join(PackedStringArray(shown)), 12, _rel_color(shown[shown.size() - 1]), size.x - 10)
+		var line := " · ".join(PackedStringArray(shown))
+		# две длинные пометки не влезают в одну строку внизу карточки — тогда только последняя
+		if shown.size() > 1 and _f("hand").get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x > size.x - 10:
+			shown = shown.slice(shown.size() - 1)
+			line = str(shown[0])
+		Look.text_c(self, _f("hand"), size.x / 2, 203, line, 12, _rel_color(shown[shown.size() - 1]), size.x - 10)
 	if Rules.where_is(state(), id) == state().get("here"):
 		draw_circle(Vector2(size.x - 18, 18), 8, Look.WAX)
 		draw_circle(Vector2(size.x - 18, 18), 5, Look.WAX.lightened(0.15))
@@ -385,8 +394,11 @@ func _draw_folder() -> void:
 	var tab := Look.rrect(Rect2(14, 0, 78, 22), 4)
 	draw_colored_polygon(tab, Color("c79e5c"))
 	var body := Look.rrect(Rect2(0, 14, w, h - 14), 3)
-	# лист, торчащий из папки
-	draw_colored_polygon(Look.rrect(Rect2(w - 96, 6, 82, 30), 1), Color("f4eee0"))
+	# листы, торчащие из папки: у дела по стадиям их столько, сколько стадий пройдено
+	var stage := Rules.case_stage(state(), id) if d.has("stages") else 0
+	for k in range(stage, -1, -1):
+		draw_colored_polygon(Look.rrect(Rect2(w - 96 - k * 14, 6 - k * 1.5, 82, 30), 1), Color("f4eee0").darkened(0.04 * k))
+		draw_rect(Rect2(w - 96 - k * 14, 6 - k * 1.5, 82, 30), Color(0.4, 0.3, 0.2, 0.25), false, 1.0)
 	Look.fill_v(self, body, Color("d8b679"), Color("bf9455"))
 	_paper_grain(body, 0.16)
 	Look.outline(self, body, Color(0.4, 0.28, 0.12, 0.7))
@@ -397,8 +409,12 @@ func _draw_folder() -> void:
 	draw_multiline_string(_f("type"), Vector2(lab.position.x + 6, lab.position.y + 19), title(), HORIZONTAL_ALIGNMENT_CENTER, lab.size.x - 12, 14, 2, Look.INK)
 	# штамп
 	draw_set_transform(Vector2(w - 62, h - 24), -0.2, Vector2.ONE)
-	draw_rect(Rect2(-30, -14, 60, 24), Color(0.6, 0.12, 0.1, 0.55), false, 2.0)
-	draw_string(_f("serif_bold"), Vector2(-30, 4), "ДЕЛО", HORIZONTAL_ALIGNMENT_CENTER, 60, 14, Color(0.6, 0.12, 0.1, 0.6))
+	var mark := "ДЕЛО"
+	if d.has("stages"):
+		mark = str(d["stages"][clampi(stage, 0, d["stages"].size() - 1)].get("mark", "ДЕЛО"))
+	var mw := maxf(60.0, _f("serif_bold").get_string_size(mark, HORIZONTAL_ALIGNMENT_LEFT, -1, 12).x + 14)
+	draw_rect(Rect2(-mw + 30, -14, mw, 24), Color(0.6, 0.12, 0.1, 0.55), false, 2.0)
+	draw_string(_f("serif_bold"), Vector2(-mw + 30, 3), mark, HORIZONTAL_ALIGNMENT_CENTER, mw, 12, Color(0.6, 0.12, 0.1, 0.65))
 	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 	# завязки
 	var b1 := Vector2(30, h - 22)
@@ -442,8 +458,45 @@ func _draw_token() -> void:
 		Look.text_c(self, _f("serif_italic"), size.x / 2, 121, lifetime_phrase(), 10, Color(0.95, 0.85, 0.65, 0.75), size.x + 20)
 
 
+# ---- печатка подхода Флёра (Обаяние, Клинок, Фамилия, Кошелёк, Откровенность)
+func _draw_trait() -> void:
+	var c := Vector2(size.x / 2, 50)
+	var rest := int(inst().get("rest", 0))
+	var enamel := Color(str(d.get("color", "#2a3f6a")))
+	var k := 0.45 if rest > 0 else 1.0
+	draw_circle(c, 46, Look.BRASS_DARK.darkened(0.2))
+	draw_circle(c, 43, Look.BRASS.lerp(Color(0.4, 0.38, 0.34), 1.0 - k))
+	for i in 24:
+		var a := TAU * i / 24.0
+		draw_circle(c + Vector2.from_angle(a) * 40, 1.6, Look.BRASS_DARK)
+	draw_circle(c, 34, enamel.darkened(0.25).lerp(Color(0.25, 0.24, 0.23), 1.0 - k))
+	draw_circle(c, 31, enamel.lerp(Color(0.3, 0.29, 0.28), 1.0 - k))
+	draw_circle(c + Vector2(-11, -13), 11, Color(1, 1, 1, 0.1 * k))
+	_draw_glyph(str(d.get("glyph", "")), c, Color("f4e6c2").lerp(Color("9a9080"), 1.0 - k))
+	Look.text_c(self, _f("serif_bold"), size.x / 2, 113, title(), 13, Color("f1e3c0") if rest == 0 else Color(0.8, 0.75, 0.66, 0.8), size.x + 30)
+	if rest > 0:
+		draw_arc(c, 47, -PI / 2, -PI / 2 + TAU * (1.0 - float(rest) / maxf(1.0, float(d.get("recharge", 3)))), 40, Color(0.95, 0.8, 0.45, 0.9), 3.0, true)
+		Look.text_c(self, _f("serif_italic"), size.x / 2, 128, "восстанавливается", 10, Color(0.95, 0.85, 0.65, 0.8), size.x + 30)
+
+
 func _draw_glyph(g: String, c: Vector2, col: Color) -> void:
 	match g:
+		"heart":
+			draw_circle(c + Vector2(-6, -4), 7, col)
+			draw_circle(c + Vector2(6, -4), 7, col)
+			draw_colored_polygon(PackedVector2Array([c + Vector2(-12.5, -1), c + Vector2(12.5, -1), c + Vector2(0, 14)]), col)
+		"crest":
+			draw_colored_polygon(PackedVector2Array([c + Vector2(-12, -13), c + Vector2(12, -13), c + Vector2(12, 2), c + Vector2(0, 15), c + Vector2(-12, 2)]), col)
+			draw_line(c + Vector2(0, -9), c + Vector2(0, 9), col.darkened(0.6), 2.0, true)
+			draw_line(c + Vector2(-7, -3), c + Vector2(7, -3), col.darkened(0.6), 2.0, true)
+		"coin":
+			draw_circle(c + Vector2(4, 4), 11, col.darkened(0.25))
+			draw_circle(c + Vector2(-3, -3), 11, col)
+			draw_arc(c + Vector2(-3, -3), 7, 0, TAU, 20, col.darkened(0.45), 1.5, true)
+		"eye":
+			draw_arc(c + Vector2(0, 8), 16, PI * 1.18, PI * 1.82, 18, col, 2.5, true)
+			draw_arc(c + Vector2(0, -8), 16, PI * 0.18, PI * 0.82, 18, col, 2.5, true)
+			draw_circle(c, 5, col)
 		"glass":
 			draw_arc(c + Vector2(0, -8), 11, 0, PI, 16, col, 2.5, true)
 			draw_line(c + Vector2(-11, -8), c + Vector2(11, -8), col, 2.0)

@@ -8,6 +8,7 @@ const SETTINGS_PATH := "user://settings.cfg"
 
 const ACTIVITY_SCRIPTS := {
 	"harpoon": "res://scenes/activities/harpoon.gd",
+	"duel": "res://scenes/activities/duel.gd",
 }
 
 var state: Dictionary = {}
@@ -60,10 +61,10 @@ func enter_scene(id: String, ctx: Dictionary) -> void:
 	mode = "vn"
 	var vn = load("res://scenes/vn/vn_screen.gd").new()
 	vn.setup(scene, ctx)
-	main.swap(vn, str(scene.get("title", "")))
+	main.swap(vn, "")
 
 
-func finish_scene(changes: Array, after_title := "После разговора") -> void:
+func finish_scene(changes: Array, after_title := "Что изменилось") -> void:
 	pending_return = {"title": after_title, "text": "", "changes": changes}
 	to_table()
 
@@ -86,6 +87,7 @@ func finish_activity(q: Dictionary, result: Dictionary, title: String) -> void:
 		Rules.add_card(state, id, {}, api)
 	if result.get("outcome") == "lost":
 		Rules.apply(rule.get("lost_effects"), state, {}, api)
+	Rules.apply(result.get("effects"), state, {}, api)
 	var tail: String = rule.get("texts", {}).get(result.get("outcome", ""), "")
 	var parts := PackedStringArray()
 	for p in [str(result.get("summary", "")), tail]:
@@ -124,7 +126,7 @@ func do_action(action: Dictionary, where: String, slots: Dictionary) -> Dictiona
 	Rules.mark_seen(state)
 	var res := Rules.perform(action, state, ctx, api)
 	res["changes"] = api["changes"]
-	res["silent"] = action.get("silent", false)
+	res["silent"] = action.get("silent", false) or res.get("silent", false)
 	return res
 
 

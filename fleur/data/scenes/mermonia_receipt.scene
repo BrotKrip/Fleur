@@ -1,6 +1,4 @@
 @id mermonia_receipt
-@title Недостающая подпись
-@after Недостающая подпись
 
 @bg mermonia
 @show npc_sedene left

@@ -1,6 +1,4 @@
 @id manor_journey
-@title Полдня до обеда
-@after Полдня до обеда
 
 @bg docks
 @show char_charlotte right

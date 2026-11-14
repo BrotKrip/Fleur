@@ -45,7 +45,16 @@
 			"hat": "",
 			"eyes": "5a4a3a",
 			"short": true
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"morning": "loc_lutes",
+					"day": "loc_lutes",
+					"evening": "loc_lutes"
+				}
+			}
+		]
 	},
 	"gaston": {
 		"type": "person",
@@ -69,7 +78,15 @@
 			"hat": "",
 			"eyes": "5a4a3a",
 			"short": true
-		}
+		},
+		"schedule": [
+			{
+				"map": {
+					"evening": "loc_debor",
+					"night": "loc_debor"
+				}
+			}
+		]
 	},
 	"watchman": {
 		"type": "person",

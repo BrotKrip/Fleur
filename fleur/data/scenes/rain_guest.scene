@@ -1,6 +1,4 @@
 @id rain_guest
-@title Камин занят
-@after Камин занят
 
 @bg vasari
 @show char_charlotte right

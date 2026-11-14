@@ -11,7 +11,7 @@ static func _open(sh: Sheet) -> Sheet:
 static func pause() -> void:
 	var sh := Sheet.new(420)
 	sh.add_kicker("Пауза")
-	sh.add_title("Шевалье де ла Флёр")
+	sh.add_title("Послевкусие")
 	sh.add_rule()
 	sh.add_button("Вернуться к столу", sh.close)
 	sh.add_button("Сохранить", func():

@@ -1,4 +1,53 @@
 {
+	"talk": {
+		"talk": true,
+		"at": "*",
+		"title": "Поговорить",
+		"desc": "Собеседник, тема — любая карта со стола: слух, улика, вещь, другой человек — и, если хочется, манера. Можно просто бросить карту на портрет того, кто рядом.",
+		"visible": {
+			"someoneHere": true
+		},
+		"cost": 1,
+		"slots": [
+			{
+				"id": "who",
+				"label": "Собеседник",
+				"types": [
+					"person"
+				],
+				"present": true,
+				"required": true
+			},
+			{
+				"id": "topic",
+				"label": "О чём",
+				"types": [
+					"rumor",
+					"info",
+					"clue",
+					"item",
+					"person",
+					"storyline",
+					"affair",
+					"invitation",
+					"state",
+					"world"
+				],
+				"required": true,
+				"exclude_slot": "who"
+			},
+			{
+				"id": "approach",
+				"label": "Как (необязательно)",
+				"types": [
+					"approach"
+				]
+			}
+		],
+		"outcomes": [
+			{}
+		]
+	},
 	"train": {
 		"at": "loc_apartment",
 		"title": "Потренироваться в «Рапире и штопоре»",
@@ -171,7 +220,6 @@
 		"at": "loc_beaumont",
 		"title": "Потренироваться с Клориндой",
 		"desc": "",
-		"cost": 0,
 		"once": true,
 		"outcomes": [
 			{
@@ -1177,33 +1225,10 @@
 			"day"
 		]
 	},
-	"louis_conversation": {
-		"at": "loc_lutes",
-		"title": "Поговорить с Луи-Марком",
-		"desc": "",
-		"cost": 0,
-		"once": true,
-		"outcomes": [
-			{
-				"effects": [
-					{
-						"scene": "louis_conversation"
-					}
-				]
-			}
-		],
-		"visible": {
-			"has": "inv_louis_talk"
-		},
-		"phases": [
-			"morning",
-			"day"
-		]
-	},
 	"father_talk": {
 		"at": "loc_manor",
 		"title": "Снова поехать к отцу, теперь без гостей",
-		"desc": "Поездка и разговор займут большую часть дня.",
+		"desc": "Без гостей и без Шарлотты. Только он, отец и бумага, которую уже нельзя не заметить.",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -1216,33 +1241,30 @@
 			}
 		],
 		"visible": {
-			"has": "inv_father_talk"
+			"all": [
+				{
+					"has": "info_father_order"
+				},
+				{
+					"noFlag": "father_talk_done"
+				},
+				{
+					"noFlag": "first_arc_done"
+				}
+			]
 		},
 		"phases": [
 			"morning"
-		]
-	},
-	"charlotte_article": {
-		"at": "loc_steambird",
-		"title": "Рассказать Шарлотте о разговоре",
-		"desc": "",
-		"cost": 0,
-		"once": true,
-		"outcomes": [
-			{
-				"effects": [
-					{
-						"scene": "charlotte_article"
-					}
-				]
-			}
 		],
-		"visible": {
-			"has": "note_charlotte_result"
-		},
-		"phases": [
-			"day",
-			"evening"
+		"slots": [
+			{
+				"id": "order",
+				"label": "Распоряжение Адриана",
+				"ids": [
+					"info_father_order"
+				],
+				"required": true
+			}
 		]
 	},
 	"ordinary_morning": {
@@ -1369,6 +1391,336 @@
 			{
 				"text": "Он перечитал записи. Обстоятельства были разными; люди помнили разные вещи и не обязаны были вспоминать лучше ради его удобства. Флёр исправил одно слово, оставил следующую страницу пустой и закрыл тетрадь.",
 				"effects": []
+			}
+		]
+	},
+	"file_case": {
+		"case": true,
+		"on": "aff_nectar",
+		"title": "Подшить в дело",
+		"cost": 0,
+		"desc": "Улика, слух или чужой рассказ ложится в папку. Дело растёт, когда в нём появляется то, чего раньше не было.",
+		"visible": {
+			"all": [
+				{
+					"has": "aff_nectar"
+				},
+				{
+					"noFlag": "first_arc_done"
+				}
+			]
+		},
+		"slots": [
+			{
+				"id": "case",
+				"label": "Дело",
+				"ids": [
+					"aff_nectar"
+				],
+				"required": true
+			},
+			{
+				"id": "evidence",
+				"label": "Что подшить",
+				"types": [
+					"info",
+					"clue",
+					"rumor"
+				],
+				"notFlagged": "filed:",
+				"required": true
+			}
+		],
+		"outcomes": [
+			{}
+		]
+	},
+	"give_article": {
+		"at": "loc_steambird",
+		"title": "Отдать дело Шарлотте",
+		"cost": 1,
+		"desc": "Дело, человек, который за это отвечает, и то, чем это подтверждено. Шарлотта напечатает только то, что выдержит проверку.",
+		"visible": {
+			"all": [
+				{
+					"has": "aff_nectar"
+				},
+				{
+					"noFlag": "first_arc_done"
+				},
+				{
+					"counterGte": [
+						"stage:aff_nectar",
+						2
+					]
+				},
+				{
+					"present": [
+						"char_charlotte",
+						"loc_steambird"
+					]
+				}
+			]
+		},
+		"slots": [
+			{
+				"id": "case",
+				"label": "Дело",
+				"ids": [
+					"aff_nectar"
+				],
+				"required": true
+			},
+			{
+				"id": "who",
+				"label": "Кто отвечает",
+				"types": [
+					"person"
+				],
+				"required": true
+			},
+			{
+				"id": "proof",
+				"label": "Чем подтвердить",
+				"types": [
+					"info",
+					"clue",
+					"rumor"
+				],
+				"required": true
+			}
+		],
+		"outcomes": [
+			{
+				"when": {
+					"counterLt": [
+						"stage:aff_nectar",
+						4
+					]
+				},
+				"cost": 0,
+				"title": "Пока это вопросы",
+				"text": "Шарлотта перебирает подшитые бумаги. — Это хорошие вопросы. Но это ещё вопросы. Чтобы назвать того, кто отвечает, нужна подпись — или его собственные слова."
+			},
+			{
+				"when": {
+					"all": [
+						{
+							"slot": [
+								"who",
+								"char_marcel"
+							]
+						},
+						{
+							"slot": [
+								"proof",
+								"info_cabriera"
+							]
+						}
+					]
+				},
+				"cost": 0,
+				"title": "Только деловая связь",
+				"text": "Шарлотта смотрит на имя дольше, чем на бумагу. — Марсель поставляет добавку. Это деловая связь. Если я напечатаю его имя рядом со словом «вред», я обвиню человека в том, чего мы не знаем: ни состава, ни того, что известно ему самому. Нет.",
+				"effects": [
+					{
+						"flag": "accuse_marcel_refused"
+					}
+				]
+			},
+			{
+				"when": {
+					"slot": [
+						"who",
+						"char_marcel"
+					]
+				},
+				"cost": 0,
+				"title": "Только имя",
+				"text": "— У вас есть имя друга семьи и ничего, кроме имени, — Шарлотта откладывает карандаш. — Так пишут анонимки, а не статьи.",
+				"effects": [
+					{
+						"flag": "accuse_marcel_refused"
+					}
+				]
+			},
+			{
+				"when": {
+					"slot": [
+						"who",
+						"char_louis"
+					]
+				},
+				"cost": 0,
+				"title": "Не та подпись",
+				"text": "— Луи-Марк подписывает ведомости, — говорит Шарлотта. — Распоряжение подписал не он. Вы хотите, чтобы виноватым оказался тот, с кем проще поссориться?",
+				"effects": [
+					{
+						"flag": "accuse_louis_tried"
+					}
+				]
+			},
+			{
+				"when": {
+					"all": [
+						{
+							"slot": [
+								"who",
+								"char_adrian"
+							]
+						},
+						{
+							"not": {
+								"any": [
+									{
+										"slot": [
+											"proof",
+											"info_father_order"
+										]
+									},
+									{
+										"slot": [
+											"proof",
+											"info_cabriera"
+										]
+									}
+								]
+							}
+						}
+					]
+				},
+				"cost": 0,
+				"title": "Не то подтверждение",
+				"text": "— Это подтверждает, что с вином что-то не так, — Шарлотта возвращает бумагу. — Но не то, кто это решил. Мне нужна подпись или его собственные слова."
+			},
+			{
+				"when": {
+					"all": [
+						{
+							"slot": [
+								"who",
+								"char_adrian"
+							]
+						},
+						{
+							"flag": "father_talk_done"
+						}
+					]
+				},
+				"silent": true,
+				"cost": 0,
+				"effects": [
+					{
+						"flag": "accused_adrian"
+					},
+					{
+						"scene": "charlotte_article"
+					}
+				]
+			},
+			{
+				"when": {
+					"all": [
+						{
+							"slot": [
+								"who",
+								"char_adrian"
+							]
+						},
+						{
+							"flag": "article_waits_father"
+						}
+					]
+				},
+				"cost": 0,
+				"title": "Она ждёт",
+				"text": "— Ты собирался сначала поговорить с ним, — напоминает Шарлотта. — Я жду. Только не дольше, чем ждёт редактор."
+			},
+			{
+				"when": {
+					"slot": [
+						"who",
+						"char_adrian"
+					]
+				},
+				"silent": true,
+				"cost": 0,
+				"effects": [
+					{
+						"flag": "accused_adrian"
+					},
+					{
+						"scene": "article_before_father"
+					}
+				]
+			},
+			{
+				"cost": 0,
+				"title": "При чём здесь это",
+				"text": "Шарлотта поднимает глаза. — При чём здесь этот человек? Мы пишем о распоряжении, а не о знакомых."
+			}
+		]
+	},
+	"train_clorinde": {
+		"at": "loc_beaumont",
+		"title": "Тренировка с Клориндой",
+		"daily": true,
+		"phases": [
+			"morning",
+			"day"
+		],
+		"cost": 1,
+		"desc": "Безопасные приёмы, песок и человек, который читает каждое движение.",
+		"visible": {
+			"flag": "practice_done"
+		},
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"activity": {
+							"id": "duel",
+							"params": {
+								"duel": "clorinde_training"
+							},
+							"onResult": "duel"
+						}
+					}
+				]
+			}
+		]
+	},
+	"duel_lamotte": {
+		"at": "loc_beaumont",
+		"title": "Встретиться с виконтом",
+		"phases": [
+			"morning",
+			"day"
+		],
+		"cost": 0,
+		"desc": "Площадка за «Бомонтом», секунданты и больше зрителей, чем нужно.",
+		"visible": {
+			"has": "inv_duel_lamotte"
+		},
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"remove": "inv_duel_lamotte"
+					},
+					{
+						"activity": {
+							"id": "duel",
+							"params": {
+								"duel": "lamotte_honor"
+							},
+							"onResult": "duel"
+						}
+					},
+					{
+						"scene": "lamotte_after"
+					}
+				]
 			}
 		]
 	}

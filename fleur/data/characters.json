@@ -46,6 +46,23 @@
 		"rel": [],
 		"schedule": [
 			{
+				"when": {
+					"all": [
+						{
+							"flag": "louis_talk_done"
+						},
+						{
+							"noFlag": "first_arc_done"
+						}
+					]
+				},
+				"map": {
+					"morning": "loc_steambird",
+					"day": "loc_vasari",
+					"evening": "loc_steambird"
+				}
+			},
+			{
 				"map": {
 					"morning": "loc_steambird",
 					"day": "loc_vasari",
@@ -140,6 +157,23 @@
 		"text": "Луи-Марк, старший брат и управляющий городскими делами. Устаёт от работы и считает, что Шевалье пользуется семейным благополучием, не интересуясь его ценой.",
 		"rel": [
 			"Прохладно"
+		],
+		"schedule": [
+			{
+				"when": {
+					"all": [
+						{
+							"flag": "samples_done"
+						},
+						{
+							"noFlag": "louis_talk_done"
+						}
+					]
+				},
+				"map": {
+					"day": "loc_lutes"
+				}
+			}
 		]
 	},
 	"char_marcel": {

@@ -7,6 +7,8 @@ var actions: Dictionary = {}
 var events: Dictionary = {}
 var scenes: Dictionary = {}
 var world: Dictionary = {}
+var talk: Dictionary = {}
+var duel: Dictionary = {}
 
 
 func _init() -> void:
@@ -27,6 +29,10 @@ func _init() -> void:
 	actions = _load_json("res://data/actions.json")
 	events = _load_json("res://data/events.json")
 	world = _load_json("res://data/world.json")
+	if FileAccess.file_exists("res://data/talk.json"):
+		talk = _load_json("res://data/talk.json")
+	if FileAccess.file_exists("res://data/duel.json"):
+		duel = _load_json("res://data/duel.json")
 	for table in [cards, characters, actions, events]:
 		for id in table:
 			table[id]["id"] = id
@@ -74,7 +80,8 @@ func background(id: String) -> Dictionary:
 ##   кто: текст                    — реплика (fleur, char_..., или говорящий из world.json)
 ##   кто [эмоция]: текст           — реплика со сменой эмоции (держится, пока не сменят)
 ##   @show id [место] [эмоция] / @mood id эмоция — выход с эмоцией / смена без реплики
-##   @choice, затем строки «- метка | текст», под ними «  ? {условие}» и «  ! [эффекты]»
+##   @choice, затем строки «- метка | текст», под ними «  ? {условие}», «  ! [эффекты]»
+##   и «  ~ ap_charm» — вариант требует подхода Флёра (карта должна быть готова) и тратит его
 ## «кто [эмоция]: текст»
 static var _MOOD_LINE: RegEx = RegEx.create_from_string(r"^([A-Za-z_][A-Za-z0-9_]*)\s*\[([^\]]+)\]\s*:\s(.*)$")
 
@@ -90,6 +97,9 @@ func parse_scene(text: String, fname := "") -> Dictionary:
 		var line := raw.strip_edges(false, true)
 		var s := line.strip_edges()
 		if s == "" or s.begins_with("#"):
+			continue
+		if cur_opt != null and s.begins_with("~ "):
+			cur_opt["ap"] = s.substr(2).strip_edges()
 			continue
 		if cur_opt != null and (s.begins_with("? ") or s.begins_with("! ")):
 			var j = JSON.parse_string(s.substr(2))
@@ -145,6 +155,12 @@ func parse_scene(text: String, fname := "") -> Dictionary:
 				"choice":
 					cur_choice = {"choice": []}
 					nodes.append(cur_choice)
+				"hub":
+					# хаб тем: выбранный вариант исчезает, «@back» возвращает к оставшимся
+					cur_choice = {"choice": [], "hub": true}
+					nodes.append(cur_choice)
+				"back":
+					nodes.append({"back": true})
 				_:
 					push_error("%s:%d — неизвестная команда @%s" % [fname, ln, cmd])
 			continue

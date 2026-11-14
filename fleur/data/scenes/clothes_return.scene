@@ -1,6 +1,4 @@
 @id clothes_return
-@title Собственный гардероб
-@after Собственный гардероб
 
 @bg lutes
 @show char_charlotte right

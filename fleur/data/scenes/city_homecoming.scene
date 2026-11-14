@@ -1,6 +1,4 @@
 @id city_homecoming
-@title Дом снова в городе
-@after Дом снова в городе
 
 @bg docks
 @show char_charlotte right

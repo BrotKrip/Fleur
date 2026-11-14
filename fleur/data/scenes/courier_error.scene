@@ -1,6 +1,4 @@
 @id courier_error
-@title На соседнюю улицу
-@after На соседнюю улицу
 
 @bg apartment
 @show courier left

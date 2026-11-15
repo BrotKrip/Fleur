@@ -396,6 +396,7 @@
 		"rel": [
 			"Знакомы"
 		],
+		"schedule": [{"map": {"morning": "loc_beaumont", "day": "loc_beaumont"}}],
 		"notes": "Естественное место для разговоров о фехтовании и снаряжении для охоты.",
 		"placeholder": {
 			"hair": "8a3a2a",

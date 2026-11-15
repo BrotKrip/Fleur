@@ -18,7 +18,7 @@ const OBJECT_SIZES := {
 	"rapier": Vector2(310, 74), "hairpin": Vector2(110, 52), "bottle": Vector2(226, 84),
 	"newspaper": Vector2(196, 134), "parcel": Vector2(124, 94), "fin": Vector2(124, 104),
 	"plate": Vector2(114, 104), "spine": Vector2(210, 54), "pearl": Vector2(78, 78),
-	"crate": Vector2(200, 140), "coat": Vector2(160, 150),
+	"crate": Vector2(200, 140), "coat": Vector2(160, 150), "pastry_box": Vector2(108, 102),
 }
 ## Толщина предметов: [глубина, цвет у лицевой стороны, цвет у стола]. Книги рисуются отдельно.
 const EDGES := {
@@ -384,7 +384,7 @@ func _draw_clipping() -> void:
 	elif paper_art:
 		var plate := Rect2(8, 57, 75, 57)
 		draw_texture_rect_region(paper_art, plate, Art.cover_region(paper_art, plate.size))
-		draw_multiline_string(_f("serif_italic"), Vector2(89, 72), "Ткани и старый пресс.", HORIZONTAL_ALIGNMENT_LEFT, size.x - 96, 11, 3, Look.INK)
+		draw_multiline_string(_f("serif_italic"), Vector2(89, 72), str(d.get("caption", "")), HORIZONTAL_ALIGNMENT_LEFT, size.x - 96, 11, 3, Look.INK)
 	else:
 		var col_w := (size.x - 26) / 2.0
 		Look.fake_lines(self, Rect2(10, 66, col_w, 44), Color(0.25, 0.22, 0.2, 0.35), 6.0, seed_v)
@@ -404,7 +404,7 @@ func _draw_note() -> void:
 		if id == "it_warehouse_pass":
 			var signed_at := sample.position + sample.size * Vector2(0.58, 0.62)
 			Look.text_c(self, _f("hand"), signed_at.x, signed_at.y, "Луи-Марк", 13, Color("273a50"), sample.size.x * 0.5)
-		draw_multiline_string(_f("serif"), Vector2(8, 125), Rules.txt(d.get("text"), state()), HORIZONTAL_ALIGNMENT_LEFT, size.x - 16, 11, 4, Look.INK)
+		draw_multiline_string(_f("serif"), Vector2(8, 125), Rules.txt(d.get("caption", d.get("text")), state()), HORIZONTAL_ALIGNMENT_LEFT, size.x - 16, 11, 4, Look.INK)
 		_lifetime_note(Vector2(size.x - 128, size.y - 5))
 		return
 	var y := 40.0
@@ -462,6 +462,12 @@ func _draw_label() -> void:
 	var backing := silhouette()
 	Look.fill_v(self, backing, Color("e4d6b6"), Color("c8b596"))
 	_paper_grain(backing, 0.22)
+	if id != "clue_numbers":
+		Look.outline(self, Look.rrect(Rect2(Vector2(3, 3), size - Vector2(6, 6)), 2), Color("a78d65"))
+		if paper_art:
+			DeskProp.draw_sprite(self, paper_art, Rect2(9, 10, size.x - 18, size.y - 44))
+		Look.text_c(self, _f("hand"), size.x * 0.5, size.y - 12, title(), 15, Look.INK, size.x - 20)
+		return
 	var marks := ["Северный склон", "Д-18"]
 	for i in 2:
 		var slip := Rect2(4 + i * 8, 4 + i * 53, size.x - 16, 56)

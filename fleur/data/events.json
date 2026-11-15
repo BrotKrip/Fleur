@@ -1,4 +1,9 @@
 {
+	"ev_arlecchino_vasari": {
+		"when": {"flag": "prologue_done", "dayGte": 6, "not": {"dayGte": 19}, "phase": "evening", "noFlag": "arlecchino_met"},
+		"chance": 0.2,
+		"effects": [{"scene": "arlecchino_vasari"}]
+	},
 	"ev_first_evening": {
 		"when": {"day": 1, "phase": "evening", "flag": "prologue_done", "noFlag": "met_charlotte"},
 		"effects": [{"scene": "first_evening"}]
@@ -431,47 +436,22 @@
 		},
 		"effects": [
 			{
-				"scene": "premiere_incident"
+				"scene": "opera_arrival"
 			}
 		]
 	},
 	"ev_premiere_reply": {
-		"when": {
-			"daysSince": [
-				"premiere_witness",
-				1
-			]
-		},
+		"when": {"all": [{"daysSince": ["premiere_witness", 1]}, {"noFlag": "trial_started"}]},
 		"effects": [
+			{"add": "info_halsey_letter"},
 			{
-				"if": {
-					"flag": "premiere_lumine_meeting"
-				},
-				"then": [
-					{
-						"add": "inv_premiere_cafe"
-					},
-					{
-						"notice": {
-							"title": "Письмо из Берилла",
-							"text": "Ответ Хэлси пришёл с утренней почтой. Флёр послал Люмин записку: днём он будет ждать её в «Лютесе»."
-						}
-					}
-				],
-				"else": [
-					{
-						"add": "info_halsey_letter"
-					},
-					{
-						"notice": {
-							"title": "Пришёл ответ из Берилла",
-							"text": "Хэлси отозвалась. В жандармерию доставлено её письмо с именами трёх человек, которые видели её в день представления."
-						}
-					}
-				]
+				"if": {"flag": "premiere_lumine_meeting"},
+				"then": [{"notice": {"title": "Срочная записка из Берилла", "text": [{"when": {"flag": "halsey_docks_done"}, "text": "На рассвете в дверь постучал посыльный со срочной запиской на имя шевалье. «Жива. Двадцатого весь вечер на барже „Сова“, капитан Ланже подтвердит. Второй мой билет, седьмой ряд, выпал из футляра у нижних причалов в тот день, когда ты меня выручал. Думала, утонул. Письмо следом. Х.»"}, {"when": {"noFlag": "halsey_docks_done"}, "text": "На рассвете в дверь постучал посыльный со срочной запиской на имя шевалье. «Жива. Двадцатого весь вечер на барже „Сова“, капитан Ланже подтвердит. Второй мой билет, седьмой ряд, пропал у нижних причалов на прошлой неделе. Думала, утонул. Письмо следом. Хэлси.»"}, {"when": {"flag": "courier_helped"}, "text": "Записку принёс Леон, тот самый посыльный, которому Флёр помогал искать дом с кованой птичкой. Отказался от монеты: сказал, что шевалье с ним уже расплатился, тогда, у второй мадам Роже."}, "Люмин заперта в «Эпиклезе». Записку придётся нести самому."]}}],
+				"else": [{"notice": {"title": "Ответ из Берилла в жандармерии", "text": "Утром из жандармерии прислали копию для свидетеля: Хэлси двадцатого весь вечер провела на барже в Берилле и назвала капитана. Второй её билет, на седьмой ряд, пропал у нижних причалов. Подлинник приобщён к делу. Люмин, как представителю труппы, его покажут в театре."}}]
 			}
 		]
 	},
+
 	"ev_world_magicians_posters": {
 		"when": {
 			"all": [
@@ -530,6 +510,187 @@
 		"effects": [
 			{
 				"add": "rum_traveler_road"
+			}
+		]
+	},
+	"ev_street_magic": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 9
+				},
+				{
+					"phase": [
+						"morning",
+						"day"
+					]
+				},
+				{
+					"lacks": "rum_street_magic"
+				},
+				{
+					"noFlag": "twins_met"
+				},
+				{
+					"not": {
+						"dayGte": 19
+					}
+				},
+				{
+					"flag": "homecoming_done"
+				}
+			]
+		},
+		"logText": "В Пассаже говорят, что у остановки аквабуса бесплатно показывает фокусы сам Лини.",
+		"effects": [
+			{
+				"add": "rum_street_magic"
+			}
+		]
+	},
+	"ev_exhibition_invite": {
+		"when": {
+			"all": [
+				{
+					"flag": "practice_done"
+				},
+				{
+					"dayGte": 14
+				},
+				{
+					"phase": "morning"
+				},
+				{
+					"noFlag": "exhibition_done"
+				},
+				{
+					"lacks": "inv_exhibition_evening"
+				},
+				{
+					"not": {
+						"dayGte": 19
+					}
+				}
+			]
+		},
+		"title": "Записка от Клоринды",
+		"text": "Записку принёс мальчишка из «Бомонта» и ждал ответа так серьёзно, будто нёс вызов. «Любительский вечер у мастерской. Нужен фехтовальщик с эффектным выходом. Вы подходите, хотя мне неприятно это признавать. К.»",
+		"effects": [
+			{
+				"add": "inv_exhibition_evening"
+			}
+		]
+	},
+	"ev_skate_request": {
+		"when": {
+			"all": [
+				{
+					"flag": "navia_met"
+				},
+				{
+					"phase": [
+						"morning",
+						"day"
+					]
+				},
+				{
+					"lacks": "note_skate_nets"
+				},
+				{
+					"noFlag": "poisson_skate_done"
+				}
+			]
+		},
+		"title": "Записка из Пуассона",
+		"text": "Почерк крупный, с завитками, на обороте счёт за муку. «Шевалье, у южной стены второй месяц живёт панцирный скат и рвёт нашим рыбакам сети. Говорят, вы умеете обращаться с гарпуном. Если это правда, мясо в Пуассоне пригодится. Мелус обещал не спрашивать, как вы это сделали. Н.»",
+		"effects": [
+			{
+				"add": [
+					"note_skate_nets",
+					"rum_skate"
+				]
+			}
+		]
+	},
+	"ev_trial_start": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 22
+				},
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"effects": [
+			{
+				"scene": "trial_opening"
+			}
+		]
+	},
+	"ev_rain_walk_fallback": {
+		"when": {
+			"all": [
+				{
+					"flag": "met_charlotte"
+				},
+				{
+					"noFlag": "done:walk_charlotte_home"
+				},
+				{
+					"noFlag": "eye:char_charlotte"
+				},
+				{
+					"any": [
+						{
+							"phase": [
+								"evening",
+								"night"
+							]
+						},
+						{
+							"dayGte": 3
+						}
+					]
+				}
+			]
+		},
+		"effects": [
+			{
+				"flag": "done:walk_charlotte_home"
+			},
+			{
+				"scene": "rain_guest_walk"
+			}
+		]
+	},
+	"ev_city_walk_fallback": {
+		"when": {
+			"all": [
+				{
+					"flag": "city_cafe_done"
+				},
+				{
+					"noFlag": "done:city_walk_josie"
+				},
+				{
+					"noFlag": "clorinde_button_night"
+				},
+				{
+					"phase": "morning"
+				}
+			]
+		},
+		"effects": [
+			{
+				"flag": "done:city_walk_josie"
+			},
+			{
+				"scene": "city_navia_walk"
 			}
 		]
 	}

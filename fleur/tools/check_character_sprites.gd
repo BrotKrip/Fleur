@@ -14,8 +14,13 @@ func _run() -> void:
 	var hashes := {}
 	var ids: Array = content.characters.keys()
 	ids.sort()
+	var pending := []
 	for pid in ids:
 		var path := "res://assets/art/characters/%s.png" % pid
+		if content.def(pid).get("pending_art", false) and not ResourceLoader.exists(path):
+			# Рисунка пока нет намеренно: фигура рисуется заготовкой по полю "placeholder".
+			pending.append(pid)
+			continue
 		if not ResourceLoader.exists(path):
 			push_error("Нет импортированного базового спрайта: " + path)
 			bad += 1
@@ -52,5 +57,7 @@ func _run() -> void:
 			push_error("Одинаковые спрайты у разных персонажей: %s / %s" % [hashes[hash], pid])
 			bad += 1
 		hashes[hash] = pid
-	print("CHARACTER SPRITES: ", ids.size(), " checked, ", bad, " errors")
+	if pending.size() > 0:
+		print("Ждут рисунка (показываются заготовкой): ", ", ".join(PackedStringArray(pending)))
+	print("CHARACTER SPRITES: ", ids.size() - pending.size(), " checked, ", bad, " errors")
 	quit(0 if bad == 0 else 1)

@@ -23,6 +23,8 @@ tmp/
 # Локальные настройки Claude Code
 .claude/settings.local.json
 
+story
+
 # Мусор систем и редакторов
 Thumbs.db
 desktop.ini

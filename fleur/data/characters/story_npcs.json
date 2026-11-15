@@ -67,6 +67,25 @@
 		"rel": [
 			"Знакомы"
 		],
+		"schedule": [
+			{
+				"when": {
+					"all": [
+						{
+							"flag": "halsey_docks_done"
+						},
+						{
+							"not": {
+								"dayGte": 19
+							}
+						}
+					]
+				},
+				"map": {
+					"day": "loc_docks"
+				}
+			}
+		],
 		"notes": "Настоящая Хэлси. Перед отъездом в Берилл она уступает Флёру своё место в третьем ряду.",
 		"placeholder": {
 			"hair": "8a513f",
@@ -172,5 +191,85 @@
 		"title": "Кладовщик",
 		"text": "Ведёт складскую книгу на городском причале.",
 		"color": "#7a7060"
+	},
+	"npc_marta": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Марта",
+		"text": "Утренняя гостья Флёра. Пришла за забытой подвязкой и гребнем «на вырост».",
+		"color": "#c8a0a0"
+	},
+	"npc_bourdieu": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Господин Бурдье",
+		"text": "Торговец сукном с идеями, устроитель «Вечера клинка и чуда» у «Бомонта».",
+		"color": "#8a7a5a"
+	},
+	"npc_mystery_writer": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Сочинитель детективов",
+		"text": "Пожилой зритель с блокнотом, пишет детективы под псевдонимом и придумывает разгадки быстрее жандармов.",
+		"color": "#7a7a8a"
+	},
+	"npc_guard_melusine": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Мелюзина-конвоир",
+		"text": "Мелюзина с блокнотом, приставленная к труппе Лини. Записывает каждое слово и любезностей не признаёт.",
+		"color": "#7aa0a8"
+	},
+	"npc_cellar_keeper": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Смотритель подводного склада",
+		"text": "Старик на мостках у подводных погребов. Помнит, какого роста была Жози, когда барон привёз её сюда впервые.",
+		"color": "#6a7a80"
+	},
+	"npc_gallery_voice": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Голос с галереи",
+		"text": "Кто-то из публики на галерее «Эпиклеза».",
+		"color": "#8a8a8a"
+	},
+	"npc_crowd_voice": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Голос из партера",
+		"text": "Кто-то из публики в партере «Эпиклеза».",
+		"color": "#8a8a8a"
+	},
+	"npc_gallery_old_woman": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Старуха с галереи",
+		"text": "Зрительница с галереи, которую больше всего волнует вода из фонтана Люсин.",
+		"color": "#9a8a80"
+	},
+	"npc_foreman": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Мастер цеха",
+		"text": "Мастер городского цеха розлива на причале.",
+		"color": "#7a6a5a"
+	},
+	"npc_hearth_girl": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Клэр",
+		"text": "Девочка лет восьми в сером переднике из Дома Очага. Умеет терпеливо ждать, пока жук прыгнет.",
+		"color": "#a0a0a8"
 	}
 }

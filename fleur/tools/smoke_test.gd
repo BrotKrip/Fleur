@@ -84,7 +84,7 @@ func play_scene() -> void:
 	var plan: Array = choice_plan.get(sid, [])
 	var shot_done := false
 	trace.append(stamp() + " сцена " + sid)
-	var calendar := {"first_evening": 1, "charlotte_first": 2, "premiere_eve": 19, "premiere_incident": 20}
+	var calendar := {"first_evening": 1, "charlotte_first": 2, "premiere_eve": 19, "opera_arrival": 20, "premiere_incident": 20, "trial_opening": 22}
 	if calendar.has(sid):
 		expect(Game.state.day == calendar[sid], "Сцена открылась не в свой день: " + sid)
 	for k in 800:
@@ -368,8 +368,12 @@ func _run() -> void:
 	# Первый акт целиком.
 	var done_count := {}
 	var saved := false
-	for it in 500:
-		if s["flags"].get("arc_epilogue_seen", false):
+	var epilogue_checked := false
+	for it in 900:
+		if s["flags"].get("arc_epilogue_seen", false) and not epilogue_checked:
+			epilogue_checked = true
+			await shot("table_epilogue")
+		if s["flags"].get("build_end", false):
 			break
 		if not saved and s["flags"].get("louis_talk_done", false):
 			expect(Game.save_slot(test_slot), "сохранение")
@@ -389,6 +393,14 @@ func _run() -> void:
 			table()._on_wait()
 			await settle()
 		expect(int(s["day"]) < 40, "сюжет застрял")
+	# Оперная арка: расследование, суд и конец текущей версии.
+	for f in ["twins_met", "opera_arrived", "premiere_witness", "opera_investigation_done", "trial_started", "trial_done", "liliane_revealed", "vonn_exposed", "build_end"]:
+		expect(s["flags"].get(f, false), "оперная арка не дошла до " + f)
+	expect(Game.build_ended(), "после суда версия закончилась")
+	expect(Game.wait_phase().has("error"), "после конца версии время не идёт")
+	print("SMOKE опера: дело ", Rules.case_stage(s, "aff_opera") if s["cards"].has("aff_opera") else "закрыто",
+		", Люмин: ", s["rel"].get("char_lumine", []), ", Линетт: ", s["rel"].get("char_lynette", []))
+	await shot("table_build_end")
 	expect(Rules.case_stage(s, "aff_nectar") == 4, "дело дошло до последней стадии")
 	expect(s["flags"].get("accused_adrian", false), "статья через обвинение")
 	expect(not s["cards"].has("dl_article"), "срок снят после статьи")
@@ -397,7 +409,9 @@ func _run() -> void:
 	for f in ["chevreuse_office_shared", "josie_arrived", "city_night_finished", "clorinde_button_night",
 			"ledgers_read", "furina_sketch_ready", "furina_sketch_delivered", "submerged_cellar_checked", "article_seen"]:
 		expect(s["flags"].get(f, false), "пропущен эпизод до расследования: " + f)
-	await shot("table_epilogue")
+	for f in ["eloise_after_print_done", "marcel_lunch_done"]:
+		if not s["flags"].get(f, false):
+			print("SMOKE заметка: не пройдено после статьи — ", f)
 	var used := PackedStringArray()
 	for k in s["counters"]:
 		if str(k).begins_with("used:"):

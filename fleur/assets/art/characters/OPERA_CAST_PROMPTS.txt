@@ -1,0 +1,64 @@
+Opera cast. Built-in image generation. Style reference: six previous Fontaine sprites, in the project's existing cast style sheet.
+
+Shared direction
+One finished transparent dialogue sprite, vertical 2:3. Reference contact sheet is for ART STYLE only; paint a single individual. A sophisticated hand-inked and delicately painted 2D Fontaine, Genshin / French Belle Époque visual novel. Expressive tapered warm brown linework, matte gouache, careful cel shadows and delicate highlights from upper left, understated palette, individual distinctive and non-caricatural face and adult proportions, no large grin or dramatic gesture. Slight three-quarter conversational turn toward viewer, face clearly visible, shoulders natural, no extreme angle, believable hands. Frame head to MID-THIGH for adult humans, hem may continue beyond bottom; children and Melusines are full figures. Allow clearance on top and sides, close camera with generous facial detail. Broad quiet costume color shapes legible when reduced. One isolated centered silhouette against genuine transparent alpha. No letters, border, backdrop, furniture, floor, effects, second character, cast shadow or vignette.
+
+char_childe.png
+Tartaglia (Childe) from Genshin Impact, recognizable canon default appearance. Tall slender athletic young adult man, tousled vivid ginger hair and one longer lock; his small swept-back red Fatui mask with horn perches on the SIDE of his hair, NOT over face. Enigmatic deep ocean blue eyes with scarcely a highlight; straight slender nose, relaxed neutral mouth, alert and untroubled. Canon asymmetrical light grey fitted Snezhnayan uniform jacket, high dark collar, black straps and gloves, dark fitted trousers, red scarf draped from one shoulder, small blue Hydro Vision at belt. One gloved hand at hip and the other hangs loose, no weapon or combat pose.
+
+npc_liliane.png
+Liliane, a very alert young adult Mondstadt woman who borrowed a theatre ticket. Short blunt chestnut-brown bob cut just above jaw, parted unevenly, green eyes, pointed chin, nimble angular shoulders. Muted forest-sage short travelling jacket with aged ochre fastenings over a cream collar and practical brown skirt, no hat, no jewelry. Slightly wary watchful neutral face, resting fingers loosely touching sleeve cuff; determined person rather than a generic beauty. Fine strands of hair clearly separate from face.
+
+npc_cowell.png
+Cowell, a new illusionist's stagehand. A sober young adult male with short neatly parted walnut-brown hair, pale hazel eyes, neat face with slightly angular jaw and an almost impersonal professional smile that never becomes a smirk. Muted umber fitted waistcoat/jacket, modest linen high collar, small aged brass buttons and a narrow backstage apron; a reel of fine untwisted stage line in one hand by his belt, other forearm relaxed. Neither a magician nor a villain caricature.
+
+npc_esmon.png
+Veteran French gendarme Esmon, a sturdy man in his early fifties with a weathered face, silver temples, thick grey sideburns, pale steel eyes, skeptical patient natural expression. Dark Prussian blue Fontaine gendarmerie tunic with neat antique brass piping, small dark navy kepi, simple dark breeches, short notebook tucked into one hand. Broad steady shoulders, no weapon in hand. Confident sober senior investigator.
+
+npc_vonn.png
+Vonn, junior Fontaine gendarme in his mid-twenties. Narrow smooth face and long nose, light reddish brown side-parted hair peeking out under regulation navy kepi, dark hazel eyes, attentive neutral expression. Slightly too-perfect matching dark Prussian blue uniform with brass collar trim and a square dark leather waist belt, unadorned gloves; one hand tugs the other cuff. Thin angular silhouette differs clearly from the heavier veteran officers.
+
+npc_tristana.png
+Tristana is a small magical MELUSINE Gendarme from Genshin Impact, species matches the little blue long-eared officer in reference but a new individual. Full body, diminutive nonhuman proportions, ice blue soft skin, fluffy pale silvery periwinkle bob, darker blue little face markings, blue eyes, long petal-shaped outward ears with icy blue inner patterns, twin delicate swept antennae, little fin-tail and rounded mitten paws, two short legs. Upright composed stance, hands clasped level in front. Muted dusky navy Fontainian officer coat and lowered-peak cap tilted between delicate ears with warm antique gold piping. Patient neutral expression. No large human ears or hands.
+
+npc_cashier.png
+Madame Pelou, a mature female Opera ticket clerk around sixty with thoughtful mauve-brown eyes and silver hair wound into a meticulous low bun. A compact stout figure, small reading spectacles low on nose, quiet and decisive gaze. Plum/burgundy high-necked working dress with a modest ivory insert and three restrained brass buttons, burgundy skirt. Holding a small fan of two or three unlettered cream tickets and brass hand punch at waist. Head to mid-thigh. Seen three decades of premieres.
+
+npc_jules.png
+Jules, 45-year-old street ticket reseller of Fontaine. Middle-aged working man, tan lightly lined face, strong wavy eyebrows, warm brown eyes, short chestnut hair under a rumpled CHARCOAL beret, thin moustache, short stubble, olive-brown coat and tobacco scarf, patched ochre waistcoat. Relaxed observant salesman, one hand opens slightly as if offering conversation; folded unlettered ticket bundle tucked into his jacket breast pocket. Normal neutral mouth.
+
+npc_jules_son.png
+Jules junior, the thirteen-year-old son of a ticket seller. Ordinary slim teenager with young rounded cheeks, brown eyes, dark chestnut wavy fringe, charcoal French beret that is a little too big, like his father. Short olive-brown jacket, oatmeal shirt, ochre waistcoat, simple breeches and ankle boots. Hands in the pockets of his coat, gaze slightly lowered and attentive. FULL FIGURE with age-appropriate proportions. No other figures.
+
+npc_trouin.png
+Trouin, adult male debt collector in a fine coat, early forties. Clean-shaven lean elongated face, thin straight mouth, dark brown hair smoothly combed back, dark brown eyes, crisp black silk top hat. Proper understated charcoal city overcoat with muted gilt trim, brown gloves, brocade waistcoat. Courteous almost neutral expression. Holds a CLOSED calfskin receipt book by his hip. Distinct composed stance. No money depicted.
+
+npc_marta.png
+Marta, adult woman in her mid-twenties calling in the morning for a comb. Deep auburn hair tied with a small warm pink ribbon, dark expressive round eyes, broad nose, slight freckles; discreet teal day dress with curved pleats, cream lace collar and plum cloth belt. She holds a little folded brown paper cone of cherries at her waist in one hand, the other hand at her belt. Friendly self-possessed natural mouth. Period street clothing, daytime, head to mid-thigh.
+
+npc_bourdieu.png
+Monsieur Bourdieu, successful and imaginative middle-aged cloth merchant organizing an entertainment in Fontaine. Plump, olive-complexioned, bald crown, handsome greying mutton-chop whiskers, broad eyebrows, hazel eyes. A cutaway jacket in rich muted olive/brown patterned jacquard, ochre vest, folded linen cravat and short brown gloves. One hand holds several folded differently colored cloth swatches joined by a ring. Straightforward and enthusiastic natural resting face.
+
+npc_mystery_writer.png
+An elderly male amateur detective novelist at the Opera, narrow build, thin wire spectacles with oval lenses, papery skin, neatly parted ash-grey hair, sharp inquisitive onyx eyes, small tuft of grey beard just under the lip. Dressed in a slightly dated lavender-gray frock coat with ink spots near one cuff, brown waistcoat and faded grey tie. Holds a small OPEN pocket notebook against his chest and poised pencil, no legible marks. Eager but attentive resting expression. No detective costume.
+
+npc_guard_melusine.png
+A second distinct full-body small nonhuman Melusine gendarme and escort, matching the anatomy of the Melusine in the style sheet. Dusky lilac skin and dark plum-lavender short side locks, long petal-like ears with pale lavender spots, two tiny curved antennae, cream cheeks, blue-grey irises, small rounded nose, mitten hands and short feet, fin tail. Dark navy Fontaine gendarme coat with neat fine brass hem and small dark utility satchel. Holds a tiny graphite pencil and open pocket notebook in front of her. Exacting level gaze, polite unsmiling mouth. Small hat on one side nestled between ears.
+
+npc_cellar_keeper.png
+An elderly keeper of the submerged wine stores of Fontaine. Lean, sturdy older man, silver-white cropped beard, pale blue eyes, weathered warm russet skin, big hands. Slate teal wool watch cap, worn tarred blue-green dock coat with an ochre wool sweater showing at neck, dark trousers. A ring with two old cellar keys held by a cord at hip. Relaxed even stance, perceptive warm gaze. Unlike a captain, no uniform or medals.
+
+npc_gallery_old_woman.png
+An elderly woman from the upper gallery of the Fontaine Opera. Broad cheekbones and strong lined face, dark expressive brows, pale soft grey hair gathered by a tiny black lace bonnet. Wears a plain clay-coloured wool shawl with muted embroidered border and a dusty plum day dress, simple cameo at her collar. Holds shut cream opera glasses low at the waist. Direct, curious expression, dignified three-quarter stance, clear visible face.
+
+npc_foreman.png
+Fontaine dock bottling-works foreman. Middle-aged broad-shouldered man with medium brown skin, close-cropped black hair, short peppered beard, amber eyes, solid sun-lined features. Wears rolled-up cream linen shirt, worn brick-brown leather work apron over an indigo waistcoat, a narrow wooden measuring gauge carried in his apron pocket, a small plain cork held in one hand. Measured practical expression. Head to mid-thigh.
+
+npc_hearth_girl.png
+Claire, an eight-year-old child in a grey household apron from the House of the Hearth. Short dark wavy chestnut hair tied with a simple faded ribbon, curious grey-green eyes, small freckled face. Pale linen blouse with long sleeves, charcoal-grey pinafore/apron tied at waist, dark stockings, flat practical shoes. Hands cupped modestly together in front of her, gaze attentive as if watching a tiny bug. Full-length with proper child proportions, quiet neutral resting expression. Wholesome everyday moment. No insect needed.
+
+npc_gallery_voice.png
+An anonymous spectator calling from the upper gallery of Fontaine Opera. A slim and wiry working-class woman around forty with medium brown complexion, curly dark hair pinned into a small coil with a simple comb, a navy wool shawl clasped over a rust-colored day dress; ungloved hands holding a folded ivory theatre program at her waist. Shown in a natural pronounced three-quarter side profile looking up stage, eyes and mouth still visible. Everyday reserved curious expression. She belongs to the audience and is not named.
+
+npc_crowd_voice.png
+A different anonymous Opera spectator occupying a POSH STALL SEAT. Elegant older gentleman with a round face and dapper salt-and-pepper trimmed moustache, silver-rimmed pince-nez, aubergine velvet dinner jacket, white stiff collar, dark bow tie. Front-side three-quarter profile looking toward the stage, holding a pair of small gold opera glasses in his lowered gloved hand. Resting observant mouth, neither a comedian nor a recognizable main character.

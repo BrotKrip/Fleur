@@ -102,6 +102,8 @@ func remove_card(s: Dictionary, id: String, api: Dictionary) -> bool:
 		cards[id]["count"] = int(cards[id]["count"]) - 1
 	else:
 		cards.erase(id)
+		if s.has("archived"):
+			s["archived"].erase(id)
 	api["changes"].append({"kind": "lose", "id": id})
 	return true
 
@@ -217,6 +219,17 @@ func test(c, s: Dictionary, ctx: Dictionary = {}) -> bool:
 			"noRel":
 				var who2 = _resolve(v[0], ctx)
 				if s["rel"].get(who2, []).has(v[1]):
+					return false
+			"relAny":
+				# ["char_x", ["Тег 1", "Тег 2"]] — есть хотя бы один из тегов
+				var who3 = _resolve(v[0], ctx)
+				var have: Array = s["rel"].get(who3, [])
+				var any_tag := false
+				for tag in _list(v[1]):
+					if have.has(tag):
+						any_tag = true
+						break
+				if not any_tag:
 					return false
 			"present":
 				if where_is(s, str(_resolve(v[0], ctx))) != _resolve(v[1], ctx):
@@ -390,6 +403,8 @@ func _step(s: Dictionary, api: Dictionary) -> void:
 		if int(inst["lifetime"]) <= 0:
 			var d := Content.def(id)
 			s["cards"].erase(id)
+			if s.has("archived"):
+				s["archived"].erase(id)
 			api["changes"].append({"kind": "expire", "id": id})
 			if d.has("expireText"):
 				log_entry(s, txt(d["expireText"], s), "expire")

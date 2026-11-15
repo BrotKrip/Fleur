@@ -26,6 +26,7 @@
 			"long": true
 		},
 		"schedule": [
+			{"when": {"all": [{"flag": "opera_investigation_done"}, {"noFlag": "trial_done"}]}, "map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}},
 			{
 				"map": {
 					"morning": "loc_poisson",
@@ -99,6 +100,7 @@
 		"rel": [
 			"Подданный"
 		],
+		"schedule": [{"when": {"all": [{"flag": "opera_investigation_done"}, {"noFlag": "trial_done"}]}, "map": {"evening": "loc_epiclese"}}, {"when": {"flag": "homecoming_done"}, "map": {"evening": "loc_epiclese"}}],
 		"notes": "НИКТО не знает, что она лишь играет роль Архонта, — никаких намёков, никакой «тени маски». Пророчество в силе.",
 		"placeholder": {
 			"hair": "f2f4fa",
@@ -126,6 +128,7 @@
 		"rel": [
 			"Видел в суде"
 		],
+		"schedule": [{"map": {"morning": "loc_mermonia", "day": "loc_mermonia"}}],
 		"notes": "Реинкарнация Гидро Дракона — НИКТО не знает. Знает о Первозданном море, но не о его действии на фонтейнцев. Мог бы понять правду, если бы попробовал «Нектар» или Синте, но пьёт только воду. Когда грустит, идёт дождь.",
 		"placeholder": {
 			"hair": "eef2f8",
@@ -151,6 +154,10 @@
 		"text": "Знаменитый иллюзионист Кур-де-Фонтейна, семнадцать лет. Высокий цилиндр, отметина-слеза под глазом, улыбка, которая продаёт билеты лучше любой афиши. Говорит так, что через пять минут ты уже рассказал ему то, чего не собирался рассказывать никому. Флёр относится к нему с уважением коллеги по театральности.",
 		"rel": [
 			"Зритель"
+		],
+		"schedule": [
+			{"when": {"all": [{"flag": "premiere_witness"}, {"noFlag": "trial_done"}]}, "map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}},
+			{"when": {"all": [{"flag": "twins_met"}, {"not": {"dayGte": 20}}]}, "map": {"day": "loc_vasari", "evening": "loc_beaumont"}}
 		],
 		"notes": "Член Дома Очага (Фатуи), работает под прикрытием для Арлекино, мечтает стать её преемником. Брат-близнец Линетт, приёмный брат Фремине.",
 		"placeholder": {
@@ -178,6 +185,10 @@
 		"rel": [
 			"Не знакомы"
 		],
+		"schedule": [
+			{"when": {"all": [{"flag": "premiere_witness"}, {"noFlag": "trial_done"}]}, "map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}},
+			{"when": {"all": [{"flag": "twins_met"}, {"not": {"dayGte": 20}}]}, "map": {"day": "loc_vasari", "evening": "loc_debor"}}
+		],
 		"notes": "Член Дома Очага. Очень наблюдательна, замечает первой, если брату плохо. Не доверяет механизмам.",
 		"placeholder": {
 			"hair": "c8ccd4",
@@ -204,6 +215,9 @@
 		"text": "Лучший ныряльщик Фонтейна, восемнадцать лет. Берет, веснушки, огромный акваланг за спиной и механический пингвин Перс, с которым он, кажется, разговаривает охотнее, чем с людьми. Заказы от посторонних берёт редко. На нижних причалах о нём говорят с почтением и вполголоса.",
 		"rel": [
 			"Не знакомы"
+		],
+		"schedule": [
+			{"when": {"all": [{"flag": "submerged_cellar_checked"}, {"not": {"dayGte": 20}}]}, "map": {"morning": "loc_docks", "day": "loc_docks"}}
 		],
 		"notes": "Приёмный младший брат Лини и Линетт, член Дома Очага. Низкая самооценка, плохо врёт, любит сказки и механизмы. Возможная будущая связь с рыбалкой и подводными руинами.",
 		"placeholder": {
@@ -406,12 +420,23 @@
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
-		"title": "Путешественница",
+		"title": [
+			{"when": {"noFlag": "premiere_eve_seen"}, "text": "Путешественница"},
+			{"when": {"flag": "premiere_eve_seen"}, "text": "Люмин"}
+		],
 		"subtitle": "Странница из другого мира",
 		"schedule": [
 			{
+				"when": {"flag": "trial_done"},
+				"map": {"morning": "loc_lutes", "day": "loc_vasari", "evening": "loc_lutes"}
+			},
+			{
 				"when": {"flag": "premiere_witness"},
-				"map": {"day": "loc_lutes", "evening": "loc_epiclese"}
+				"map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}
+			},
+			{
+				"when": {"flag": "premiere_eve_seen"},
+				"map": {"morning": "loc_vasari", "day": "loc_beaumont", "evening": "loc_vasari"}
 			}
 		],
 		"tags": [
@@ -447,6 +472,7 @@
 		"rel": [
 			"Слышал"
 		],
+		"schedule": [{"when": {"flag": "trial_done"}, "map": {"morning": "loc_lutes", "day": "loc_vasari", "evening": "loc_lutes"}}, {"when": {"flag": "premiere_witness"}, "map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}}, {"when": {"flag": "premiere_eve_seen"}, "map": {"morning": "loc_vasari", "day": "loc_beaumont", "evening": "loc_vasari"}}],
 		"notes": "Болтлива, но наблюдательна, хорошо знает мифы и традиции Тейвата.",
 		"placeholder": {
 			"hair": "f4f4f8",
@@ -472,6 +498,7 @@
 		"rel": [
 			"Сыновняя любовь"
 		],
+		"schedule": [{"map": {"morning": "loc_manor", "day": "loc_manor"}}],
 		"notes": "Не знает о Синте."
 	}
 }

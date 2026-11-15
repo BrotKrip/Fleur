@@ -1,0 +1,369 @@
+СПРАЙТЫ ЭМОЦИЙ — СПИСОК ВЫПОЛНЕН
+
+Все 233 выражения из списка отрисованы. Внизу перечислены 20 добавленных базовых портретов.
+Файлы находятся в assets/art/characters/<id>/<emotion>.png.
+
+arue (Аруэ): 1
+  smug.png  — «ехидно»; сцены: charlotte_first_family, prologue
+
+char_adrian (Отец): 9
+  angry.png  — «злость»; сцены: father_talk, manor_morning
+  annoyed.png  — «раздражение»; сцены: father_talk
+  determined.png  — «решимость»; сцены: manor_morning
+  hurt.png  — «обида»; сцены: father_talk
+  sad.png  — «грусть»; сцены: father_talk
+  smile.png  — «улыбка»; сцены: manor_morning
+  thoughtful.png  — «задумчиво»; сцены: father_talk
+  tired.png  — «усталость»; сцены: father_talk
+  worried.png  — «тревога»; сцены: father_talk, manor_morning
+
+char_charlotte (Шарлотта): 11
+  angry.png  — «злость»; сцены: fireplace, manor_journey
+  happy.png  — «радость»; сцены: clothes_return
+  hurt.png  — «обида»; сцены: charlotte_first_family, manor_arrival
+  indignant.png  — «возмущение»; сцены: manor_journey, manor_vineyard
+  laugh.png  — «смех»; сцены: borrowed_clothes, borrowed_clothes_departure, charlotte_night, fireplace, manor_journey, manor_vineyard и ещё 2
+  sad.png  — «грусть»; сцены: manor_vineyard, steambird_back_stairs
+  sly.png  — «лукаво»; сцены: emilie_envelope
+  surprised.png  — «удивление»; сцены: charlotte_files
+  tender.png  — «нежность»; сцены: charlotte_night, clothes_return, fireplace
+  thoughtful.png  — «задумчиво»; сцены: article_before_father, borrowed_clothes, charlotte_article, charlotte_first_family, charlotte_night, charlotte_printshop и ещё 6
+  tired.png  — «усталость»; сцены: charlotte_article
+
+char_chevreuse (Шеврёз): 6
+  flirty.png  — «флирт»; сцены: chevreuse_evening, chevreuse_office, chevreuse_opera, chevreuse_visit
+  sad.png  — «грусть»; сцены: chevreuse_opera
+  serious.png  — «серьёзно»; сцены: chevreuse_evening, chevreuse_opera, chevreuse_reports
+  smug.png  — «ехидно»; сцены: chevreuse_evening, chevreuse_office, chevreuse_opera, chevreuse_reports
+  tender.png  — «нежность»; сцены: chevreuse_office, chevreuse_reports
+  thoughtful.png  — «задумчиво»; сцены: chevreuse_reports
+
+char_childe (Чайльд): 6
+  bored.png  — «скука»; сцены: childe_after
+  confused.png  — «растерянность»; сцены: childe_after
+  excited.png  — «восторг»; сцены: beaumont_collectors, childe_after
+  laugh.png  — «смех»; сцены: childe_after
+  sly.png  — «лукаво»; сцены: childe_after
+  smile.png  — «улыбка»; сцены: beaumont_collectors, childe_after
+
+char_clorinde (Клоринда): 6
+  determined.png  — «решимость»; сцены: city_clorinde_lesson, clorinde_coffee
+  laugh.png  — «смех»; сцены: tabletop_evening
+  serious.png  — «серьёзно»; сцены: city_clorinde_lesson, clorinde_practice, clorinde_training_talk, tabletop_evening
+  sly.png  — «лукаво»; сцены: clorinde_practice
+  smile.png  — «улыбка»; сцены: city_clorinde_lesson, clorinde_coffee, clorinde_practice, clorinde_training_talk, hat_trick_evening, tabletop_evening
+  thoughtful.png  — «задумчиво»; сцены: clorinde_coffee, clorinde_practice, clorinde_training_talk
+
+char_emilie (Эмилия): 4
+  laugh.png  — «смех»; сцены: emilie_perfume
+  smile.png  — «улыбка»; сцены: emilie_perfume, samples_result
+  smug.png  — «ехидно»; сцены: emilie_perfume
+  surprised.png  — «удивление»; сцены: emilie_samples
+
+char_escoffier (Эскофье): 2
+  annoyed.png  — «раздражение»; сцены: escoffier_tasting
+  smug.png  — «ехидно»; сцены: escoffier_tasting
+
+char_freminet (Фремине): 3
+  scared.png  — «испуг»; сцены: freminet_dive
+  smile.png  — «улыбка»; сцены: freminet_dive
+  thoughtful.png  — «задумчиво»; сцены: freminet_dive
+
+char_furina (Фурина): 9
+  confused.png  — «растерянность»; сцены: trial_liliane, trial_water
+  determined.png  — «решимость»; сцены: furina_foyer
+  embarrassed.png  — «смущение»; сцены: trial_liliane
+  excited.png  — «восторг»; сцены: city_furina_glasses, furina_foyer, furina_sketch_delivery
+  indignant.png  — «возмущение»; сцены: furina_foyer, trial_opening
+  laugh.png  — «смех»; сцены: furina_foyer
+  proud.png  — «гордость»; сцены: furina_foyer
+  smile.png  — «улыбка»; сцены: furina_foyer
+  thoughtful.png  — «задумчиво»; сцены: furina_foyer
+
+char_halsey (Хэлси): 6
+  embarrassed.png  — «смущение»; сцены: halsey_docks
+  excited.png  — «восторг»; сцены: halsey_docks
+  flirty.png  — «флирт»; сцены: halsey_sitting, premiere_eve
+  laugh.png  — «смех»; сцены: halsey_sitting
+  proud.png  — «гордость»; сцены: halsey_docks
+  smug.png  — «ехидно»; сцены: halsey_docks
+
+char_josie (Жози): 14
+  angry.png  — «злость»; сцены: josie_arrives
+  embarrassed.png  — «смущение»; сцены: city_last_walk, fair_josie, josie_bath, josie_morning
+  excited.png  — «восторг»; сцены: city_navia_walk, fair_josie
+  flirty.png  — «флирт»; сцены: city_josie_sofa, josie_arrives, josie_dinner
+  happy.png  — «радость»; сцены: ordinary_morning
+  hurt.png  — «обида»; сцены: city_josie_sofa, josie_arrives, josie_morning, ordinary_morning
+  indignant.png  — «возмущение»; сцены: josie_bath, josie_dinner
+  proud.png  — «гордость»; сцены: city_navia_walk
+  sly.png  — «лукаво»; сцены: fair_josie, josie_arrives, josie_dinner, josie_morning, ordinary_morning, submerged_cellar
+  smile.png  — «улыбка»; сцены: city_josie_cafe, city_last_walk, fair_josie, josie_dinner, josie_morning, opera_release и ещё 1
+  smug.png  — «ехидно»; сцены: city_furina_glasses, fair_josie, josie_arrives, josie_bath, josie_morning, ledgers_morning и ещё 1
+  tender.png  — «нежность»; сцены: city_josie_cafe, josie_bath
+  thoughtful.png  — «задумчиво»; сцены: josie_dinner
+  worried.png  — «тревога»; сцены: josie_arrives, josie_bath, ordinary_morning, trial_hearth
+
+char_louis (Луи-Марк): 6
+  hurt.png  — «обида»; сцены: louis_conversation
+  sad.png  — «грусть»; сцены: louis_conversation
+  serious.png  — «серьёзно»; сцены: louis_conversation, manor_garden_farewell
+  smug.png  — «ехидно»; сцены: louis_conversation, manor_arrival
+  surprised.png  — «удивление»; сцены: louis_conversation
+  tired.png  — «усталость»; сцены: louis_conversation
+
+char_lumine (Люмин): 11
+  confused.png  — «растерянность»; сцены: opera_arrival
+  embarrassed.png  — «смущение»; сцены: premiere_lumine_cafe
+  laugh.png  — «смех»; сцены: lumine_trial_eve
+  sad.png  — «грусть»; сцены: childe_after, lumine_trial_eve
+  serious.png  — «серьёзно»; сцены: beaumont_collectors, lumine_trial_eve, lynette_dressing, opera_night
+  sly.png  — «лукаво»; сцены: lumine_trial_eve, lynette_dressing, opera_night, premiere_lumine_cafe
+  smug.png  — «ехидно»; сцены: beaumont_collectors, opera_night
+  surprised.png  — «удивление»; сцены: lumine_trial_eve
+  thoughtful.png  — «задумчиво»; сцены: lynette_dressing, opera_night, opera_release
+  tired.png  — «усталость»; сцены: opera_release
+  worried.png  — «тревога»; сцены: lumine_trial_eve, lynette_dressing, premiere_incident, premiere_lumine_cafe
+
+char_lynette (Линетт): 12
+  embarrassed.png  — «смущение»; сцены: opera_release
+  sad.png  — «грусть»; сцены: lynette_dressing, lynette_tea, trial_hearth
+  scared.png  — «испуг»; сцены: premiere_incident
+  serious.png  — «серьёзно»; сцены: lynette_tea
+  shocked.png  — «шок»; сцены: trial_water
+  sly.png  — «лукаво»; сцены: opera_release
+  smile.png  — «улыбка»; сцены: hat_trick_evening, lynette_dressing, lynette_tea, opera_night
+  smug.png  — «ехидно»; сцены: lynette_dressing, opera_arrival, theatre
+  tender.png  — «нежность»; сцены: opera_release
+  thoughtful.png  — «задумчиво»; сцены: lynette_dressing
+  tired.png  — «усталость»; сцены: lynette_dressing
+  worried.png  — «тревога»; сцены: opera_arrival
+
+char_lyney (Лини): 3
+  sad.png  — «грусть»; сцены: lynette_dressing, theatre, trial_hearth
+  serious.png  — «серьёзно»; сцены: opera_night
+  worried.png  — «тревога»; сцены: opera_night, trial_hearth
+
+char_marcel (Дядя Марсель): 7
+  excited.png  — «восторг»; сцены: manor_garden_farewell, reception
+  laugh.png  — «смех»; сцены: manor_garden_farewell, marcel_lunch, reception
+  sad.png  — «грусть»; сцены: manor_garden_farewell
+  serious.png  — «серьёзно»; сцены: marcel_lunch
+  smile.png  — «улыбка»; сцены: manor_garden_farewell, marcel_lunch, reception
+  smug.png  — «ехидно»; сцены: reception
+  tender.png  — «нежность»; сцены: manor_garden_farewell
+
+char_melus (Мелус): 1
+  worried.png  — «тревога»; сцены: trial_water
+
+char_navia (Навия): 9
+  confused.png  — «растерянность»; сцены: opera_night
+  determined.png  — «решимость»; сцены: navia_lunch, opera_night, trial_liliane
+  embarrassed.png  — «смущение»; сцены: opera_release
+  excited.png  — «восторг»; сцены: opera_release
+  sad.png  — «грусть»; сцены: city_clorinde_lesson, manor_journey
+  smile.png  — «улыбка»; сцены: city_navia_walk, lynette_dressing, manor_journey, opera_night, opera_release, poisson_skate и ещё 1
+  smug.png  — «ехидно»; сцены: city_last_walk, opera_night
+  surprised.png  — «удивление»; сцены: poisson_skate
+  tired.png  — «усталость»; сцены: navia_lunch
+
+char_neuvillette (Нёвиллет): 1
+  serious.png  — «серьёзно»; сцены: city_furina_glasses, furina_sketch_delivery
+
+char_paimon (Паймон): 9
+  bored.png  — «скука»; сцены: lynette_dressing
+  excited.png  — «восторг»; сцены: lynette_dressing, opera_release, premiere_eve
+  happy.png  — «радость»; сцены: opera_arrival, premiere_eve
+  indignant.png  — «возмущение»; сцены: beaumont_collectors, childe_after, lynette_dressing, opera_night
+  proud.png  — «гордость»; сцены: opera_night, trial_water
+  scared.png  — «испуг»; сцены: beaumont_collectors, lynette_dressing, opera_night
+  shocked.png  — «шок»; сцены: opera_night
+  smug.png  — «ехидно»; сцены: childe_after, opera_night
+  surprised.png  — «удивление»; сцены: opera_night
+
+char_tiori (Тиори): 4
+  annoyed.png  — «раздражение»; сцены: fountain_tiori_quarrel, tiori_spectacles
+  hurt.png  — «обида»; сцены: tiori_spectacles
+  smug.png  — «ехидно»; сцены: fountain_tiori_quarrel, tiori_spectacles
+  thoughtful.png  — «задумчиво»; сцены: tiori_spectacles
+
+courier (Посыльный): 2
+  indignant.png  — «возмущение»; сцены: courier_error
+  serious.png  — «серьёзно»; сцены: ledgers_morning
+
+eloise (Баронесса Элоиза): 10
+  angry.png  — «злость»; сцены: manor_arrival
+  determined.png  — «решимость»; сцены: eloise_after_print
+  excited.png  — «восторг»; сцены: manor_arrival
+  hurt.png  — «обида»; сцены: eloise_after_print
+  sad.png  — «грусть»; сцены: eloise_after_print, manor_arrival
+  serious.png  — «серьёзно»; сцены: eloise_after_print, manor_arrival
+  smile.png  — «улыбка»; сцены: eloise_after_print, manor_arrival
+  tender.png  — «нежность»; сцены: eloise_after_print, father_talk
+  tired.png  — «усталость»; сцены: eloise_after_print
+  worried.png  — «тревога»; сцены: eloise_after_print, father_talk, manor_arrival, textile_opening
+
+gaston (Гастон): 4
+  laugh.png  — «смех»; сцены: charlotte_article
+  sad.png  — «грусть»; сцены: debor_bar
+  serious.png  — «серьёзно»; сцены: debor_bar
+  smile.png  — «улыбка»; сцены: debor_bar
+
+npc_aurelie (Орели): 11
+  annoyed.png  — «раздражение»; сцены: aurelie_workshop
+  embarrassed.png  — «смущение»; сцены: aurelie_supper, fountain_tiori_quarrel
+  flirty.png  — «флирт»; сцены: aurelie_supper
+  happy.png  — «радость»; сцены: fountain_tiori
+  hurt.png  — «обида»; сцены: fountain_tiori_quarrel
+  sly.png  — «лукаво»; сцены: aurelie_supper
+  smile.png  — «улыбка»; сцены: aurelie_supper, aurelie_workshop, fountain_tiori, fountain_tiori_quarrel
+  smug.png  — «ехидно»; сцены: aurelie_workshop
+  tender.png  — «нежность»; сцены: aurelie_window
+  thoughtful.png  — «задумчиво»; сцены: aurelie_supper
+  tired.png  — «усталость»; сцены: aurelie_workshop
+
+npc_aurelie_sister (Сестра Орели): 1
+  sly.png  — «лукаво»; сцены: aurelie_workshop
+
+npc_bassoonist (Фаготист): 1
+  confused.png  — «растерянность»; сцены: theatre
+
+npc_bourdieu (Господин Бурдье): 3
+  excited.png  — «восторг»; сцены: hat_trick_evening
+  hurt.png  — «обида»; сцены: hat_trick_evening
+  scared.png  — «испуг»; сцены: hat_trick_evening
+
+npc_bussy (Советник Бюсси): 1
+  excited.png  — «восторг»; сцены: cards_evening
+
+npc_cashier (Мадам Пелу): 2
+  serious.png  — «серьёзно»; сцены: box_office
+  smug.png  — «ехидно»; сцены: box_office
+
+npc_desk_melusine (Мелюзина за стойкой): 1
+  smug.png  — «ехидно»; сцены: chevreuse_visit
+
+npc_duty_officer (Дежурный): 1
+  tired.png  — «усталость»; сцены: chevreuse_evening
+
+npc_esmon (Эсмон): 1
+  serious.png  — «серьёзно»; сцены: opera_night
+
+npc_estelle (Эстель): 5
+  happy.png  — «радость»; сцены: childe_after, estelle_cord
+  indignant.png  — «возмущение»; сцены: beaumont_collectors
+  scared.png  — «испуг»; сцены: estelle_cord
+  serious.png  — «серьёзно»; сцены: estelle_cord
+  thoughtful.png  — «задумчиво»; сцены: estelle_cord
+
+npc_fry_seller (Продавщица картошки): 1
+  smile.png  — «улыбка»; сцены: chevreuse_visit
+
+npc_hearth_girl (Клэр): 1
+  happy.png  — «радость»; сцены: arlecchino_vasari
+
+npc_henri (Анри): 3
+  sad.png  — «грусть»; сцены: manor_vineyard
+  smug.png  — «ехидно»; сцены: manor_vineyard
+  thoughtful.png  — «задумчиво»; сцены: manor_vineyard
+
+npc_jules (Жюль): 3
+  scared.png  — «испуг»; сцены: jules_scalper
+  smug.png  — «ехидно»; сцены: jules_scalper
+  worried.png  — «тревога»; сцены: jules_scalper
+
+npc_jules_son (Жюль-младший): 1
+  surprised.png  — «удивление»; сцены: jules_scalper
+
+npc_liliane (Лилиан): 5
+  embarrassed.png  — «смущение»; сцены: trial_liliane
+  hurt.png  — «обида»; сцены: trial_water
+  scared.png  — «испуг»; сцены: trial_liliane
+  surprised.png  — «удивление»; сцены: trial_liliane
+  tearful.png  — «слёзы»; сцены: trial_liliane
+
+npc_markot_lady (Дама со станции Маркот): 1
+  excited.png  — «восторг»; сцены: theatre
+
+npc_marta (Марта): 2
+  embarrassed.png  — «смущение»; сцены: first_evening
+  happy.png  — «радость»; сцены: first_evening
+
+npc_mystery_writer (Сочинитель детективов): 2
+  embarrassed.png  — «смущение»; сцены: opera_night
+  excited.png  — «восторг»; сцены: opera_night
+
+npc_odile (Одиль): 3
+  proud.png  — «гордость»; сцены: textile_opening
+  smile.png  — «улыбка»; сцены: textile_opening
+  smug.png  — «ехидно»; сцены: textile_opening
+
+npc_old_weaver (Пожилой ткач): 1
+  proud.png  — «гордость»; сцены: textile_opening
+
+npc_seamstress (Белошвейка): 2
+  embarrassed.png  — «смущение»; сцены: eloise_after_print
+  smile.png  — «улыбка»; сцены: eloise_after_print
+
+npc_sedene (Седэн): 2
+  serious.png  — «серьёзно»; сцены: furina_sketch_delivery, mermonia_receipt
+  smile.png  — «улыбка»; сцены: mermonia_receipt
+
+npc_theatre_girl (Девочка из зала): 1
+  indignant.png  — «возмущение»; сцены: theatre
+
+npc_tiori_apprentice (Ученица Тиори): 3
+  embarrassed.png  — «смущение»; сцены: tiori_repair
+  laugh.png  — «смех»; сцены: tiori_repair
+  surprised.png  — «удивление»; сцены: tiori_repair
+
+npc_tristana (Тристана): 2
+  happy.png  — «радость»; сцены: opera_night
+  serious.png  — «серьёзно»; сцены: opera_night
+
+npc_trouin (Труан): 1
+  smug.png  — «ехидно»; сцены: beaumont_collectors
+
+npc_verdier (Мадам Вердье): 7
+  determined.png  — «решимость»; сцены: verdier_visit
+  embarrassed.png  — «смущение»; сцены: verdier_visit
+  hurt.png  — «обида»; сцены: verdier_visit
+  sad.png  — «грусть»; сцены: verdier_visit
+  smile.png  — «улыбка»; сцены: verdier_visit
+  tearful.png  — «слёзы»; сцены: verdier_visit
+  worried.png  — «тревога»; сцены: verdier_visit
+
+npc_vonn (Вонн): 4
+  annoyed.png  — «раздражение»; сцены: opera_night
+  indignant.png  — «возмущение»; сцены: opera_night
+  scared.png  — «испуг»; сцены: trial_liliane
+  smug.png  — «ехидно»; сцены: opera_night
+
+viscount (Виконт де Ламотт): 5
+  embarrassed.png  — «смущение»; сцены: cards_evening, lamotte_after
+  hurt.png  — «обида»; сцены: cards_evening
+  serious.png  — «серьёзно»; сцены: lamotte_after
+  smile.png  — «улыбка»; сцены: lamotte_after
+  tired.png  — «усталость»; сцены: lamotte_after
+
+ДОБАВЛЕННЫЕ БАЗОВЫЕ ПОРТРЕТЫ (assets/art/characters/<id>.png):
+  char_childe (Чайльд) — beaumont_collectors, childe_after
+  npc_bourdieu (Господин Бурдье) — hat_trick_evening
+  npc_cashier (Мадам Пелу) — box_office
+  npc_cellar_keeper (Смотритель подводного склада) — submerged_cellar
+  npc_cowell (Коуэлл) — hat_trick_evening, opera_arrival
+  npc_crowd_voice (Голос из партера) — trial_hearth, trial_water
+  npc_esmon (Эсмон) — opera_night, trial_water
+  npc_foreman (Мастер цеха) — warehouse
+  npc_gallery_old_woman (Старуха с галереи) — trial_water
+  npc_gallery_voice (Голос с галереи) — trial_hearth, trial_liliane, trial_water
+  npc_guard_melusine (Мелюзина-конвоир) — opera_night
+  npc_hearth_girl (Клэр) — arlecchino_vasari
+  npc_jules (Жюль) — jules_scalper
+  npc_jules_son (Жюль-младший) — jules_scalper
+  npc_liliane (Лилиан) — trial_liliane, trial_water
+  npc_marta (Марта) — first_evening
+  npc_mystery_writer (Сочинитель детективов) — opera_night
+  npc_tristana (Тристана) — opera_night
+  npc_trouin (Труан) — beaumont_collectors
+  npc_vonn (Вонн) — opera_night, trial_liliane, trial_water

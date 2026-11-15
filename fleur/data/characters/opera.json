@@ -1,0 +1,120 @@
+{
+	"npc_cowell": {
+		"type": "person", "look": "portrait", "role": "secondary",
+		"title": "Коуэлл",
+		"subtitle": "Ассистент Лини",
+		"tags": ["opera", "troupe"],
+		"color": "#7a6a58",
+		"text": [
+			{"when": {"noFlag": "premiere_witness"}, "text": "Новый ассистент в труппе Лини. Ставит реквизит, проверяет тросы, первым приходит и последним уходит. Улыбается всем одинаково, как будто выучил улыбку по руководству для служащих."},
+			{"when": {"flag": "premiere_witness"}, "text": "Ассистент Лини. Погиб на представлении двадцатого: резервуар с водой рухнул на ящик, в котором вместо зрительницы оказался он."}
+		],
+		"rel": ["Видел"],
+		"notes": "Канон: сообщник группировки, торгующей водой Первозданного моря. Подменил трос, взломал генератор номеров, собирался растворить выбранную зрительницу и свалить исчезновение на Лини.",
+		"placeholder": {"hair": "6a5038", "coat": "4a4038", "trim": "a08a5a", "hat": "", "eyes": "5a5a4a", "short": true}
+	},
+	"npc_liliane": {
+		"type": "person", "look": "portrait", "role": "secondary",
+		"title": [
+			{"when": {"noFlag": "liliane_revealed"}, "text": "Зрительница из седьмого ряда"},
+			{"when": {"flag": "liliane_revealed"}, "text": "Лилиан"}
+		],
+		"subtitle": "Та, что вошла в ящик",
+		"tags": ["opera"],
+		"color": "#8a7a5a",
+		"text": [
+			{"when": {"noFlag": "liliane_revealed"}, "text": "Женщина, которую генератор номеров вызвал из седьмого ряда. Флёр видел её со спины: короткая стрижка, плечи, которые не умеют стоять спокойно. Жандармы ищут её под именем Хэлси."},
+			{"when": {"flag": "liliane_revealed"}, "text": "Лилиан из Мондштадта, карманница. Украла билет, вошла в ящик вместо художницы, отбилась в тоннеле от Коуэлла и два дня пряталась в самой Опере."}
+		],
+		"rel": ["Видел со спины"],
+		"notes": "Не фонтейнка, поэтому вода Первозданного моря её не растворила.",
+		"placeholder": {"hair": "7a5a3a", "coat": "5a6a5a", "trim": "c0a060", "hat": "", "eyes": "4a7a5a", "bob": true}
+	},
+	"npc_jules": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Жюль",
+		"subtitle": "Перекупщик билетов",
+		"tags": ["vasari"],
+		"color": "#8a6a3a",
+		"text": "Тот самый Жюль с афишной тумбы: «Есть одно место, спросить Жюля». Торгует лишними билетами у остановки аквабуса. Сыну тринадцать, отцу — сорок пять, и оба уверены, что дело принадлежит им.",
+		"rel": ["Слышал"],
+		"placeholder": {"hair": "4a3a2a", "coat": "6a5a3a", "trim": "a08040", "hat": "beret", "hat_color": "3a3a3a", "eyes": "5a4a3a", "short": true}
+	},
+	"char_childe": {
+		"type": "person", "look": "portrait", "role": "secondary",
+		"title": "Чайльд",
+		"subtitle": "Банк Северного королевства",
+		"vision": "Гидро",
+		"tags": ["vision", "fatui"],
+		"color": "#c0603a",
+		"text": "Рыжий молодой человек с весёлыми и совершенно пустыми глазами. Представляется служащим Банка Северного королевства, а дерётся так, как служащих банков не учат. Скучает. Ищет в Фонтейне противника себе по руке.",
+		"rel": ["Не знакомы"],
+		"schedule": [{"when": {"all": [{"flag": "childe_met"}, {"noFlag": "premiere_witness"}]}, "map": {"day": "loc_beaumont"}}],
+		"notes": "Тарталья, Одиннадцатый Предвестник. Флёр этого не знает.",
+		"placeholder": {"hair": "c8642c", "coat": "4a4a52", "trim": "b02a2a", "hat": "", "eyes": "3a6aa0", "short": true}
+	},
+	"npc_jules_son": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Жюль-младший",
+		"subtitle": "Сын перекупщика",
+		"tags": ["vasari"],
+		"color": "#9a7a4a",
+		"text": "Тринадцать лет, берет как у отца и привычка смотреть на землю, когда все смотрят на драку.",
+		"rel": [],
+		"placeholder": {"hair": "5a4030", "coat": "7a6a4a", "trim": "a08040", "hat": "beret", "hat_color": "3a3a3a", "eyes": "5a4a3a", "short": true}
+	},
+	"npc_cashier": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Мадам Пелу",
+		"subtitle": "Кассир «Эпиклеза»",
+		"tags": ["opera"],
+		"color": "#8a5a6a",
+		"text": "Тридцать лет продаёт билеты в «Эпиклез» и помнит каждого, кто когда-либо просил место у прохода.",
+		"rel": [],
+		"placeholder": {"hair": "c8c0b8", "coat": "5a2a3a", "trim": "d4b25a", "hat": "bun", "hat_color": "c8c0b8", "eyes": "5a4a5a"}
+	},
+	"npc_trouin": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Труан",
+		"subtitle": "Торговая ассоциация Кабриера",
+		"tags": ["vasari"],
+		"color": "#6a5a4a",
+		"text": "Сборщик долгов в хорошем пальто. Начинает с половины, к концу фразы хочет семьдесят процентов.",
+		"rel": [],
+		"placeholder": {"hair": "3a2a1a", "coat": "3a3a3a", "trim": "8a7a5a", "hat": "tophat", "hat_color": "2a2a2a", "eyes": "4a3a2a", "short": true}
+	},
+	"npc_esmon": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Эсмон",
+		"subtitle": "Жандарм, следственная группа",
+		"tags": ["gendarme"],
+		"color": "#5a6a7a",
+		"text": "Жандарм со стажем, который ведёт осмотр «Эпиклеза». Считает людей самыми ненадёжными из доказательств и не скрывает этого даже от свидетелей.",
+		"rel": [],
+		"placeholder": {"hair": "6a6a6a", "coat": "2a3a5a", "trim": "c0a050", "hat": "kepi", "hat_color": "2a3a5a", "eyes": "4a5a6a", "short": true}
+	},
+	"npc_vonn": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Вонн",
+		"subtitle": "Жандарм",
+		"tags": ["gendarme"],
+		"color": "#4a5a6a",
+		"text": [
+			{"when": {"noFlag": "vonn_exposed"}, "text": "Молодой жандарм из следственной группы. Первым унёс генератор номеров на осмотр и громче всех уверен, что виноват иллюзионист."},
+			{"when": {"flag": "vonn_exposed"}, "text": "Подбросил воду Первозданного моря в вещи Лини. На суде начал называть своего главаря и растворился у всех на глазах."}
+		],
+		"rel": [],
+		"notes": "Сообщник Коуэлла.",
+		"placeholder": {"hair": "8a6a4a", "coat": "2a3a5a", "trim": "c0a050", "hat": "kepi", "hat_color": "2a3a5a", "eyes": "6a5a4a", "short": true}
+	},
+	"npc_tristana": {
+		"type": "person", "look": "portrait", "role": "episodic",
+		"title": "Тристана",
+		"subtitle": "Мелюзина у дверей «Эпиклеза»",
+		"tags": ["melusine", "gendarme"],
+		"color": "#8ab0c8",
+		"text": "Мелюзина-жандарм, которая весь вечер представления простояла у главного входа и так и не увидела ни одного фокуса. Уверена, что мимо неё никто не проходил, и, кажется, права.",
+		"rel": [],
+		"placeholder": {"hair": "a8c8e0", "coat": "4a5a7a", "trim": "d4b25a", "hat": "longears", "hat_color": "a8c8e0", "eyes": "3a5a8a", "bob": true}
+	}
+}

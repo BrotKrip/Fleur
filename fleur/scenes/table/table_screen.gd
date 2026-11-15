@@ -89,6 +89,52 @@ var _anchored := false
 var _drag_vel := Vector2.ZERO       # для инерции после перетаскивания
 var _arrived: Array = []             # карты, прилетевшие за последнюю синхронизацию
 
+var card_index: CardIndex
+const INDEX_POS := Vector2(1182, 44)
+## Что нельзя убрать в картотеку: дела, сроки и печати подходов всегда на виду.
+const KEEP_ON_DESK := ["affair", "deadline", "approach"]
+
+
+## Картотека: деревянный ящик на краю стола. Карту можно бросить в него, чтобы она не мешала;
+## щелчок по ящику — список убранного. Нужная для дела карта возвращается сама.
+class CardIndex extends Control:
+	signal opened
+	var count := 0
+
+	func _init() -> void:
+		size = Vector2(196, 150)
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		tooltip_text = "Картотека. Бросьте сюда карту, которая сейчас не нужна; щелчок — что уже убрано."
+
+	func _gui_input(e: InputEvent) -> void:
+		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+			opened.emit()
+			accept_event()
+
+	func _draw() -> void:
+		var body := Rect2(8, 34, size.x - 16, size.y - 44)
+		var pts := Look.rrect(body, 6)
+		Look.soft_shadow(self, pts, Vector2(3, 7), 8, 0.6)
+		Look.thickness(self, pts, 5.0, Color("5a3a20"), Color("2a180c"))
+		Look.fill_v(self, pts, Color("7a5232"), Color("4a2e18"))
+		Look.outline(self, pts, Color("2a180c"), 2.0)
+		# карточки торчат из ящика: чем больше убрано, тем выше стопка
+		var shown := mini(count, 7)
+		for i in shown:
+			var r := Rect2(22 + i * 3, 30 - i * 2.6, size.x - 44 - i * 6, 26)
+			draw_rect(r, Color("efe5cf").darkened(0.04 * (shown - i)))
+			draw_rect(r, Color("8a7a5a"), false, 1.0)
+		var front := Rect2(8, 58, size.x - 16, size.y - 68)
+		Look.fill_v(self, Look.rrect(front, 5), Color("6a4428"), Color("3e2614"))
+		Look.outline(self, Look.rrect(front, 5), Color("2a180c"), 1.5)
+		var plate := Rect2(size.x / 2 - 62, 74, 124, 30)
+		Look.fill_v(self, Look.rrect(plate, 4), Color("d8b866"), Color("8e6a2a"))
+		Look.outline(self, Look.rrect(plate, 4), Color("4a3410"), 1.0)
+		Look.text_c(self, Look.font("serif_bold"), size.x / 2, 95, "Картотека", 15, Color("2a1c0a"))
+		Look.text_c(self, Look.font("hand"), size.x / 2, 128, ("убрано: %d" % count) if count > 0 else "пусто", 15, Color(0.95, 0.88, 0.7, 0.85))
+
+
 var nodes: Dictionary = {}      # id -> TableCard
 var sheet: ActionSheet = null
 var note: Control = null
@@ -167,7 +213,9 @@ func _ready() -> void:
 	hint_label.add_theme_font_size_override("font_size", 15)
 	hint_label.add_theme_color_override("font_color", Color(0.93, 0.85, 0.7, 0.55))
 	hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hint_label.text = "Колесо — ближе и дальше, правая кнопка или пустое место стола — сдвинуть вид, Home — вернуть.\nБулавка — отправиться туда; золотая точка рядом — текущее сюжетное намерение, пустое кольцо — оно ждёт времени или подготовки.\nСургучная точка на карточке означает, что она новая. Карту можно бросить на булавку, портрет или в ячейку."
+	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint_label.clip_text = true
+	hint_label.text = "Колесо — ближе и дальше, пустое место стола — сдвинуть вид, Home — вернуть. Булавка — отправиться туда; золотая точка — сюжетное намерение. Карту можно бросить на булавку, портрет, папку дела или в картотеку."
 
 	map = CityMap.new()
 	map.pin_clicked.connect(_travel)
@@ -177,6 +225,8 @@ func _ready() -> void:
 	spread.action_chosen.connect(func(a):
 		_choose_action(a, str(Game.state["here"])))
 	spread.person_clicked.connect(func(pid):
+		if not nodes.has(pid) and Game.state.get("archived", {}).has(pid):
+			_unarchive([pid])
 		if nodes.has(pid):
 			_toggle_note(nodes[pid]))
 	world.add_child(spread)
@@ -192,6 +242,10 @@ func _ready() -> void:
 	plaque.tooltip_text = "Меню, сохранение, настройки (Esc)"
 	plaque.pressed.connect(Dialogs.pause)
 	add_child(plaque)
+
+	card_index = CardIndex.new()
+	card_index.opened.connect(_open_card_index)
+	world.add_child(card_index)
 
 	cards_layer = Control.new()
 	cards_layer.size = WORLD
@@ -274,6 +328,11 @@ func _brass_button(caption: String, footprint: Vector2) -> Button:
 
 func on_shown() -> void:
 	sync_cards(true)
+	if not Game.state["flags"].get("_desk_intro", false):
+		# Первый взгляд на стол: карта города, открытка места, люди и письмо — всё в кадре.
+		Game.state["flags"]["_desk_intro"] = true
+		focus_rect(Rect2(0, 0, WORLD.x, 1250), 1.0, true)
+		_user_cam_time = _clock
 	if not Game.pending_return.is_empty():
 		var pr := Game.pending_return
 		Game.pending_return = {}
@@ -317,11 +376,21 @@ func _layout_fixed() -> void:
 	notebook.position = Vector2(ts.x - 170, ts.y - 180)
 	plaque.position = Vector2(34, ts.y - 72)
 	tidy_btn.position = Vector2(166, ts.y - 72)
-	hint_label.position = Vector2(ts.x * 0.5 - 330, ts.y - 64)
-	hint_label.visible = bool(Game.settings["hints"])
+	card_index.position = INDEX_POS
+	# подсказка живёт между латунными табличками и записной книжкой и не уходит за край
+	hint_label.position = Vector2(440, ts.y - 66)
+	hint_label.size = Vector2(maxf(200.0, ts.x - 440 - 200), 56)
+	_update_hint()
 	blotter.queue_redraw()
 	_clamp_camera()
 	_apply_camera()
+
+
+## Подсказка нужна в первые дни; потом и когда открыт лист она только мешает.
+func _update_hint() -> void:
+	if hint_label == null:
+		return
+	hint_label.visible = bool(Game.settings["hints"]) and int(Game.state.get("day", 1)) <= 3 and sheet == null
 
 
 func _draw_blotter() -> void:
@@ -356,6 +425,7 @@ func _reserved() -> Array:
 		Rect2(map.position, map.size).grow(6),
 		Rect2(spread.position, spread.size).grow(8),
 		Rect2(inkwell.position, inkwell.size),
+		Rect2(INDEX_POS, card_index.size).grow(6),
 	] + trinkets.map(func(tr): return Rect2(tr.position, tr.size * tr.scale))
 
 
@@ -404,7 +474,76 @@ func _grid_spot(card_size: Vector2, zone: Rect2, occupied: Array) -> Vector2:
 					break
 		if ok:
 			return p
-	return (zone.position + Vector2(randf_range(0, 60), randf_range(0, 60))).clamp(bounds.position, bounds.end)
+	# Зона переполнена: ищем любое свободное место на подложке, начиная с ближайших к зоне.
+	var leather := Rect2(40, 420, WORLD.x - 80, WORLD.y - 440)
+	var spots := []
+	var y := leather.position.y
+	while y + card_size.y <= leather.end.y:
+		var x := leather.position.x
+		while x + card_size.x <= leather.end.x:
+			spots.append(Vector2(x, y))
+			x += step.x
+		y += step.y
+	var zc := zone.get_center()
+	spots.sort_custom(func(a, b): return a.distance_squared_to(zc) < b.distance_squared_to(zc))
+	for p in spots:
+		var rect := Rect2(p, card_size)
+		var ok := true
+		for rr in reserved:
+			if rr.intersects(rect):
+				ok = false
+				break
+		if ok:
+			for oc in occupied:
+				if oc.intersects(rect):
+					ok = false
+					break
+		if ok:
+			return p
+	# Стол заставлен целиком.
+	return NO_ROOM
+
+
+const NO_ROOM := Vector2(-99999, -99999)
+
+
+## Стол заставлен: самая старая карта, без которой можно обойтись, уходит в картотеку.
+## Сначала уже подшитые улики и прочитанные слухи, потом сведения и предметы, потом люди, которых нет рядом.
+func _auto_archive(keep_id: String) -> String:
+	var s := Game.state
+	var order := ["rumor", "world", "info", "clue", "item", "invitation", "person"]
+	for kind in order:
+		for id in s["cards"]:
+			if id == keep_id or not nodes.has(id) or s.get("archived", {}).has(id):
+				continue
+			var d := Content.def(id)
+			if str(d.get("type", "")) != kind or s["cards"][id].get("fresh", false):
+				continue
+			if kind == "person" and Rules.where_is(s, id) == s["here"]:
+				continue
+			if sheet and Rules.slot_candidates({"types": [kind]}, s, sheet.ctx()).has(id):
+				continue
+			_archive(id)
+			return id
+	return ""
+
+
+## Свободное место для новой карты; если стола не хватает — освободить, убрав старое в картотеку.
+func _place_new(card_size: Vector2, zone: Rect2, id: String) -> Vector2:
+	var p := _free_spot(card_size, zone, id)
+	var moved := []
+	while p == NO_ROOM and moved.size() < 4:
+		var gone := _auto_archive(id)
+		if gone == "":
+			break
+		moved.append(Rules.title_of(gone, Game.state))
+		p = _free_spot(card_size, zone, id)
+	if moved.size() > 0:
+		_toast("Стол заставлен. В картотеку: " + ", ".join(PackedStringArray(moved)))
+	if p == NO_ROOM:
+		var k := nodes.size() % 12
+		p = zone.position + Vector2(k * 34, k * 26)
+	return p
 
 
 func _free_spot(card_size: Vector2, zone: Rect2, ignore_id := "") -> Vector2:
@@ -433,12 +572,89 @@ func _tidy() -> void:
 	for id in ids:
 		var card: TableCard = nodes[id]
 		var target := _grid_spot(card.size, _zone_for(card.d), occupied)
+		if target == NO_ROOM:
+			target = _zone_for(card.d).position + Vector2((i % 12) * 34, (i % 12) * 26)
 		occupied.append(Rect2(target, card.size).grow(-6))
 		card.rest_rot = randf_range(-0.02, 0.02)
 		_save_layout_at(card, target)
 		tw.tween_property(card, "position", target, 0.55).set_delay(i * 0.012).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		i += 1
 	focus_rect(Rect2(Vector2.ZERO, WORLD), 0.9)
+
+
+## Убрать карту в картотеку.
+func _archive(id: String) -> void:
+	var s := Game.state
+	if not s["cards"].has(id):
+		return
+	s["cards"][id]["fresh"] = false
+	s["archived"][id] = true
+	Sound.play("ui_paper", -2.0)
+	if note_card == id:
+		_close_note()
+	if nodes.has(id):
+		var card: TableCard = nodes[id]
+		nodes.erase(id)
+		s["layout"].erase(id)
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var tw := create_tween().set_parallel()
+		tw.tween_property(card, "position", INDEX_POS + Vector2(40, 10), 0.35).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tw.tween_property(card, "base_scale", 0.3, 0.35)
+		tw.tween_property(card, "modulate:a", 0.0, 0.35)
+		tw.chain().tween_callback(card.queue_free)
+	card_index.count = s["archived"].size()
+	card_index.queue_redraw()
+
+
+## Вернуть карты из картотеки на стол.
+func _unarchive(ids: Array) -> void:
+	var s := Game.state
+	var any := false
+	for id in ids:
+		if s["archived"].has(id):
+			s["archived"].erase(id)
+			s["layout"].erase(id)
+			any = true
+	if any:
+		sync_cards(true)
+
+
+func _open_card_index() -> void:
+	if _reading:
+		return
+	_close_note()
+	var s := Game.state
+	var sh := Sheet.new(560)
+	sh.add_kicker("Стол Флёра")
+	sh.add_title("Картотека")
+	var ids: Array = s["archived"].keys().filter(func(id): return s["cards"].has(id))
+	if ids.is_empty():
+		sh.add_text("Пусто. Сюда можно бросить карту, которая сейчас не нужна: человека, с которым давно не виделись, или прочитанный слух. Если карта понадобится для дела, она вернётся на стол сама.")
+	else:
+		ids.sort_custom(func(a, b): return Rules.title_of(a, s) < Rules.title_of(b, s))
+		var scroll := ScrollContainer.new()
+		scroll.custom_minimum_size = Vector2(0, mini(420, 44 * ids.size()))
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		var col := VBoxContainer.new()
+		col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		scroll.add_child(col)
+		for id in ids:
+			var b := Button.new()
+			b.theme_type_variation = "InkButton"
+			b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+			b.text = "→ " + Rules.title_of(id, s) + "  — вернуть на стол"
+			var cid: String = id
+			b.pressed.connect(func():
+				sh.close()
+				_unarchive([cid]))
+			col.add_child(b)
+		sh.body.add_child(scroll)
+		sh.add_row([Sheet.make_button("Вернуть всё", func():
+			sh.close()
+			_unarchive(ids))])
+	sh.add_row([Sheet.make_button("Закрыть", sh.close)])
+	Sound.play("ui_folder")
+	Game.main.open_overlay(sh)
 
 
 func _save_layout(card: TableCard) -> void:
@@ -449,18 +665,31 @@ func _save_layout(card: TableCard) -> void:
 
 func sync_cards(animate: bool) -> void:
 	var s := Game.state
+	if not s.has("archived"):
+		s["archived"] = {}
+	var archived: Dictionary = s["archived"]
 	var want := {}
 	for id in s["cards"]:
 		if Rules.is_location(id):
 			continue
+		if archived.has(id):
+			# в картотеке: на столе её нет, пока не понадобится
+			if s["cards"][id].get("fresh", false):
+				archived.erase(id)
+			else:
+				continue
 		if not animate and _hidden_until_shown.has(id):
 			continue
 		want[id] = true
 	for id in nodes.keys():
-		if not s["cards"].has(id):
+		if not s["cards"].has(id) or archived.has(id):
 			_remove_node(id, animate)
+	card_index.count = archived.size()
+	card_index.queue_redraw()
 	_arrived.clear()
 	for id in want:
+		if archived.has(id):
+			continue  # могла уйти в картотеку, пока раскладывали соседей
 		if not nodes.has(id):
 			_add_node(id, animate)
 			if animate:
@@ -490,7 +719,7 @@ func _add_node(id: String, animate: bool) -> void:
 		target = Vector2(float(lay[0]), float(lay[1]))
 		card.rest_rot = float(lay[2])
 	else:
-		target = _free_spot(card.size, _zone_for(card.d), id)
+		target = _place_new(card.size, _zone_for(card.d), id)
 		card.rest_rot = randf_range(-0.07, 0.07)
 		_save_layout_at(card, target)
 	card.rotation = card.rest_rot
@@ -633,6 +862,14 @@ func _on_dropped(card: TableCard) -> void:
 			card.base_scale = 1.0
 			sheet.refresh()
 	gp = screen_to_plane(gp)
+	# в картотеку — убрать со стола
+	if card_index.get_global_rect().grow(10).has_point(gp):
+		if KEEP_ON_DESK.has(str(card.d.get("type", ""))):
+			_return_card(card)
+			_toast("Это лучше держать на виду.")
+		else:
+			_archive(card.id)
+		return
 	# на папку дела — подшить улику
 	var case_id := _case_under(gp, card)
 	if case_id != "":
@@ -769,6 +1006,18 @@ func _choose_action(a: Dictionary, where: String, preset := {}) -> void:
 		_after(Game.do_action(act, w, slots)))
 	sheet.cancelled.connect(_close_sheet)
 	sheet_layer.add_child(sheet)
+	_update_hint()
+	# нужные для дела карты сами выходят из картотеки
+	var back := []
+	for sb in sheet.slot_boxes:
+		for id in Rules.slot_candidates(sb.slot, s, sheet.ctx()):
+			if s.get("archived", {}).has(id) and not back.has(id):
+				back.append(id)
+	for id in preset.values():
+		if s.get("archived", {}).has(id) and not back.has(id):
+			back.append(id)
+	if back.size() > 0:
+		_unarchive(back)
 	# Размер листа становится известен не сразу (контейнеры раскладываются на следующих кадрах),
 	# поэтому место считается по минимальному размеру и пересчитывается при каждом изменении.
 	var placed := sheet
@@ -835,6 +1084,7 @@ func _close_sheet() -> void:
 	sheet.queue_free()
 	sheet = null
 	_highlight_candidates()
+	_update_hint()
 
 
 func _after(res: Dictionary) -> void:
@@ -850,12 +1100,34 @@ func _after(res: Dictionary) -> void:
 	_read(res.get("title", ""), res.get("text", ""), res.get("changes", []), "result", flow)
 
 
+var _end_shown := false
+
+
+## Конец текущей версии: суд в «Эпиклезе» окончен, двери Оперы открыты.
+func _show_build_end() -> void:
+	var sh := Sheet.new(600, 0.7)
+	sh.add_kicker("Послевкусие")
+	sh.add_title("Продолжение следует")
+	sh.add_text("Суд в «Эпиклезе» окончен, и всех, кто два дня не мог покинуть Оперу, отпустили по домам. На этом текущая версия игры заканчивается.\n\nСтол, люди и всё, что Флёр успел сказать и сделать, сохранены. Когда история продолжится, эта партия пойдёт дальше с того же места.")
+	sh.add_row([
+		Sheet.make_button("Остаться за столом", sh.close),
+		Sheet.make_button("В главное меню", func():
+			sh.close()
+			Game.show_menu()),
+	])
+	Game.main.open_overlay(sh)
+
+
 ## Разбор последствий: уведомления о событиях, затем сцены/активности.
 func flow() -> void:
 	var item := Game.next_flow_item()
 	if item.is_empty():
 		_highlight_candidates()
+		_update_hint()
 		Game.autosave()
+		if Game.build_ended() and not _end_shown:
+			_end_shown = true
+			_show_build_end()
 		return
 	if item["type"] == "notice":
 		sync_cards(true)

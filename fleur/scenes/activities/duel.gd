@@ -1387,7 +1387,7 @@ func _show_intro() -> void:
 
 func _begin() -> void:
 	_busy = true
-	Sound.play("danger" if duel_id == "docks_street" else "scabbard")
+	Sound.play("danger" if eng.context == "street" else "scabbard")
 	disp_init = eng.initiative
 	await _banner(get_title(), Color("f4e8ca"))
 	_deal(true)
@@ -1399,6 +1399,8 @@ func _begin() -> void:
 func _outcome_entry(key: String) -> Dictionary:
 	var variants: Array = eng.def.get("outcomes", {}).get(key, [])
 	for v in variants:
+		if v.has("when") and not Rules.test(v["when"], Game.state):
+			continue
 		if int(eng.result.get("broke", 0)) < int(v.get("min_broke", 0)):
 			continue
 		if int(eng.result.get("panache", 0)) < int(v.get("min_panache", 0)):

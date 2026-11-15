@@ -37,6 +37,7 @@
 		}
 	},
 	"figure_lighting": {
+		"rain_street": {"ambient_color": "#8ea4b8", "ambient_strength": 0.3, "brightness": 0.88, "backdrop_tint": "#9aa6b6"},
 		"day": {
 			"ambient_color": "#d9e5ee",
 			"ambient_strength": 0.055,
@@ -210,6 +211,21 @@
 			"lighting": "stage",
 			"label": "Зал «Эпиклеза»",
 			"colors": ["#392b3d", "#713d41", "#c5a369"]
+		},
+		"epiclese_court": {
+			"lighting": "stage",
+			"label": "«Эпиклез»: зал суда",
+			"colors": ["#342840", "#5a2a32", "#c5a369"]
+		},
+		"opera_backstage": {
+			"lighting": "amber_lamps",
+			"label": "Кулисы «Эпиклеза»",
+			"colors": ["#3c2228", "#7a4a3a", "#e0c08a"]
+		},
+		"opera_tunnel": {
+			"lighting": "dark_room",
+			"label": "Тоннель под сценой",
+			"colors": ["#1e1a20", "#4a3628", "#a07a4a"]
 		},
 		"apartment": {
 			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dark_room"},
@@ -537,6 +553,6 @@
 		"ехидно": "smug",
 		"флирт": "flirty",
 		"решимость": "determined",
-		"скука": "bored"
+		"скука": "bored", "нежность": "tender", "лукаво": "sly", "восторг": "excited", "растерянность": "confused", "возмущение": "indignant", "гордость": "proud", "обида": "hurt", "слёзы": "tearful"
 	}
 }

@@ -687,6 +687,11 @@ func _show_choice(opts: Array) -> void:
 		n += 1
 		var b := Button.new()
 		b.text = Rules.txt(o.get("t"), s, ctx)
+		var rel_marks := _rel_marks(o.get("when"))
+		if rel_marks.size() > 0:
+			# вариант открыт благодаря отношениям: игрок видит, что прошлое сработало
+			b.text = "◆ %s  %s" % [", ".join(rel_marks), b.text]
+			b.tooltip_text = "Этот вариант есть, потому что между ними уже сложилось: " + ", ".join(rel_marks).to_lower() + "."
 		if ap != "":
 			b.text = "[%s]  %s" % [Rules.title_of(ap, s), b.text]
 			if Rules.is_resting(s, ap):
@@ -761,6 +766,33 @@ func _finish() -> void:
 		return
 	_finished = true
 	Game.finish_scene(api["changes"], str(scene.get("after", "")), history)
+
+
+## Отношения, от которых зависит вариант: «Шарлотта: доверие». Ищутся rel и relAny на любой глубине условия.
+func _rel_marks(cond) -> PackedStringArray:
+	var out := PackedStringArray()
+	if cond is Array:
+		for c in cond:
+			out.append_array(_rel_marks(c))
+	elif cond is Dictionary:
+		for k in cond:
+			var v = cond[k]
+			if k == "rel" and v is Array and v.size() > 1:
+				out.append("%s: %s" % [Rules.title_of(str(v[0]), Game.state), str(v[1]).to_lower()])
+			elif k == "relAny" and v is Array and v.size() > 1:
+				var have: Array = Game.state["rel"].get(str(v[0]), [])
+				for tag in (v[1] if v[1] is Array else [v[1]]):
+					if have.has(tag):
+						out.append("%s: %s" % [Rules.title_of(str(v[0]), Game.state), str(tag).to_lower()])
+						break
+			elif k == "all":
+				out.append_array(_rel_marks(v))
+			elif k == "any":
+				for sub in v:
+					if Rules.test(sub, Game.state, ctx):
+						out.append_array(_rel_marks(sub))
+						break
+	return out
 
 
 ## Есть ли в выборе хотя бы один видимый вариант (для хаба — ещё не выбранный).

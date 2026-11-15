@@ -63,6 +63,7 @@ func _run() -> void:
 			_check_image(art, pid, mood, catalog[pid][mood])
 			image_count += 1
 	print("ART COVERAGE: ", required.size(), " используемых эмоций; персонажей с вариантами: ", catalog.size(), "; PNG: ", image_count)
+	check(art._expressions.size() <= art.EXPRESSION_CACHE_LIMIT, "Кэш эмоций превысил свой предел")
 	if failed > 0:
 		quit(1)
 		return
@@ -164,6 +165,8 @@ func _check_image(art: Script, pid: String, mood: String, path: String) -> void:
 	var texture: Texture2D = art.portrait(pid, mood)
 	check(texture != null and texture.resource_path == path, "Art.portrait вернул неверный спрайт: " + path)
 	if texture != null:
+		if mood != "neutral":
+			check(not art._textures.has(path), "Эмоция осталась в постоянном кэше: " + path)
 		# Проверяем рисунки по одному, затем отдаём память предыдущей текстуры.
 		art._textures.erase(texture.resource_path)
 	var img := Image.load_from_file(ProjectSettings.globalize_path(path))

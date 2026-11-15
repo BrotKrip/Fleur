@@ -33,7 +33,7 @@ func _ready() -> void:
 		holder.add_child(f)
 		var l := Label.new()
 		var d := Content.def(pid)
-		l.text = "%s\n%s%s" % [Rules.txt(d.get("title"), {}), pid, "" if Art.portrait(pid) else "  ·  заготовка"]
+		l.text = "%s\n%s%s" % [Rules.txt(d.get("title"), {"flags": {}, "cards": {}, "rel": {}, "counters": {}, "whereabouts": {}, "day": 1, "phase": 0}), pid, "" if Art.portrait(pid) else "  ·  заготовка"]
 		l.position = pos + Vector2(0, CELL.y - 54)
 		l.size = Vector2(CELL.x - 10, 40)
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

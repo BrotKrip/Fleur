@@ -1,0 +1,155 @@
+Opera and estate scenes. Additional expressions for the established cast.
+
+Production reference: each character’s existing neutral PNG. Input is a strict grid of aligned, repeated crops of those original faces. An expression is registered to the neutral face using its surrounding hair, outline and accessories. The final RGBA retains the original full-sized canvas, silhouette, body and costume.
+
+atlas_00 (4 by 2)
+  1.1  char_marcel/excited.png
+  1.2  char_marcel/laugh.png
+  1.3  char_marcel/sad.png
+  1.4  char_marcel/serious.png
+  2.1  char_marcel/smile.png
+  2.2  char_marcel/smug.png
+  2.3  char_marcel/tender.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 bright eager eyes, openly delighted parted smile; R1C2 genuine laugh, eyes crescented and smiling mouth open; R1C3 sorrow, inner brows raised and lips turned down; R1C4 calmly serious, firm mouth, attentive unsmiling eyes; R2C1 gentle sincere closed-mouth smile, softened eyes; R2C2 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R2C3 tender warm gaze, brows relaxed and kind soft smile. Leave unused cells flat grey as in original. Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_01 (3 by 3)
+  1.1  char_navia/confused.png
+  1.2  char_navia/determined.png
+  1.3  char_navia/embarrassed.png
+  2.1  char_navia/excited.png
+  2.2  char_navia/sad.png
+  2.3  char_navia/smile.png
+  3.1  char_navia/smug.png
+  3.2  char_navia/surprised.png
+  3.3  char_navia/tired.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 3 equal columns x 3 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 puzzled asymmetric brow, lips slightly parted; R1C2 resolute lowered brows, steady direct eyes, mouth set; R1C3 shy sideways eyes and flustered small smile, faint blush; R2C1 bright eager eyes, openly delighted parted smile; R2C2 sorrow, inner brows raised and lips turned down; R2C3 gentle sincere closed-mouth smile, softened eyes; R3C1 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R3C2 surprised, arched brows, round eyes and small O mouth; R3C3 weary eyes, gentle upper lid droop, neutral soft mouth.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_02 (3 by 3)
+  1.1  char_paimon/bored.png
+  1.2  char_paimon/excited.png
+  1.3  char_paimon/happy.png
+  2.1  char_paimon/indignant.png
+  2.2  char_paimon/proud.png
+  2.3  char_paimon/scared.png
+  3.1  char_paimon/shocked.png
+  3.2  char_paimon/smug.png
+  3.3  char_paimon/surprised.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 3 equal columns x 3 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 bored, sleepy eyelids and flat mouth; R1C2 bright eager eyes, openly delighted parted smile; R1C3 happy open eyes and upturned cheeks with joyful smile; R2C1 indignant raised inner brow and sharply protesting parted lips; R2C2 quiet pride, bright composed eyes and small self-assured smile; R2C3 fright, wide eyes, drawn-up inner brows and parted lips; R3C1 shocked, widely opened eyes and clearly dropped jaw; R3C2 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R3C3 surprised, arched brows, round eyes and small O mouth.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_03 (5 by 2)
+  1.1  eloise/angry.png
+  1.2  eloise/determined.png
+  1.3  eloise/excited.png
+  1.4  eloise/hurt.png
+  1.5  eloise/sad.png
+  2.1  eloise/serious.png
+  2.2  eloise/smile.png
+  2.3  eloise/tender.png
+  2.4  eloise/tired.png
+  2.5  eloise/worried.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 5 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 controlled anger, visibly knit brows, lips tight; R1C2 resolute lowered brows, steady direct eyes, mouth set; R1C3 bright eager eyes, openly delighted parted smile; R1C4 hurt feelings, pinched inner brows, trembling mouth; R1C5 sorrow, inner brows raised and lips turned down; R2C1 calmly serious, firm mouth, attentive unsmiling eyes; R2C2 gentle sincere closed-mouth smile, softened eyes; R2C3 tender warm gaze, brows relaxed and kind soft smile; R2C4 weary eyes, gentle upper lid droop, neutral soft mouth; R2C5 concerned, raised inner brows, tense lips.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_04 (4 by 3)
+  1.1  npc_aurelie/annoyed.png
+  1.2  npc_aurelie/embarrassed.png
+  1.3  npc_aurelie/flirty.png
+  1.4  npc_aurelie/happy.png
+  2.1  npc_aurelie/hurt.png
+  2.2  npc_aurelie/sly.png
+  2.3  npc_aurelie/smile.png
+  2.4  npc_aurelie/smug.png
+  3.1  npc_aurelie/tender.png
+  3.2  npc_aurelie/thoughtful.png
+  3.3  npc_aurelie/tired.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 3 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 irritation, a skeptical brow and pressed lips; R1C2 shy sideways eyes and flustered small smile, faint blush; R1C3 playful warm sidelong gaze, small smile; R1C4 happy open eyes and upturned cheeks with joyful smile; R2C1 hurt feelings, pinched inner brows, trembling mouth; R2C2 soft playful knowing look, tiniest uneven smile, eyes alert; R2C3 gentle sincere closed-mouth smile, softened eyes; R2C4 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R3C1 tender warm gaze, brows relaxed and kind soft smile; R3C2 thoughtful gaze slightly aside, one mildly lowered brow, mouth closed; R3C3 weary eyes, gentle upper lid droop, neutral soft mouth. Leave unused cells flat grey as in original. Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_05 (4 by 2)
+  1.1  npc_verdier/determined.png
+  1.2  npc_verdier/embarrassed.png
+  1.3  npc_verdier/hurt.png
+  1.4  npc_verdier/sad.png
+  2.1  npc_verdier/smile.png
+  2.2  npc_verdier/tearful.png
+  2.3  npc_verdier/worried.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 resolute lowered brows, steady direct eyes, mouth set; R1C2 shy sideways eyes and flustered small smile, faint blush; R1C3 hurt feelings, pinched inner brows, trembling mouth; R1C4 sorrow, inner brows raised and lips turned down; R2C1 gentle sincere closed-mouth smile, softened eyes; R2C2 eyes brimming with fine moisture, small visible tear, lips pressed; R2C3 concerned, raised inner brows, tense lips. Leave unused cells flat grey as in original. Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_06 (4 by 2)
+  1.1  char_lyney/sad.png
+  1.2  char_lyney/serious.png
+  1.3  char_lyney/worried.png
+  1.4  char_tiori/annoyed.png
+  2.1  char_tiori/hurt.png
+  2.2  char_tiori/smug.png
+  2.3  char_tiori/thoughtful.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 sorrow, inner brows raised and lips turned down; R1C2 calmly serious, firm mouth, attentive unsmiling eyes; R1C3 concerned, raised inner brows, tense lips; R1C4 irritation, a skeptical brow and pressed lips; R2C1 hurt feelings, pinched inner brows, trembling mouth; R2C2 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R2C3 thoughtful gaze slightly aside, one mildly lowered brow, mouth closed. Leave unused cells flat grey as in original. Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_07 (3 by 3)
+  1.1  viscount/embarrassed.png
+  1.2  viscount/hurt.png
+  1.3  viscount/serious.png
+  2.1  viscount/smile.png
+  2.2  viscount/tired.png
+  2.3  gaston/laugh.png
+  3.1  gaston/sad.png
+  3.2  gaston/serious.png
+  3.3  gaston/smile.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 3 equal columns x 3 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 shy sideways eyes and flustered small smile, faint blush; R1C2 hurt feelings, pinched inner brows, trembling mouth; R1C3 calmly serious, firm mouth, attentive unsmiling eyes; R2C1 gentle sincere closed-mouth smile, softened eyes; R2C2 weary eyes, gentle upper lid droop, neutral soft mouth; R2C3 genuine laugh, eyes crescented and smiling mouth open; R3C1 sorrow, inner brows raised and lips turned down; R3C2 calmly serious, firm mouth, attentive unsmiling eyes; R3C3 gentle sincere closed-mouth smile, softened eyes.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_08 (4 by 2)
+  1.1  npc_estelle/happy.png
+  1.2  npc_estelle/indignant.png
+  1.3  npc_estelle/scared.png
+  1.4  npc_estelle/serious.png
+  2.1  npc_estelle/thoughtful.png
+  2.2  npc_tiori_apprentice/embarrassed.png
+  2.3  npc_tiori_apprentice/laugh.png
+  2.4  npc_tiori_apprentice/surprised.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 happy open eyes and upturned cheeks with joyful smile; R1C2 indignant raised inner brow and sharply protesting parted lips; R1C3 fright, wide eyes, drawn-up inner brows and parted lips; R1C4 calmly serious, firm mouth, attentive unsmiling eyes; R2C1 thoughtful gaze slightly aside, one mildly lowered brow, mouth closed; R2C2 shy sideways eyes and flustered small smile, faint blush; R2C3 genuine laugh, eyes crescented and smiling mouth open; R2C4 surprised, arched brows, round eyes and small O mouth.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_09 (4 by 2)
+  1.1  npc_odile/proud.png
+  1.2  npc_odile/smile.png
+  1.3  npc_odile/smug.png
+  1.4  npc_henri/sad.png
+  2.1  npc_henri/smug.png
+  2.2  npc_henri/thoughtful.png
+  2.3  npc_seamstress/embarrassed.png
+  2.4  npc_seamstress/smile.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 quiet pride, bright composed eyes and small self-assured smile; R1C2 gentle sincere closed-mouth smile, softened eyes; R1C3 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R1C4 sorrow, inner brows raised and lips turned down; R2C1 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R2C2 thoughtful gaze slightly aside, one mildly lowered brow, mouth closed; R2C3 shy sideways eyes and flustered small smile, faint blush; R2C4 gentle sincere closed-mouth smile, softened eyes.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_10 (4 by 2)
+  1.1  arue/smug.png
+  1.2  char_melus/worried.png
+  1.3  char_neuvillette/serious.png
+  1.4  courier/indignant.png
+  2.1  courier/serious.png
+  2.2  npc_sedene/serious.png
+  2.3  npc_sedene/smile.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 4 equal columns x 2 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R1C2 concerned, raised inner brows, tense lips; R1C3 calmly serious, firm mouth, attentive unsmiling eyes; R1C4 indignant raised inner brow and sharply protesting parted lips; R2C1 calmly serious, firm mouth, attentive unsmiling eyes; R2C2 calmly serious, firm mouth, attentive unsmiling eyes; R2C3 gentle sincere closed-mouth smile, softened eyes. Leave unused cells flat grey as in original. Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+atlas_11 (3 by 3)
+  1.1  npc_aurelie_sister/sly.png
+  1.2  npc_bassoonist/confused.png
+  1.3  npc_bussy/excited.png
+  2.1  npc_desk_melusine/smug.png
+  2.2  npc_duty_officer/tired.png
+  2.3  npc_fry_seller/smile.png
+  3.1  npc_markot_lady/excited.png
+  3.2  npc_old_weaver/proud.png
+  3.3  npc_theatre_girl/indignant.png
+
+In-place image edit of the supplied tiled game portrait expression atlas. Preserve its EXACT 3 equal columns x 3 equal rows borderless grid, canvas aspect, the current character assigned to EACH cell, and every cell's original zoom, angle, nose position, jaw, hair, costume, eyewear, line style and light. Do not turn or resize any head. Change ONLY eyes, eyebrows, cheek and mouth INNER artwork to convey each emotion distinctly, subtle natural acting, with perfectly recognizable individuals. Keep the grey backing, all outer edges unchanged, no text/no panel borders. You MUST retain the same composition as input tile by tile, NOT a new sheet of zoomed-out heads. Reading order: R1C1 soft playful knowing look, tiniest uneven smile, eyes alert; R1C2 puzzled asymmetric brow, lips slightly parted; R1C3 bright eager eyes, openly delighted parted smile; R2C1 quiet self-satisfaction, only one corner slightly raised, alert clear eyes; restrained; R2C2 weary eyes, gentle upper lid droop, neutral soft mouth; R2C3 gentle sincere closed-mouth smile, softened eyes; R3C1 bright eager eyes, openly delighted parted smile; R3C2 quiet pride, bright composed eyes and small self-assured smile; R3C3 indignant raised inner brow and sharply protesting parted lips.  Distinguish silent concern from hurt, gentle closed-mouth smile from open laughter. No caricature or exaggerated smug grin.
+
+Last pass: char_lyney/sad.png, char_lyney/worried.png, npc_verdier/tearful.png
+Edit the same exact 3-column, one-row 3:1 expression sprite strip, preserving original pixel scale, each pose, hair, accessories, background and old linework. Repaint ONLY editorial facial features. Left magician is quietly grieving: his eyes look DOWN and his upper eyelids visibly lower over purple eyes; inner brows lift in pain; lips closed in a plainly downturned arc, soft and vulnerable, not sleepy or angry. Centre magician is abruptly WORRIED about his sister: violet eyes visibly open, eyebrows rise and come together in an inverted V, lips part on a short intake of breath, sober and tense. Keep his existing ink drop under his eye in both. Right is mature MADAME VERDIER in tears; visible wet lower lids, one thin cool glistening tear trail directly from the outer corner of the nearer eye down the cheek, AND a clearly formed small silvery teardrop partway down her cheek, as well as another at the inner corner of the other eye. Keep her mouth closed and brave, no smile. Tears subtle but unmistakable at visual novel size. No change to head outline, shading, costume or colour. Preserve crop, exact cell positions and size, same visual space between all features. No letters or borders.

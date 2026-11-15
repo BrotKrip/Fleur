@@ -1862,7 +1862,7 @@
 		"desc": "Распаковать вещи, пока сестра дожидается своего подарка.",
 		"visible": {
 			"flag": "homecoming_done",
-			"noFlag": "city_night_finished"
+			"noFlag": ["city_night_finished", "city_cafe_done"]
 		},
 		"phases": [
 			"morning",
@@ -2077,6 +2077,634 @@
 					}
 				]
 			}
+		]
+	},
+	"walk_charlotte_home": {
+		"at": "loc_lutes",
+		"title": "Проводить Шарлотту через Пассаж",
+		"desc": "Над Пассажем сгущаются тучи. Шарлотта собирает бумаги и, кажется, не против компании.",
+		"cost": 0,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"flag": "met_charlotte"
+				},
+				{
+					"day": 2
+				},
+				{
+					"noFlag": "eye:char_charlotte"
+				}
+			]
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "rain_guest_walk"
+					}
+				]
+			}
+		]
+	},
+	"charlotte_iced_coffee": {
+		"at": "loc_lutes",
+		"title": "Заказать Шарлотте холодный кофе",
+		"desc": "Пусть узнает, что Флёр пьёт в «Лютесе», раз уж узнала о нём остальное.",
+		"cost": 0,
+		"once": true,
+		"visible": {
+			"all": [
+				{
+					"flag": "met_charlotte"
+				},
+				{
+					"day": 2
+				},
+				{
+					"noFlag": "eye:char_charlotte"
+				}
+			]
+		},
+		"outcomes": [
+			{
+				"text": "Аруэ поставил перед Шарлоттой высокий стакан со льдом. Она подозрительно понюхала соломинку, отпила и ничего не сказала. Через минуту стакан стоял пустой, а в блокноте под строкой «отец, погреба» появилась ещё одна: «кофе со льдом, в Лютесе, без сахара». Флёр решил не спрашивать, к какому разделу это относится.",
+				"effects": [
+					{
+						"relAdd": [
+							"char_charlotte",
+							"Угостил кофе"
+						]
+					},
+					{
+						"flag": "charlotte_iced_coffee"
+					}
+				]
+			}
+		]
+	},
+	"city_walk_josie": {
+		"at": "loc_vasari",
+		"title": "Пройтись с Жози по набережной",
+		"desc": "Сестра не хочет домой. Пассаж ещё светится, а у ограды набережной кто-то смеётся.",
+		"cost": 0,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"flag": "city_cafe_done"
+				},
+				{
+					"noFlag": "clorinde_button_night"
+				}
+			]
+		},
+		"phases": [
+			"evening",
+			"night"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "city_navia_walk"
+					}
+				]
+			}
+		]
+	},
+	"josie_chestnuts": {
+		"at": "loc_vasari",
+		"title": "Купить Жози жареных каштанов",
+		"desc": "У тележки на углу Пассажа ещё дымится жаровня.",
+		"cost": 0,
+		"once": true,
+		"visible": {
+			"all": [
+				{
+					"flag": "city_cafe_done"
+				},
+				{
+					"noFlag": "clorinde_button_night"
+				}
+			]
+		},
+		"outcomes": [
+			{
+				"text": "Продавец насыпал полный кулёк и отказался от сдачи в пользу шевалье, который так улыбается сестре. Жози обожгла пальцы первым же каштаном, второй отдала брату очищенным и сделала вид, что это вышло случайно. Флёр тоже сделал вид. Скорлупу они сложили в его карман, потому что у сестры карманов на этом платье не было вовсе.",
+				"effects": [
+					{
+						"relAdd": [
+							"char_josie",
+							"Смех"
+						]
+					},
+					{
+						"flag": "josie_chestnuts"
+					}
+				]
+			}
+		]
+	},
+	"street_magic": {
+		"at": "loc_vasari",
+		"title": "Посмотреть фокусы у остановки",
+		"desc": "Цилиндр, кошачьи уши и толпа, которая уже не помнит, куда шла.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"has": "rum_street_magic"
+				},
+				{
+					"noFlag": "twins_met"
+				},
+				{
+					"not": {
+						"dayGte": 20
+					}
+				}
+			]
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "twins_vasari"
+					}
+				]
+			}
+		]
+	},
+	"lynette_tea": {
+		"at": "loc_debor",
+		"title": "Подсесть к Линетт в чайном зале",
+		"desc": "Она делает вид, что её здесь нет. Это удаётся ей лучше, чем большинству людей удаётся присутствовать.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"has": "note_lynette_tea"
+				},
+				{
+					"not": {
+						"dayGte": 20
+					}
+				}
+			]
+		},
+		"phases": [
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "lynette_tea"
+					}
+				]
+			}
+		]
+	},
+	"freminet_dive": {
+		"at": "loc_docks",
+		"title": "Подождать ныряльщика у семейного отсека",
+		"desc": "Над водой у старых ячеек опять поднимаются пузыри. Кто-то работает внизу без лодки.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"flag": "submerged_cellar_checked"
+				},
+				{
+					"noFlag": "freminet_met"
+				},
+				{
+					"not": {
+						"dayGte": 20
+					}
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "freminet_dive"
+					}
+				]
+			}
+		]
+	},
+	"exhibition_evening": {
+		"at": "loc_beaumont",
+		"title": "Показательный вечер у мастерской",
+		"desc": "Клоринде нужен фехтовальщик с эффектным выходом.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"has": "inv_exhibition_evening"
+				},
+				{
+					"not": {
+						"dayGte": 20
+					}
+				}
+			]
+		},
+		"phases": [
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "hat_trick_evening"
+					}
+				]
+			}
+		]
+	},
+	"skate_to_poisson": {
+		"at": "loc_poisson",
+		"title": "Отвезти добычу в Пуассон",
+		"desc": "Мясо ската в Пуассоне пригодится, как и известие, что сети больше никто не рвёт.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"has": "note_skate_nets"
+				},
+				{
+					"has": "it_skate_meat"
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "poisson_skate"
+					}
+				]
+			}
+		]
+	},
+	"beaumont_visit": {
+		"at": "loc_beaumont",
+		"title": "Заглянуть к Эстель за клинком",
+		"desc": "Рапира третий день просится к точильщику. Из мастерской доносятся голоса громче обычного.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"flag": "premiere_eve_seen"
+				},
+				{
+					"day": 19
+				}
+			]
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "beaumont_collectors"
+					}
+				]
+			}
+		]
+	},
+	"find_jules": {
+		"at": "loc_vasari",
+		"title": "Найти Жюля у афишной тумбы",
+		"desc": "«Есть одно место. Спросить Жюля». Если кто-то в городе знает, как достают билеты на распроданный вечер, то он.",
+		"cost": 1,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "jules_scalper"
+					}
+				]
+			}
+		]
+	},
+	"box_office": {
+		"at": "loc_epiclese",
+		"title": "Заглянуть в кассу «Эпиклеза»",
+		"desc": "Театр закрыт, но касса у бокового входа работает: возвраты за сорванный вечер.",
+		"cost": 1,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "box_office"
+					}
+				]
+			}
+		]
+	},
+	"estelle_cord": {
+		"at": "loc_beaumont",
+		"title": "Показать Эстель огрызок троса",
+		"desc": "Огнепроводный шнур в Кур-де-Фонтейне продают не на каждом углу.",
+		"cost": 1,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"has": "clue_flash_cord"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "estelle_cord"
+					}
+				]
+			}
+		]
+	},
+	"charlotte_files": {
+		"at": "loc_steambird",
+		"title": "Попросить у Шарлотты архив исчезновений",
+		"desc": "Она следит за этим делом не первый год. И, конечно, уже знает, что Флёр был в зале.",
+		"cost": 1,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "charlotte_files"
+					}
+				]
+			}
+		]
+	},
+	"chevreuse_opera": {
+		"at": "loc_gardinage",
+		"title": "Зайти к Шеврёз",
+		"desc": "Патруль Шеврёз не ведёт это дело. Зато она знает всех, кто его ведёт.",
+		"cost": 1,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				},
+				{
+					"has": "char_chevreuse"
+				}
+			]
+		},
+		"phases": [
+			"morning",
+			"day"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "chevreuse_opera"
+					}
+				]
+			}
+		]
+	},
+	"pastry_box": {
+		"at": "loc_lutes",
+		"title": "Попросить у Аруэ коробку пирожных",
+		"desc": "Тем, кто заперт в «Эпиклезе», жандармы носят казённый хлеб.",
+		"cost": 0,
+		"once": true,
+		"visible": {
+			"all": [
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"outcomes": [
+			{
+				"text": "Аруэ выслушал, для кого коробка, и пошёл на кухню, не дожидаясь, пока Флёр договорит. Вернулся с тремя слоями пирожных, переложенных бумагой, и пачкой чая сверху. Денег не взял. Сказал только, что если в Опере кто-нибудь назовёт его миндальные трубочки «неплохими», пусть Флёр запомнит имя.",
+				"effects": [
+					{
+						"add": "it_pastry_box"
+					},
+					{
+						"relAdd": [
+							"arue",
+							"Свой человек"
+						]
+					}
+				]
+			}
+		]
+	},
+	"visit_troupe": {
+		"at": "loc_epiclese",
+		"title": "Пройти к запертым в театре",
+		"desc": "Свидетеля пропустят. С корзиной — тем более.",
+		"cost": 0,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"all": [
+				{
+					"flag": "opera_investigation_done"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "lynette_dressing"
+					}
+				]
+			}
+		]
+	},
+	"trial_eve": {
+		"at": "loc_epiclese",
+		"title": "Остаться в фойе до закрытия",
+		"desc": "Люмин не спит. Паймон уснула на чьём-то плаще.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"all": [
+				{
+					"flag": "troupe_visited"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"phases": [
+			"evening",
+			"night"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "lumine_trial_eve"
+					}
+				]
+			}
+		]
+	},
+	"file_case_opera": {
+		"case": true,
+		"on": "aff_opera",
+		"title": "Подшить в дело",
+		"cost": 0,
+		"desc": "Всё, что Флёр принесёт из города, ляжет в папку. К суду она должна быть толще, чем у обвинения.",
+		"visible": {
+			"all": [
+				{
+					"has": "aff_opera"
+				},
+				{
+					"noFlag": "trial_started"
+				}
+			]
+		},
+		"slots": [
+			{
+				"id": "case",
+				"label": "Дело",
+				"ids": [
+					"aff_opera"
+				],
+				"required": true
+			},
+			{
+				"id": "evidence",
+				"label": "Что подшить",
+				"types": [
+					"info",
+					"clue",
+					"rumor"
+				],
+				"notFlagged": "filed:",
+				"required": true
+			}
+		],
+		"outcomes": [
+			{}
 		]
 	}
 }

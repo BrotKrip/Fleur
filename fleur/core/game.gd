@@ -141,6 +141,8 @@ func do_action(action: Dictionary, where: String, slots: Dictionary) -> Dictiona
 	var check := Rules.can_do(action, state, ctx)
 	if not check["ok"]:
 		return {"error": check["reason"]}
+	if build_ended() and Rules.cost_of(action, state) > 0:
+		return {"error": BUILD_END_NOTE}
 	var api := Rules.new_api()
 	Rules.mark_seen(state)
 	var res := Rules.perform(action, state, ctx, api)
@@ -149,7 +151,17 @@ func do_action(action: Dictionary, where: String, slots: Dictionary) -> Dictiona
 	return res
 
 
+## Текущая версия игры заканчивается после суда в «Эпиклезе»: дальше время не идёт.
+const BUILD_END_NOTE := "На этом текущая версия заканчивается. Продолжение следует."
+
+
+func build_ended() -> bool:
+	return not state.is_empty() and state["flags"].get("build_end", false)
+
+
 func wait_phase() -> Dictionary:
+	if build_ended():
+		return {"error": BUILD_END_NOTE}
 	var api := Rules.new_api()
 	Rules.mark_seen(state)
 	Rules.log_entry(state, "Флёр позволил времени идти своим чередом.", "action")

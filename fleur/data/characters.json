@@ -142,7 +142,8 @@
 		],
 		"rel": [
 			"Почтение"
-		]
+		],
+		"schedule": [{"map": {"morning": "loc_manor", "day": "loc_manor"}}]
 	},
 	"char_louis": {
 		"id": "char_louis",
@@ -202,6 +203,7 @@
 		],
 		"rel": [
 			"Тёплое знакомство"
-		]
+		],
+		"schedule": [{"when": {"flag": "first_arc_done"}, "map": {"day": "loc_debor"}}]
 	}
 }

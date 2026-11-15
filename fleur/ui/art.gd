@@ -13,6 +13,10 @@ const BACKGROUNDS := {
 }
 
 static var _textures: Dictionary = {}
+## Недавние выражения для быстрых переключений в диалоге. Сама фигура
+## держит обе текстуры текущего перехода, даже если одна вышла из кэша.
+const EXPRESSION_CACHE_LIMIT := 12
+static var _expressions: Dictionary = {}
 
 
 ## Материалы столешницы, подложки и печатных листов.
@@ -41,7 +45,7 @@ static func portrait(pid: String, mood := "") -> Texture2D:
 	var file := mood_file(mood)
 	if file != "" and file != "neutral":
 		for path in [ROOT + "characters/" + pid + "/" + file + ".png", ROOT + "characters/" + pid + "_" + file + ".png"]:
-			var found := _texture(path)
+			var found := _texture(path, true)
 			if found:
 				return found
 		_warn_missing(pid, file)
@@ -86,12 +90,18 @@ static func cover_region(texture: Texture2D, target: Vector2) -> Rect2:
 	return Rect2((source - crop) * 0.5, crop)
 
 
-static func _texture(path: String) -> Texture2D:
-	if _textures.has(path):
-		return _textures[path] as Texture2D
-	if not ResourceLoader.exists(path):
-		return null
-	var texture := load(path) as Texture2D
+static func _texture(path: String, expression := false) -> Texture2D:
+	var cache := _expressions if expression else _textures
+	var texture := cache.get(path) as Texture2D
 	if texture:
-		_textures[path] = texture
+		if expression:
+			cache.erase(path)
+			cache[path] = texture
+		return texture
+	if ResourceLoader.exists(path):
+		texture = load(path) as Texture2D
+		if texture:
+			if expression and cache.size() >= EXPRESSION_CACHE_LIMIT:
+				cache.erase(cache.keys()[0])
+			cache[path] = texture
 	return texture

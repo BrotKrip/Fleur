@@ -12,6 +12,7 @@ config/features=PackedStringArray("4.7", "GL Compatibility")
 
 Content="*res://core/content.gd"
 Rules="*res://core/rules.gd"
+Sound="*res://core/sound.gd"
 Game="*res://core/game.gd"
 
 [display]

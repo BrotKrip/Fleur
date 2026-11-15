@@ -1,0 +1,34 @@
+Музыка Genshin Impact
+
+HOYO-MiX • Fountain of Belleau • HoYoverse, 2023
+
+В игре звучат пять записей из официального музыкального веб-события «Glad Tidings From Afar». Файлы переведены из MP3 в Ogg Vorbis. Названия, авторство и ссылки на исходные записи приведены ниже.
+
+Ballad of Many Waters
+ballad_of_many_waters.ogg
+https://act.hoyoverse.com/ys/event/e20231003ost/sounds/1.mp3
+
+Cakes and Ale for the Exiled
+cakes_and_ale.ogg
+https://act.hoyoverse.com/ys/event/e20231003ost/sounds/2.mp3
+
+Le spectacle doit continuer
+le_spectacle.ogg
+https://act.hoyoverse.com/ys/event/e20231003ost/sounds/3.mp3
+
+Il Nome della Rosula
+il_nome_della_rosula.ogg
+https://act.hoyoverse.com/ys/event/e20231003ost/sounds/4.mp3
+
+Ann's Anapausis
+anns_anapausis.ogg
+https://act.hoyoverse.com/ys/event/e20231003ost/sounds/5.mp3
+
+Альбом на сайте Genshin Impact
+https://genshin.hoyoverse.com/en/news/detail/113222
+
+Официальное музыкальное событие
+https://act.hoyoverse.com/ys/event/e20231003ost/index.html?lang=en-us
+
+Справка HoYoverse о личном некоммерческом использовании внутриигровой музыки в фанатских работах
+https://support.hoyoverse.com/hc/en-us/articles/50333834244633-Can-I-use-in-game-music-for-my-fan-made-content

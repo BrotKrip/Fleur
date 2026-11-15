@@ -35,7 +35,7 @@ static func pause() -> void:
 		sh.close()
 		confirm("Закрыть игру? Прогресс сохранится в автосохранении.", func():
 			Game.autosave()
-			Game.get_tree().quit()))
+			Game.main.quit_game()))
 	_open(sh)
 
 
@@ -71,15 +71,23 @@ static func settings() -> void:
 		speed_lbl.text = speed_name.call(v))
 	sh.body.add_child(sl)
 
-	var vol_lbl := sh.add_text("Громкость (звука пока нет)")
-	vol_lbl.theme_type_variation = "Ink"
-	var vs := HSlider.new()
-	vs.min_value = 0
-	vs.max_value = 1
-	vs.step = 0.05
-	vs.value = float(Game.settings["volume"])
-	vs.value_changed.connect(func(v): Game.set_setting("volume", v))
-	sh.body.add_child(vs)
+	for pair in [["volume", "Общая громкость"], ["music_volume", "Музыка"], ["ambience_volume", "Атмосфера мест"], ["effects_volume", "Действия и интерфейс"]]:
+		var row := HBoxContainer.new()
+		var label := Label.new()
+		label.theme_type_variation = "Ink"
+		label.text = pair[1]
+		label.custom_minimum_size.x = 190
+		row.add_child(label)
+		var slider := HSlider.new()
+		slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		slider.max_value = 1.0
+		slider.step = 0.05
+		var key: String = pair[0]
+		slider.value = float(Game.settings[key])
+		slider.value_changed.connect(func(v): Game.set_setting(key, v))
+		row.add_child(slider)
+		sh.body.add_child(row)
 
 	for pair in [["fullscreen", "Полноэкранный режим"], ["autosave", "Автосохранение"], ["hints", "Подсказки на столе"]]:
 		var cb := CheckBox.new()
@@ -149,6 +157,7 @@ static func saves(mode: String) -> void:
 
 
 static func journal() -> void:
+	Sound.play("ui_page")
 	var sh := Sheet.new(640)
 	sh.add_kicker("Записная книжка")
 	sh.add_title("Что было")

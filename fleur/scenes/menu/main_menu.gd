@@ -13,6 +13,7 @@ var _first_item: Button
 
 
 func _ready() -> void:
+	Sound.environment("backgrounds", "menu", "evening")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var bg := ColorRect.new()
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -96,12 +97,11 @@ func _ready() -> void:
 	_item(box, "Загрузить", func():
 		Dialogs.saves("load"))
 	_item(box, "Настройки", Dialogs.settings)
-	_item(box, "Выйти", func():
-		get_tree().quit())
+	_item(box, "Выйти", Game.main.quit_game)
 
 	var foot := Label.new()
 	_foot = foot
-	foot.text = "Фанатский проект по миру Genshin Impact   ·   рабочая версия"
+	foot.text = "Фанатский проект по миру Genshin Impact   ·   Музыка HOYO-MiX"
 	foot.add_theme_font_size_override("font_size", 14)
 	foot.add_theme_font_override("font", Look.font("sans"))
 	foot.add_theme_color_override("font_color", Color(0.77, 0.75, 0.67, 0.85))

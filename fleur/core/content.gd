@@ -7,6 +7,7 @@ var actions: Dictionary = {}
 var events: Dictionary = {}
 var scenes: Dictionary = {}
 var world: Dictionary = {}
+var soundscapes: Dictionary = {}
 var talk: Dictionary = {}
 var duel: Dictionary = {}
 
@@ -29,6 +30,7 @@ func _init() -> void:
 	actions = _load_json("res://data/actions.json")
 	events = _load_json("res://data/events.json")
 	world = _load_json("res://data/world.json")
+	soundscapes = _load_json("res://data/soundscapes.json")
 	if FileAccess.file_exists("res://data/talk.json"):
 		talk = _load_json("res://data/talk.json")
 	if FileAccess.file_exists("res://data/duel.json"):
@@ -72,9 +74,20 @@ func background(id: String) -> Dictionary:
 	return world.get("backgrounds", {}).get(id, {})
 
 
+func figure_lighting(id: String, phase: String, shot_profile := "") -> Dictionary:
+	var profiles: Dictionary = world.get("figure_lighting", {})
+	if profiles.has(shot_profile):
+		return profiles[shot_profile]
+	var fallback := "day" if phase == "morning" else phase
+	var setting = background(id).get("lighting", fallback)
+	if setting is Dictionary:
+		setting = setting.get(phase, setting.get("day", fallback))
+	return profiles.get(setting, profiles.get(fallback, {}))
+
+
 ## Текстовый формат сцен (data/scenes/*.scene) — чтобы сцены можно было писать как прозу.
 ##   @id, @title, @after          — заголовок сцены
-##   @bg имя / @show id [left|center|right] / @hide id
+##   @bg имя [профиль_света] / @show id [left|center|right] / @hide id
 ##   @label имя / @goto имя / @if {условие JSON} -> имя / @do [эффекты JSON] / @end
 ##   N: текст                      — повествование
 ##   кто: текст                    — реплика (fleur, char_..., или говорящий из world.json)
@@ -123,10 +136,16 @@ func parse_scene(text: String, fname := "") -> Dictionary:
 			var cmd := s.substr(1) if sp < 0 else s.substr(1, sp - 1)
 			var arg := "" if sp < 0 else s.substr(sp + 1).strip_edges()
 			match cmd:
-				"id", "title", "after":
+				"id", "title", "after", "music":
 					sc[cmd] = arg
+				"sfx":
+					nodes.append({"sfx": arg})
 				"bg":
-					nodes.append({"bg": arg})
+					var parts := arg.split(" ", false, 1)
+					var shot := {"bg": parts[0] if not parts.is_empty() else ""}
+					if parts.size() > 1:
+						shot["lighting"] = parts[1].strip_edges()
+					nodes.append(shot)
 				"show":
 					var parts := arg.split(" ", false)
 					var shown := {"show": parts[0], "at": parts[1] if parts.size() > 1 else "center"}

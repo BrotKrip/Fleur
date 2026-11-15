@@ -12,6 +12,7 @@ var _busy := false
 
 
 func _ready() -> void:
+	get_tree().auto_accept_quit = false
 	get_tree().root.theme = Look.theme()
 	get_tree().root.min_size = Vector2i(1024, 600)
 	Game.main = self
@@ -87,6 +88,18 @@ func swap(new_screen: Control, title := "") -> void:
 	_busy = false
 	if screen and screen.has_method("on_shown"):
 		screen.on_shown()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		quit_game()
+
+
+func quit_game() -> void:
+	if Sound.closing:
+		return
+	await Sound.drain()
+	get_tree().quit()
 
 
 # ---------------------------------------------------------------- оверлеи

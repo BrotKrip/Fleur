@@ -439,4 +439,4 @@ func _run() -> void:
 	Game.delete_slot(test_slot)
 	print("SMOKE TRACE:\n  ", "\n  ".join(trace))
 	print("SMOKE OK")
-	get_tree().quit(0)
+	Game.main.quit_game()

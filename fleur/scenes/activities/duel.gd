@@ -458,6 +458,7 @@ func get_title() -> String:
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
+	Sound.environment("backgrounds", str(eng.def.get("bg", "practice")), Rules.phase_key(Game.state), "", "off")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	bg_rect = TextureRect.new()
@@ -1102,6 +1103,7 @@ func _playback() -> void:
 							await _wait(0.2)
 			"hit":
 				if v:
+					Sound.play("blades", -3.0)
 					var through := int(ev["amount"])
 					var absorbed := int(ev.get("absorbed", 0))
 					var dir := Vector2.from_angle(randf_range(-0.6, 0.6) + (PI if randf() < 0.5 else 0.0))
@@ -1119,6 +1121,7 @@ func _playback() -> void:
 						_float(vc + Vector2(0, -60), "отбито", Color("c9d7e2"), 26)
 					await _wait(0.26)
 			"hit_fleur":
+				Sound.play("blades", -3.0)
 				var through2 := int(ev["amount"])
 				fleur_disp["guard"] = maxf(0.0, float(fleur_disp["guard"]) - int(ev.get("absorbed", 0)))
 				fleur_disp["balance"] = maxf(0.0, float(fleur_disp["balance"]) - through2)
@@ -1384,6 +1387,7 @@ func _show_intro() -> void:
 
 func _begin() -> void:
 	_busy = true
+	Sound.play("danger" if duel_id == "docks_street" else "scabbard")
 	disp_init = eng.initiative
 	await _banner(get_title(), Color("f4e8ca"))
 	_deal(true)

@@ -36,8 +36,153 @@
 			"color": "#c9a94a"
 		}
 	},
+	"figure_lighting": {
+		"day": {
+			"ambient_color": "#d9e5ee",
+			"ambient_strength": 0.055,
+			"brightness": 1
+		},
+		"evening": {
+			"ambient_color": "#aaa1b7",
+			"ambient_strength": 0.29,
+			"brightness": 0.92
+		},
+		"night": {
+			"ambient_color": "#8795c0",
+			"ambient_strength": 0.44,
+			"brightness": 0.83
+		},
+		"window_left_day": {
+			"ambient_color": "#ddd1c1",
+			"ambient_strength": 0.065,
+			"brightness": 0.99,
+			"light_color": "#ffe3b6",
+			"light_strength": 0.037,
+			"light_side": -1
+		},
+		"window_right_day": {
+			"ambient_color": "#e1d6cc",
+			"ambient_strength": 0.065,
+			"brightness": 0.99,
+			"light_color": "#ffedcf",
+			"light_strength": 0.035,
+			"light_side": 1
+		},
+		"dusk_room": {
+			"ambient_color": "#aa93a8",
+			"ambient_strength": 0.28,
+			"brightness": 0.92,
+			"light_color": "#ffcc91",
+			"light_strength": 0.08,
+			"light_side": 1
+		},
+		"dark_room": {
+			"ambient_color": "#8192ba",
+			"ambient_strength": 0.46,
+			"brightness": 0.815,
+			"light_color": "#ffc686",
+			"light_strength": 0.055,
+			"light_side": 1
+		},
+		"fireplace": {
+			"ambient_color": "#8998bd",
+			"ambient_strength": 0.4,
+			"brightness": 0.865,
+			"light_color": "#ffb472",
+			"light_strength": 0.29,
+			"light_side": 1
+		},
+		"street_evening": {
+			"ambient_color": "#b5a0ac",
+			"ambient_strength": 0.29,
+			"brightness": 0.92,
+			"light_color": "#ffcf9e",
+			"light_strength": 0.045,
+			"light_side": -1,
+			"backdrop_tint": "#c7b5b2"
+		},
+		"street_night": {
+			"ambient_color": "#8491bd",
+			"ambient_strength": 0.44,
+			"brightness": 0.83,
+			"light_color": "#ffe0ad",
+			"light_strength": 0.035,
+			"light_side": -1,
+			"backdrop_tint": "#8290b2"
+		},
+		"rain": {
+			"ambient_color": "#96adbc",
+			"ambient_strength": 0.22,
+			"brightness": 0.94
+		},
+		"rain_window": {
+			"ambient_color": "#8d9fac",
+			"ambient_strength": 0.235,
+			"brightness": 0.935,
+			"light_color": "#ffce9b",
+			"light_strength": 0.048,
+			"light_side": 1
+		},
+		"lanterns": {
+			"ambient_color": "#9795b1",
+			"ambient_strength": 0.3,
+			"brightness": 0.89,
+			"light_color": "#ffd197",
+			"light_strength": 0.095,
+			"light_side": 1
+		},
+		"docks_at_night": {
+			"ambient_color": "#7b90af",
+			"ambient_strength": 0.47,
+			"brightness": 0.815,
+			"light_color": "#ffd18e",
+			"light_strength": 0.068,
+			"light_side": -1
+		},
+		"dock_store": {
+			"ambient_color": "#819aa7",
+			"ambient_strength": 0.36,
+			"brightness": 0.865,
+			"light_color": "#ffcb86",
+			"light_strength": 0.095,
+			"light_side": 1
+		},
+		"amber_lamps": {
+			"ambient_color": "#ac98a2",
+			"ambient_strength": 0.245,
+			"brightness": 0.925,
+			"light_color": "#ffd298",
+			"light_strength": 0.095,
+			"light_side": 1
+		},
+		"stage": {
+			"ambient_color": "#99868b",
+			"ambient_strength": 0.32,
+			"brightness": 0.885,
+			"light_color": "#ffe1b0",
+			"light_strength": 0.075,
+			"light_side": 1
+		},
+		"stone": {
+			"ambient_color": "#bcb0a0",
+			"ambient_strength": 0.195,
+			"brightness": 0.95,
+			"light_color": "#f8dcad",
+			"light_strength": 0.045,
+			"light_side": 1
+		},
+		"grotto": {
+			"ambient_color": "#77a7af",
+			"ambient_strength": 0.34,
+			"brightness": 0.895,
+			"light_color": "#ffcf99",
+			"light_strength": 0.06,
+			"light_side": 1
+		}
+	},
 	"backgrounds": {
 		"apartment": {
+			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dark_room"},
 			"label": "Квартира, улица Изумрудных Фонарей",
 			"colors": [
 				"#1d2a4a",
@@ -46,6 +191,7 @@
 			]
 		},
 		"apartment_morning": {
+			"lighting": "window_left_day",
 			"label": "Квартира, утро",
 			"colors": [
 				"#e8d6b8",
@@ -54,6 +200,7 @@
 			]
 		},
 		"apartment_evening": {
+			"lighting": "dusk_room",
 			"label": "Квартира, вечер",
 			"colors": [
 				"#3a2a3a",
@@ -62,6 +209,7 @@
 			]
 		},
 		"apartment_night": {
+			"lighting": "dark_room",
 			"label": "Квартира, ночь",
 			"colors": [
 				"#070b18",
@@ -70,6 +218,7 @@
 			]
 		},
 		"vasari": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Пассаж Вазари",
 			"colors": [
 				"#7fc6d8",
@@ -78,6 +227,7 @@
 			]
 		},
 		"vasari_rain": {
+			"lighting": "rain",
 			"label": "Пассаж Вазари, дождь",
 			"colors": [
 				"#748597",
@@ -86,6 +236,7 @@
 			]
 		},
 		"apartment_rain": {
+			"lighting": "rain_window",
 			"label": "Квартира, дождь за окном",
 			"colors": [
 				"#798391",
@@ -94,6 +245,7 @@
 			]
 		},
 		"vasari_fair": {
+			"lighting": "lanterns",
 			"label": "Вечерняя ярмарка на Пассаже Вазари",
 			"colors": [
 				"#b49b9d",
@@ -102,6 +254,7 @@
 			]
 		},
 		"lutes": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Кафе «Лютес»",
 			"colors": [
 				"#d9c7a3",
@@ -110,6 +263,7 @@
 			]
 		},
 		"tiori": {
+			"lighting": {"day": "window_right_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Дом Тиори",
 			"colors": [
 				"#f0d78a",
@@ -118,6 +272,7 @@
 			]
 		},
 		"docks": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Нижние причалы",
 			"colors": [
 				"#9fd3e0",
@@ -126,6 +281,7 @@
 			]
 		},
 		"docks_night": {
+			"lighting": "docks_at_night",
 			"label": "Нижние причалы, ночь",
 			"colors": [
 				"#05070f",
@@ -134,6 +290,7 @@
 			]
 		},
 		"warehouse": {
+			"lighting": "dock_store",
 			"label": "Склад у южной стены",
 			"colors": [
 				"#1a140e",
@@ -142,6 +299,7 @@
 			]
 		},
 		"debor": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "«Дебор Отель»",
 			"colors": [
 				"#e2c78a",
@@ -150,6 +308,7 @@
 			]
 		},
 		"debor_bar": {
+			"lighting": "amber_lamps",
 			"label": "Бар «Дебора»",
 			"colors": [
 				"#4a2a18",
@@ -158,6 +317,7 @@
 			]
 		},
 		"debor_hall": {
+			"lighting": "amber_lamps",
 			"label": "Большой зал «Дебора»",
 			"colors": [
 				"#f0dca0",
@@ -166,6 +326,7 @@
 			]
 		},
 		"steambird": {
+			"lighting": {"day": "window_right_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Редакция «Паровой птицы»",
 			"colors": [
 				"#cfc6b8",
@@ -174,6 +335,7 @@
 			]
 		},
 		"gardinage": {
+			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Палата Жардинаж",
 			"colors": [
 				"#504e50",
@@ -182,6 +344,7 @@
 			]
 		},
 		"practice": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Площадка у мастерской",
 			"colors": [
 				"#658b81",
@@ -190,6 +353,7 @@
 			]
 		},
 		"manor_interior": {
+			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Поместье Флёров",
 			"colors": [
 				"#bdae8a",
@@ -198,6 +362,7 @@
 			]
 		},
 		"manor_cellar": {
+			"lighting": "stone",
 			"label": "Семейный погреб",
 			"colors": [
 				"#665a48",
@@ -206,6 +371,7 @@
 			]
 		},
 		"manor_dining": {
+			"lighting": "amber_lamps",
 			"label": "Столовая в поместье",
 			"colors": [
 				"#ad8962",
@@ -214,6 +380,7 @@
 			]
 		},
 		"vineyard": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Виноградники в Берилле",
 			"colors": [
 				"#789a68",
@@ -222,6 +389,7 @@
 			]
 		},
 		"glass_workshop": {
+			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Витражная мастерская",
 			"colors": [
 				"#7b9eab",
@@ -230,6 +398,7 @@
 			]
 		},
 		"epiclèse_exterior": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Фонтан Люсин, перед «Эпиклезом»",
 			"colors": [
 				"#79b1d0",
@@ -238,6 +407,7 @@
 			]
 		},
 		"epiclèse_foyer": {
+			"lighting": "amber_lamps",
 			"label": "Фойе «Эпиклеза»",
 			"colors": [
 				"#617f85",
@@ -246,6 +416,7 @@
 			]
 		},
 		"epiclèse_hall": {
+			"lighting": "stage",
 			"label": "Зал «Эпиклеза»",
 			"colors": [
 				"#623a40",
@@ -254,6 +425,7 @@
 			]
 		},
 		"poisson": {
+			"lighting": "grotto",
 			"label": "Пуассон",
 			"colors": [
 				"#5f746e",
@@ -262,6 +434,7 @@
 			]
 		},
 		"perfume_shop": {
+			"lighting": {"day": "window_right_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Мастерская Эмилии",
 			"colors": [
 				"#557364",
@@ -270,6 +443,7 @@
 			]
 		},
 		"mermonia_exterior": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Верхний ярус, дворец Мермония",
 			"colors": [
 				"#71a7c7",
@@ -278,6 +452,7 @@
 			]
 		},
 		"morte": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
 			"label": "Акватория Морт",
 			"colors": [
 				"#85c3db",
@@ -286,6 +461,7 @@
 			]
 		},
 		"mermonia": {
+			"lighting": {"day": "window_right_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Дворец Мермония",
 			"colors": [
 				"#688eaa",

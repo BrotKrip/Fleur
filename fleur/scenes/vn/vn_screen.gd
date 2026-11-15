@@ -6,6 +6,8 @@ extends Control
 ## { choice: [{ t, when, effects, goto }] }, { label }, { goto }, { if, goto }, { do }, { end }.
 
 const Decor := preload("res://ui/ambient_canvas.gd")
+const FIGURE_LIGHT := preload("res://shaders/figure_lighting.gdshader")
+const BACKGROUND_FADE := 0.65
 var scene: Dictionary
 var ctx: Dictionary
 var api: Dictionary
@@ -21,6 +23,11 @@ var bg_mat: ShaderMaterial
 var background_art: TextureRect
 var previous_art: TextureRect
 var background_tween: Tween
+var figure_material := ShaderMaterial.new()
+var lighting_tween: Tween
+var current_bg := ""
+var shot_lighting := ""
+var lighting_phase := -1
 var place_label: Label
 var scene_label: Label
 var location_plaque: Control
@@ -93,6 +100,9 @@ func _ready() -> void:
 	add_child(Decor.new(11))
 
 	figures_layer = Control.new()
+	figure_material.shader = FIGURE_LIGHT
+	figure_material.set_shader_parameter("figure_width", VNFigure.FRAME_SIZE.x)
+	figures_layer.material = figure_material
 	figures_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
 	figures_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(figures_layer)
@@ -375,7 +385,7 @@ func _run() -> void:
 		if n.has("label"):
 			i += 1
 		elif n.has("bg"):
-			_set_bg(str(n["bg"]))
+			_set_bg(str(n["bg"]), str(n.get("lighting", "")))
 			i += 1
 		elif n.has("show"):
 			_show(str(n["show"]), str(n.get("at", "center")), str(n.get("mood", "")))
@@ -388,6 +398,9 @@ func _run() -> void:
 			i += 1
 		elif n.has("do"):
 			Rules.apply(n["do"], s, ctx, api)
+			i += 1
+		elif n.has("sfx"):
+			Sound.play(n["sfx"])
 			i += 1
 		elif n.has("if"):
 			i = labels[n["goto"]] if Rules.test(n["if"], s, ctx) else i + 1
@@ -423,17 +436,20 @@ func _run() -> void:
 	_finish()
 
 
-func _set_bg(id: String) -> void:
+func _set_bg(id: String, light_profile := "") -> void:
+	var had_bg := not current_bg.is_empty()
+	current_bg = id
+	shot_lighting = light_profile
 	if background_tween:
 		background_tween.kill()
 	previous_art.texture = background_art.texture
 	previous_art.modulate = background_art.modulate
 	previous_art.visible = previous_art.texture != null
 	background_art.texture = Art.background(id)
-	background_art.modulate = Art.background_tint(id)
+	_apply_environment(had_bg, false)
 	if previous_art.visible:
 		background_tween = create_tween()
-		background_tween.tween_property(previous_art, "modulate:a", 0.0, 0.65)
+		background_tween.tween_property(previous_art, "modulate:a", 0.0, BACKGROUND_FADE)
 		background_tween.tween_callback(func(): previous_art.visible = false)
 	var b := Content.background(id)
 	var cols: Array = b.get("colors", ["#223344", "#334455", "#112233"])
@@ -447,6 +463,35 @@ func _set_bg(id: String) -> void:
 	bg_mat.set_shader_parameter("shafts", 0.2 if id.contains("night") else 0.7)
 	place_label.text = str(b.get("label", ""))
 	_fit_location()
+
+
+## Одна палитра на весь кадр, включая уходящие фигуры и обе позы во время смены эмоции.
+func _apply_environment(animate: bool, fade_same_backdrop: bool) -> void:
+	lighting_phase = int(Game.state.get("phase", 1))
+	Sound.environment("backgrounds", current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting, str(scene.get("music", "")))
+	var profile := Content.figure_lighting(current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting)
+	var uniforms := {
+		"ambient_color": Color.from_string(profile.get("ambient_color", ""), Color.WHITE),
+		"ambient_strength": float(profile.get("ambient_strength", 0.0)),
+		"brightness": float(profile.get("brightness", 1.0)),
+		"light_color": Color.from_string(profile.get("light_color", ""), Color.WHITE),
+		"light_strength": float(profile.get("light_strength", 0.0)),
+		"light_side": float(profile.get("light_side", 1.0)),
+	}
+	if lighting_tween:
+		lighting_tween.kill()
+	if animate:
+		lighting_tween = create_tween().set_parallel()
+	for key in uniforms:
+		if animate:
+			lighting_tween.tween_property(figure_material, "shader_parameter/" + key, uniforms[key], BACKGROUND_FADE)
+		else:
+			figure_material.set_shader_parameter(key, uniforms[key])
+	var backdrop_tint := Art.background_tint(current_bg) * Color.from_string(profile.get("backdrop_tint", ""), Color.WHITE)
+	if fade_same_backdrop and animate:
+		lighting_tween.tween_property(background_art, "modulate", backdrop_tint, BACKGROUND_FADE)
+	else:
+		background_art.modulate = backdrop_tint
 
 
 ## Эмоции персонажей в этой сцене. Сохраняются, пока сцена не сменит их,
@@ -471,6 +516,7 @@ func _show(pid: String, at: String, m := "") -> void:
 		return
 	var f := VNFigure.new()
 	f.setup(pid, str(moods.get(pid, "")))
+	f.use_parent_material = true
 	f.set_meta("at", at)
 	figures_layer.add_child(f)
 	figures[pid] = f
@@ -543,6 +589,8 @@ func _say(who: String, text: String) -> void:
 
 func _process(delta: float) -> void:
 	_t += delta
+	if not current_bg.is_empty() and int(Game.state.get("phase", 1)) != lighting_phase:
+		_apply_environment(true, true)
 	if typing:
 		_shown_chars += delta * float(Game.settings["text_speed"])
 		text_label.visible_characters = int(_shown_chars)
@@ -685,6 +733,7 @@ func _show_choice(opts: Array) -> void:
 
 
 func _show_history() -> void:
+	Sound.play("ui_page")
 	var sh := Sheet.new(720)
 	sh.add_kicker("Сцена")
 	sh.add_title("Что было сказано")

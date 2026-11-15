@@ -1,6 +1,7 @@
 @id ordinary_morning
 
 @bg apartment_morning
+@sfx ui_page
 N: На кухонном подоконнике лежала газета, сложенная статьёй внутрь. Флёр нарочно положил её так, чтобы не перечитывать за завтраком. Пока грелась вода, он всё-таки развернул третью полосу.
 @if {"noFlag":"josie_arrived"} -> alone
 @show char_josie left

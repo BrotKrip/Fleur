@@ -3,6 +3,7 @@ extends Control
 ## Спрайт персонажа с мягкой анимацией дыхания и акцентом говорящего.
 ## Процедурный бюст остаётся резервом для ещё не нарисованных персонажей.
 
+const FRAME_SIZE := Vector2(420, 640)
 const STYLES := {
 	"char_charlotte": {"hair": "e7a2b6", "coat": "b3262c", "trim": "d4b25a", "hat": "kepi", "hat_color": "b3262c", "eyes": "3fb6c4", "monocle": true, "bob": true},
 	"char_josie": {"hair": "d9dde6", "coat": "7d90a8", "trim": "1a1a1a", "hat": "", "eyes": "8ec8ee", "ponytail": true},
@@ -31,8 +32,8 @@ func setup(id: String, start_mood := "") -> void:
 	mood = start_mood
 	portrait = Art.portrait(id, mood)
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
-	size = Vector2(420, 640)
-	pivot_offset = Vector2(210, 640)
+	size = FRAME_SIZE
+	pivot_offset = Vector2(size.x * 0.5, size.y)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 

@@ -101,6 +101,19 @@ func _run() -> void:
 	await create_timer(0.6).timeout
 	check(_portrait_is(vn, "char_josie", "char_josie/laugh.png"), "@show Жози: неверная эмоция")
 	await _shot("scene_03_laugh")
+	var shot: Dictionary = content.parse_scene("@bg apartment_evening fireplace").nodes[0]
+	check(shot.bg == "apartment_evening" and shot.get("lighting") == "fireplace", "Не разобран свет кадра")
+	vn._set_bg(shot.bg, shot.lighting)
+	await create_timer(0.75).timeout
+	var material: ShaderMaterial = vn.figures_layer.material
+	var fire: Dictionary = content.world.figure_lighting.fireplace
+	check(vn.figures.char_josie.use_parent_material, "Фигура не получила освещение кадра")
+	check(is_equal_approx(material.get_shader_parameter("light_strength"), fire.light_strength), "Не включён источник у камина")
+	vn._set_bg("vasari")
+	game.state.phase = 3
+	await create_timer(0.85).timeout
+	var night: Dictionary = content.figure_lighting("vasari", "night")
+	check(is_equal_approx(material.get_shader_parameter("brightness"), night.brightness), "При смене времени сохранился дневной свет")
 	if output != "":
 		await _gallery(game, catalog)
 	print("EMOTIONS CHECK: ", "OK" if failed == 0 else "FAILED", " (", failed, ")")

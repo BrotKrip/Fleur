@@ -490,6 +490,7 @@ func _remove_node(id: String, animate: bool) -> void:
 
 func _apply_light(instant := false) -> void:
 	var ph := int(Game.state["phase"])
+	Sound.environment("locations", Game.state["here"], Rules.PHASE_KEYS[ph])
 	if instant:
 		modulate_node.color = PHASE_TINT[ph]
 		lamp_mat.set_shader_parameter("lamp", PHASE_LAMP[ph])
@@ -502,6 +503,7 @@ func _apply_light(instant := false) -> void:
 func _on_wait() -> void:
 	if _reading:
 		return
+	Sound.play("ui_dial")
 	_close_note()
 	_close_sheet()
 	var res := Game.wait_phase()
@@ -527,12 +529,14 @@ func _gui_input(e: InputEvent) -> void:
 
 
 func _on_picked(card: TableCard) -> void:
+	Sound.play("ui_drag")
 	_close_note()
 	if card.get_parent() == cards_layer:
 		cards_layer.move_child(card, -1)
 
 
 func _on_dropped(card: TableCard) -> void:
+	Sound.play("ui_card", -3.0)
 	var gp := get_global_mouse_position()
 	# в ячейку открытого дела
 	if sheet:
@@ -599,6 +603,7 @@ func _return_card(card: TableCard) -> void:
 
 
 func _put_in_slot(card: TableCard, sb) -> void:
+	Sound.play("ui_card", -3.0)
 	if sb.card and sb.card != card:
 		var prev: TableCard = sb.card
 		sb.card = null
@@ -626,6 +631,8 @@ func _travel(loc: String, with_card := "") -> void:
 	var s := Game.state
 	if s["here"] != loc:
 		s["here"] = loc
+		Sound.play("ui_map")
+		Sound.environment("locations", loc, Rules.phase_key(s))
 		s["cards"][loc]["fresh"] = false
 		map.move_hat(loc)
 		_close_sheet()
@@ -665,6 +672,7 @@ func _choose_action(a: Dictionary, where: String, preset := {}) -> void:
 		return
 	_close_sheet()
 	sheet = ActionSheet.new()
+	Sound.play("ui_folder" if a["id"] == "file_case" else "ui_paper")
 	sheet.setup(a, where)
 	sheet.confirmed.connect(func(slots):
 		var act: Dictionary = sheet.action
@@ -775,6 +783,10 @@ func _read(title: String, text: String, changes: Array, kind: String, then: Call
 	if text == "" and _changes_lines(changes).is_empty():
 		then.call()
 		return
+	if changes.any(func(change): return change.get("kind") == "stage"):
+		Sound.play("clue")
+	else:
+		Sound.play("ui_paper")
 	_reading = true
 	var sh := Sheet.new(600 if kind != "result" else 560, 0.28)
 	if kind == "intro":
@@ -844,9 +856,16 @@ func _toggle_note(card: TableCard) -> void:
 	note_card = card.id
 	card.focused = true
 	var s := Game.state
-	if s["cards"].has(card.id) and bool(s["cards"][card.id].get("fresh", false)):
+	var fresh: bool = s["cards"].get(card.id, {}).get("fresh", false)
+	if fresh:
 		s["cards"][card.id]["fresh"] = false
 		card.queue_redraw()
+	match card.look:
+		"folder": Sound.play("ui_folder")
+		"book": Sound.play("ui_page")
+		"envelope": Sound.play("ui_seal" if fresh else "ui_paper")
+		"note", "clipping", "telegram": Sound.play("ui_paper", -2.0)
+		_: Sound.play("ui_card")
 	var d := card.d
 	var p := PanelContainer.new()
 	p.theme_type_variation = "Paper"

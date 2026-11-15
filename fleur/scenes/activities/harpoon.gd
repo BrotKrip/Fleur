@@ -75,6 +75,7 @@ func get_title() -> String:
 # ---------------------------------------------------------------- создание
 
 func _ready() -> void:
+	Sound.environment("backgrounds", "morte", Rules.phase_key(Game.state))
 	boat = {"pos": Vector2(W / 2, H - 140), "vel": Vector2.ZERO, "rot": -PI / 2, "hp": 3, "invuln": 0.0, "dash": 3, "dash_t": 0.0}
 	harpoon = {"state": "ready", "pos": Vector2.ZERO, "vel": Vector2.ZERO, "charge": 0.0, "part": "", "local": Vector2.ZERO, "dist": 0.0, "cd": 0.0}
 	var sc := 1.3 if big else 1.0
@@ -390,6 +391,8 @@ func _update_boat(dt: float) -> void:
 
 
 func _hurt_boat(knock: Vector2, text: String) -> void:
+	if int(boat["hp"]) == 2:
+		Sound.play("danger")
 	boat["hp"] = int(boat["hp"]) - 1
 	boat["invuln"] = 1.2
 	boat["vel"] += knock

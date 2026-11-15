@@ -5,6 +5,7 @@ extends Node
 const SAVE_DIR := "user://saves"
 const SLOTS := ["auto", "1", "2", "3", "4", "5"]
 const SETTINGS_PATH := "user://settings.cfg"
+const VOLUME_BUSES := {"volume": "Master", "music_volume": "Music", "ambience_volume": "Ambience", "effects_volume": "Effects"}
 
 const ACTIVITY_SCRIPTS := {
 	"harpoon": "res://scenes/activities/harpoon.gd",
@@ -19,7 +20,10 @@ var settings := {
 	"text_speed": 45,      # символов в секунду, 0 — мгновенно
 	"fullscreen": false,
 	"autosave": true,
-	"volume": 0.7,         # заготовка: звука пока нет
+	"volume": 0.7,
+	"music_volume": 1.0,
+	"ambience_volume": 1.0,
+	"effects_volume": 1.0,
 	"hints": true,
 }
 
@@ -247,5 +251,8 @@ func apply_settings() -> void:
 	var want := DisplayServer.WINDOW_MODE_FULLSCREEN if settings["fullscreen"] else DisplayServer.WINDOW_MODE_WINDOWED
 	if DisplayServer.window_get_mode() != want and not (want == DisplayServer.WINDOW_MODE_WINDOWED and DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_MAXIMIZED):
 		DisplayServer.window_set_mode(want)
-	var bus := AudioServer.get_bus_index("Master")
-	AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(float(settings["volume"]), 0.0001)))
+	for key in VOLUME_BUSES:
+		var bus := AudioServer.get_bus_index(VOLUME_BUSES[key])
+		var gain := clampf(float(settings[key]), 0.0, 1.0)
+		AudioServer.set_bus_mute(bus, gain == 0.0)
+		AudioServer.set_bus_volume_db(bus, linear_to_db(maxf(gain, 0.0001)))

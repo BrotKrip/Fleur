@@ -76,5 +76,109 @@
 			"eyes": "5f7890",
 			"long": true
 		}
+	},
+	"npc_chestnut_vendor": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Торговец каштанами",
+		"text": "Жарит каштаны у фонтана на Пассаже Вазари.",
+		"color": "#8a6a4a"
+	},
+	"npc_odile": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Одиль",
+		"text": "Вышивальщица из мастерской второго двора. Подписывает работы за всех, кто их ткал.",
+		"color": "#9aa0b8"
+	},
+	"npc_old_weaver": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Пожилой ткач",
+		"text": "Пришёл на выставку посмотреть на рыбок, которых ткала его мастерская.",
+		"color": "#8a8478"
+	},
+	"npc_aurelie_sister": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Сестра Орели",
+		"text": "Живёт в городе, у неё Орели останавливается, когда приезжает из Лиффи.",
+		"color": "#a89880"
+	},
+	"npc_fry_seller": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Продавщица картошки",
+		"text": "Торгует жареной картошкой из окна в Квартале Лион. Помнит, кто сколько соли просит.",
+		"color": "#c09a5a"
+	},
+	"npc_desk_melusine": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Мелюзина за стойкой",
+		"text": "Выписывает пропуска в Палате Жардинаж.",
+		"color": "#7aa0a8"
+	},
+	"npc_duty_officer": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Дежурный",
+		"text": "Дежурный Особого патруля. Натёр ноги новыми сапогами.",
+		"color": "#6a7080"
+	},
+	"npc_bussy": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Советник Бюсси",
+		"text": "Завсегдатай карточного стола «Дебора». Держит в денежном ящичке фисташковые скорлупки.",
+		"color": "#7a6a8a"
+	},
+	"npc_markot_lady": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Дама со станции Маркот",
+		"text": "Зрительница, которая всю дорогу до театра гадала, как Лини вынимает часы из пламени.",
+		"color": "#a08098"
+	},
+	"npc_theatre_girl": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Девочка из зала",
+		"text": "Внучка зрительницы с соседнего места. Заметила Линетт раньше всех.",
+		"color": "#c0a0a0"
+	},
+	"npc_bassoonist": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Фаготист",
+		"text": "Музыкант оркестра Эпиклеза, которому досталась самая неожиданная нота сезона.",
+		"color": "#706858"
+	},
+	"npc_seamstress": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Белошвейка",
+		"text": "Белошвейка из мастерской баронессы.",
+		"color": "#b0a8a0"
+	},
+	"npc_storekeeper": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Кладовщик",
+		"text": "Ведёт складскую книгу на городском причале.",
+		"color": "#7a7060"
 	}
 }

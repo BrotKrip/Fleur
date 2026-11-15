@@ -476,6 +476,11 @@
 				"#703e46"
 			]
 		},
+		"epiclese_foyer_stairs": {
+			"lighting": "amber_lamps",
+			"label": "Парадная лестница «Эпиклеза»",
+			"colors": ["#617f85", "#ae9670", "#703e46"]
+		},
 		"epiclèse_hall": {
 			"lighting": "stage",
 			"label": "Зал «Эпиклеза»",

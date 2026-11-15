@@ -134,8 +134,12 @@ func environment(section: String, id: String, phase: String, light := "", score_
 	var bg := id
 	if section == "locations":
 		bg = str(Content.def(id).get("bg", "apartment"))
-	var cue: String = data.get("music", {}).get(bg, "") if score_override == "" else score_override
-	set_music(cue)
+	set_background_music(bg, score_override)
+
+
+func set_background_music(bg: String, override_id: String) -> void:
+	if not closing:
+		set_music(Content.soundscapes.get("music", {}).get(bg, "") if override_id.is_empty() else override_id)
 
 
 func set_music(id: String) -> void:

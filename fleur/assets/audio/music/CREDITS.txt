@@ -30,5 +30,40 @@ https://genshin.hoyoverse.com/en/news/detail/113222
 Официальное музыкальное событие
 https://act.hoyoverse.com/ys/event/e20231003ost/index.html?lang=en-us
 
+Музыка официальных фонтейнских веб-страниц Genshin Impact
+
+HoYoverse, 2023. Использованы фоновые музыкальные дорожки самих страниц. В игре они звучат в стерео, с выровненной громкостью. Название страницы указывает источник конкретной версии записи.
+
+As Light Rain Falls Without Reason — музыка страницы версии 4.0. Прибытие публики к «Эпиклезу».
+fontaine_overture.ogg
+https://act.hoyoverse.com/ys/event/e20230805preview/index.html
+https://act.hoyoverse.com/ys/event/e20230805preview/medias/bgm.a74ac036..mp3
+
+To the Stars Shining in the Depths — музыка страницы версии 4.1. Спуск к семейным ячейкам под водой.
+depths.ogg
+https://act.hoyoverse.com/ys/event/e20230916preview/index.html
+https://act.hoyoverse.com/ys/event/e20230916preview/medias/bgm.36178550..mp3
+
+Cogs in the Machine — музыка веб-события Ризли. Осмотр механизма под сценой.
+cogs_in_the_machine.ogg
+https://act.hoyoverse.com/ys/event/e20231012wriothesley/index.html
+https://act.hoyoverse.com/ys/event/e20231012wriothesley/medias/bgm.207e994c..mp3
+
+Masquerade of the Guilty — HOYO-MiX, веб-версия темы из Footprints of the Traveler Vol. 3. Заседание и оправдание Лини.
+masquerade.ogg
+https://act.hoyoverse.com/ys/event/e20231028preview/index.html
+https://act.hoyoverse.com/ys/event/e20231028preview/medias/bgm.1b18e6e3..mp3
+
+Roses and Muskets — HOYO-MiX, тема из Footprints of the Traveler Vol. 3. Показательный урок Клоринды.
+roses_and_muskets.ogg
+https://act.hoyoverse.com/ys/event/e20231209preview-yh731z/index.html
+https://act.hoyoverse.com/ys/event/e20231209preview-yh731z/medias/bgm.1d6bfe69..mp3
+
 Справка HoYoverse о личном некоммерческом использовании внутриигровой музыки в фанатских работах
 https://support.hoyoverse.com/hc/en-us/articles/50333834244633-Can-I-use-in-game-music-for-my-fan-made-content
+
+Предметные звуки для сцен «Послевкусия»
+
+Девять звуков созданы специально для игры с помощью синтеза резонансов, шума и коротких отражений. В записях представлены театральный звонок (opera_call), обрушение резервуара (tank_collapse), пробирка на полу (vial_roll), аплодисменты на галерее (gallery_applause), стук по подводной решётке (dive_knock), чайная струя (tea_pour), чашка на блюдце (cup_saucer), вязальные спицы за дверью (knitting_needles) и витражное стекло в раме (stained_glass).
+
+Звуки катушки, обрыва троса, удара в борт и всплеска сделаны для лодки в акватории Морт. В их основе синтез резонанса дерева, трения волокон и движения воды. Атмосферы суда, закулисья, тоннеля под сценой, бара «Дебора» и семейного подводного склада также созданы для игры. Это стереопетли длиной от 53 до 63 секунд.

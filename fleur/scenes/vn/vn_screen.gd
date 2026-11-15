@@ -26,6 +26,7 @@ var background_tween: Tween
 var figure_material := ShaderMaterial.new()
 var lighting_tween: Tween
 var current_bg := ""
+var score_override := ""
 var shot_lighting := ""
 var lighting_phase := -1
 var place_label: Label
@@ -52,6 +53,7 @@ var _t := 0.0
 
 func setup(sc: Dictionary, c: Dictionary) -> void:
 	scene = sc
+	score_override = str(sc.get("music", ""))
 	ctx = c.duplicate()
 	api = Rules.new_api()
 	nodes = sc.get("nodes", [])
@@ -402,6 +404,10 @@ func _run() -> void:
 		elif n.has("sfx"):
 			Sound.play(n["sfx"])
 			i += 1
+		elif n.has("score"):
+			score_override = "" if n["score"] == "auto" else str(n["score"])
+			Sound.set_background_music(current_bg, score_override)
+			i += 1
 		elif n.has("if"):
 			i = labels[n["goto"]] if Rules.test(n["if"], s, ctx) else i + 1
 		elif n.has("goto"):
@@ -468,7 +474,7 @@ func _set_bg(id: String, light_profile := "") -> void:
 ## Одна палитра на весь кадр, включая уходящие фигуры и обе позы во время смены эмоции.
 func _apply_environment(animate: bool, fade_same_backdrop: bool) -> void:
 	lighting_phase = int(Game.state.get("phase", 1))
-	Sound.environment("backgrounds", current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting, str(scene.get("music", "")))
+	Sound.environment("backgrounds", current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting, score_override)
 	var profile := Content.figure_lighting(current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting)
 	var uniforms := {
 		"ambient_color": Color.from_string(profile.get("ambient_color", ""), Color.WHITE),

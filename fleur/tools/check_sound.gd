@@ -46,7 +46,11 @@ func run() -> void:
 		for node in scene.nodes:
 			if node.has("sfx"):
 				resource("sfx", node.sfx, "wav")
+			if node.has("score") and node.score not in ["off", "auto"]:
+				resource("music", node.score, "ogg")
 	for id in ["ui_map", "ui_paper", "ui_card", "ui_seal", "ui_folder", "ui_page", "ui_dial", "ui_drag", "clue", "danger", "blades", "scabbard"]:
+		resource("sfx", id, "wav")
+	for id in ["boat_spool", "boat_hull", "boat_splash", "boat_line_break"]:
 		resource("sfx", id, "wav")
 
 	sound.environment("locations", "loc_lutes", "day")
@@ -68,6 +72,7 @@ func run() -> void:
 	check(sound.ambience.id == "hearth" and sound.ambience.selected.playing, "Не слышен камин")
 	for player in sound.music.players:
 		check(not player.playing, "Музыка не затихла")
+	await check_score_changes(content, game, sound)
 	sound.play("ui_seal")
 	check(sound.effects.any(func(player): return player.playing and player.bus == &"Effects"), "Сургуч не дошёл до шины эффектов")
 	game.settings.effects_volume = 0.0
@@ -76,3 +81,24 @@ func run() -> void:
 	await sound.drain()
 	print("SOUND CHECK: ", checked.size(), " ресурсов, ошибок: ", failed)
 	quit(1 if failed else 0)
+
+
+func check_score_changes(content: Node, game: Node, sound: Node) -> void:
+	game.state = root.get_node("Rules").new_state()
+	game.settings.text_speed = 0
+	var vn = load("res://scenes/vn/vn_screen.gd").new()
+	var script := "@music le_spectacle\n@bg lutes\nN: 1\n@score off\n@bg vasari\nN: 2\n@score anns_anapausis\nN: 3\n@score auto\nN: 4"
+	vn.setup(content.parse_scene(script), {})
+	root.add_child(vn)
+	await process_frame
+	await process_frame
+	check(sound.music.id == "le_spectacle", "Не звучит вступительная тема сцены")
+	vn._advance()
+	check(sound.music.id == "" and sound.ambience.selected != null, "При смене фона потерялась музыкальная пауза")
+	var bed: AudioStreamPlayer = sound.ambience.selected
+	vn._advance()
+	check(sound.music.id == "anns_anapausis", "Новая тема не вступила на реплике")
+	vn._advance()
+	check(sound.music.id == content.soundscapes.music.vasari and sound.ambience.selected == bed, "Не вернулась музыка места")
+	vn.queue_free()
+	await process_frame

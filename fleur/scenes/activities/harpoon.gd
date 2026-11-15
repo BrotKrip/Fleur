@@ -201,6 +201,7 @@ func _dash() -> void:
 	if dir == Vector2.ZERO:
 		dir = Vector2.from_angle(boat["rot"])
 	boat["vel"] += dir * DASH_IMPULSE
+	Sound.play("boat_splash", -5.0)
 	_splash(boat["pos"], 10, Color(0.8, 0.95, 1.0, 0.8))
 
 
@@ -212,6 +213,7 @@ func _throw_spear() -> void:
 
 
 func _fire_harpoon() -> void:
+	Sound.play("boat_spool")
 	var from: Vector2 = boat["pos"]
 	var dir := (_mouse() - from).normalized()
 	var power := clampf(harpoon["charge"] / 1.2, 0.6, 1.0)
@@ -391,6 +393,7 @@ func _update_boat(dt: float) -> void:
 
 
 func _hurt_boat(knock: Vector2, text: String) -> void:
+	Sound.play("boat_hull")
 	if int(boat["hp"]) == 2:
 		Sound.play("danger")
 	boat["hp"] = int(boat["hp"]) - 1
@@ -465,6 +468,7 @@ func _update_rope(dt: float) -> void:
 	var bp: Vector2 = boat["pos"]
 	var d := bp.distance_to(anchor)
 	if d > ROPE_SNAP:
+		Sound.play("boat_line_break")
 		_popup((bp + anchor) / 2, "Трос лопнул", Color(1, 0.6, 0.5))
 		harpoon["state"] = "cooldown"
 		harpoon["cd"] = 2.5
@@ -548,6 +552,7 @@ func _update_prey(dt: float) -> void:
 			if p["state_t"] <= 0:
 				p["state"] = "surface"
 				p["state_t"] = 0.9
+				Sound.play("boat_splash")
 				_splash(p["pos"], 24, Color(0.8, 0.95, 1.0, 0.8))
 				_popup(p["pos"], "Всплывает!", Color(1, 0.8, 0.6))
 		"recoil":

@@ -138,8 +138,8 @@ func parse_scene(text: String, fname := "") -> Dictionary:
 			match cmd:
 				"id", "title", "after", "music":
 					sc[cmd] = arg
-				"sfx":
-					nodes.append({"sfx": arg})
+				"sfx", "score":
+					nodes.append({cmd: arg})
 				"bg":
 					var parts := arg.split(" ", false, 1)
 					var shot := {"bg": parts[0] if not parts.is_empty() else ""}

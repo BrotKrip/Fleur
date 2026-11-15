@@ -1,4 +1,5 @@
 @id trial_opening
+@music off
 @after trial_hearth
 @bg epiclèse_exterior rain_street
 @sfx rain_window
@@ -26,6 +27,7 @@ char_josie: Город никогда не преувеличивает про �
 @hide char_josie
 @label hall
 @bg epiclese_court
+@score masquerade
 N: Зал «Эпиклеза» за ночь превратили обратно в суд. Сцену закрыли кафедрой, над кафедрой ожила Оратрис: огромный циферблат с весами, которые медленно покачивались, словно прислушивались к залу. Справа, в ложе прессы, Шарлотта уже писала. Слева, у ложи обвинения, стояла Клоринда со шпагой у бедра.
 @if {"relAny":["char_clorinde",["Поставили номер вместе","Говорили всерьёз","Уважает руку"]]} -> clorinde_nod
 @goto bench

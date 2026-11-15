@@ -156,6 +156,7 @@ func _draw() -> void:
 	var r := Rect2(Vector2.ZERO, size)
 	var sheet := Look.torn_rect(r, 77, true, true, 2.5)
 	Look.soft_shadow(self, sheet, Vector2(6, 9), 10, 0.55)
+	Look.thickness(self, sheet, 3.0, Color("d3c194"), Color("8a7652"))
 	Look.fill_v(self, sheet, Color("efe3c4"), Color("dccaa0"))
 	if _chart:
 		# Пропорции исходного плана важны для дворца, аквабусных линий и порта.

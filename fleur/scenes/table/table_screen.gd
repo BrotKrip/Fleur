@@ -21,6 +21,8 @@ var hint_label: Label
 var notebook: DeskProp
 var plaque: Button
 var inkwell: DeskProp
+var trinkets: Array[DeskTrinket] = []
+var quip_layer: Control
 var blotter: Control
 
 ## Большой стол: всё физическое (карта города, открытка места, вещи) лежит в world,
@@ -40,10 +42,33 @@ const ZONES := {
 	"state": Rect2(2050, 420, 300, 140),
 	"world": Rect2(1330, 400, 380, 160),
 }
+## Безделушки на деревянных краях стола, вне зон для карт (координаты стола).
+const TRINKETS := {
+	"mirror": Vector2(494, 312),
+	"bell": Vector2(642, 312),
+	"letters": Vector2(762, 310),
+	"swan": Vector2(1168, 264),
+	"hat": Vector2(2040, 196),
+	"glass": Vector2(2220, 272),
+}
 const ZONE_ORDER := ["affair", "storyline", "deadline", "state", "world", "person", "rumor", "info", "clue", "invitation", "event", "item", "approach"]
 
 var world: Control
 var backdrop: ColorRect
+## Наклон стола: плоский стол рисуется в plane и кладётся на экран в перспективе.
+## Вид сверху под углом около 22° к вертикали. Сжатие бумаги по глубине
+## не зависит от того, насколько увеличиваются предметы у ближнего края.
+const DEPTH_RATIO := 0.93
+const FAR_SCALE := 0.975
+const NEAR_SCALE := 1.025
+var plane: SubViewport
+var plane_view: ColorRect
+var plane_mat: ShaderMaterial
+var desk_input: Control              # пустое место стола внутри plane: тянет вид
+var plane_size := Vector2(1600, 900)
+var _h := PackedFloat32Array()       # экран → плоский стол
+var _hi := PackedFloat32Array()      # плоский стол → экран
+var _plane_hover := false
 var tidy_btn: Button
 var cam_pos := Vector2(720, 405)     # точка стола в центре экрана
 var cam_zoom := 1.0
@@ -80,15 +105,36 @@ func _ready() -> void:
 	modulate_node = CanvasModulate.new()
 	add_child(modulate_node)
 
+	plane = SubViewport.new()
+	plane.disable_3d = true
+	plane.gui_embed_subwindows = true
+	plane.size_2d_override_stretch = true
+	plane.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	plane.canvas_item_default_texture_filter = Viewport.DEFAULT_CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	add_child(plane)
+	desk_input = Control.new()
+	desk_input.mouse_filter = Control.MOUSE_FILTER_STOP
+	desk_input.theme = Look.theme()      # тема окна сквозь SubViewport не наследуется
+	desk_input.gui_input.connect(_desk_gui_input)
+	plane.add_child(desk_input)
+	plane_view = ColorRect.new()
+	plane_view.set_anchors_preset(Control.PRESET_FULL_RECT)
+	plane_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	plane_mat = ShaderMaterial.new()
+	plane_mat.shader = load("res://shaders/desk_tilt.gdshader")
+	plane_mat.set_shader_parameter("plane_tex", plane.get_texture())
+	plane_view.material = plane_mat
+	add_child(plane_view)
+
 	backdrop = ColorRect.new()
 	backdrop.set_anchors_preset(Control.PRESET_FULL_RECT)
 	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	backdrop.color = Color("1c120b")
-	add_child(backdrop)
+	desk_input.add_child(backdrop)
 	world = Control.new()
 	world.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	world.size = WORLD
-	add_child(world)
+	desk_input.add_child(world)
 
 	bg = ColorRect.new()
 	bg.position = Vector2(-700, -500)
@@ -110,6 +156,11 @@ func _ready() -> void:
 
 	inkwell = DeskProp.new("inkwell")
 	world.add_child(inkwell)
+	# безделушки лежат под слоем карт: карта сверху всегда главнее
+	for k in TRINKETS:
+		var trinket := DeskTrinket.new(k)
+		world.add_child(trinket)
+		trinkets.append(trinket)
 
 	hint_label = Label.new()
 	hint_label.add_theme_font_override("font", Look.font("hand"))
@@ -146,6 +197,12 @@ func _ready() -> void:
 	cards_layer.size = WORLD
 	cards_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	world.add_child(cards_layer)
+	quip_layer = Control.new()
+	quip_layer.size = WORLD
+	quip_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world.add_child(quip_layer)
+	for trinket in trinkets:
+		trinket.quip_layer = quip_layer
 	add_child(hint_label)
 
 	tidy_btn = _brass_button("Прибрать стол", Vector2(164, 44))
@@ -171,6 +228,7 @@ func _ready() -> void:
 	add_child(note_layer)
 
 	resized.connect(_layout_fixed)
+	get_viewport().size_changed.connect(_layout_fixed)
 	_layout_fixed()
 	_home_camera(true)
 	if Game.pending_return.size() > 0:
@@ -236,7 +294,7 @@ func on_escape() -> void:
 # ---------------------------------------------------------------- раскладка
 
 func table_size() -> Vector2:
-	return size if size.x > 10 else get_viewport_rect().size
+	return size if size.x > 10 and size.y > 10 else get_viewport_rect().size
 
 
 func world_size() -> Vector2:
@@ -245,12 +303,15 @@ func world_size() -> Vector2:
 
 func _layout_fixed() -> void:
 	var ts := table_size()
+	_update_plane()
 	wood.set_shader_parameter("size", bg.size)
 	lamp_mat.set_shader_parameter("size", ts)
 	# на столе (в мире)
 	map.position = Vector2(30, 30)
 	spread.position = Vector2(500, 34)
-	inkwell.position = Vector2(1168, 302)
+	inkwell.position = Vector2(973, 308)
+	for trinket in trinkets:
+		trinket.position = TRINKETS[trinket.kind]
 	# на экране
 	dial.position = Vector2(ts.x - 310, 28)
 	notebook.position = Vector2(ts.x - 170, ts.y - 180)
@@ -267,6 +328,8 @@ func _draw_blotter() -> void:
 	var r := Rect2(20, 400, WORLD.x - 40, WORLD.y - 420)
 	var edge := Look.rrect(r, 17)
 	Look.soft_shadow(blotter, edge, Vector2(3, 8), 10, 0.7)
+	# кожаная подложка лежит на столе толстым листом
+	Look.thickness(blotter, edge, 6.0, Color("1d3533"), Color("0a1414"))
 	Look.fill_v(blotter, edge, Color("273d3b"), Color("182928"))
 	Look.texture_polygon(blotter, edge, Art.surface("blotter_leather"), 1.0, Color(0.84, 0.89, 0.90, 0.56))
 	Look.fill_v(blotter, edge, Color(0.03, 0.10, 0.09, 0.02), Color(0.01, 0.04, 0.04, 0.24))
@@ -293,7 +356,7 @@ func _reserved() -> Array:
 		Rect2(map.position, map.size).grow(6),
 		Rect2(spread.position, spread.size).grow(8),
 		Rect2(inkwell.position, inkwell.size),
-	]
+	] + trinkets.map(func(tr): return Rect2(tr.position, tr.size * tr.scale))
 
 
 func _zone_for(d: Dictionary) -> Rect2:
@@ -513,6 +576,22 @@ func _on_wait() -> void:
 # ---------------------------------------------------------------- ввод с карт
 
 func _gui_input(e: InputEvent) -> void:
+	# стол виден в перспективе: событие пересчитывается в точку плоского стола
+	if e is InputEventMouse:
+		var ev := e.duplicate() as InputEventMouse
+		var pp := screen_to_plane(e.position)
+		ev.position = pp
+		ev.global_position = pp
+		if ev is InputEventMouseMotion:
+			ev.relative = _plane_delta(e.position, e.relative)
+			_plane_hover = true
+		plane.push_input(ev, true)
+		var hc := plane.gui_get_hovered_control()
+		mouse_default_cursor_shape = hc.mouse_default_cursor_shape if hc and hc != desk_input else Control.CURSOR_ARROW
+
+
+## Нажатие на пустое место стола (или безделушку) внутри plane: сдвинуть вид.
+func _desk_gui_input(e: InputEvent) -> void:
 	if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
 		if e.pressed:
 			_panning = true
@@ -524,7 +603,7 @@ func _gui_input(e: InputEvent) -> void:
 			if _panning:
 				_end_pan()
 			_panning = false
-	elif e is InputEventMouseMotion and _panning:
+	elif e is InputEventMouseMotion and _panning and (e.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		_pan_by(e.relative)
 
 
@@ -538,6 +617,9 @@ func _on_picked(card: TableCard) -> void:
 func _on_dropped(card: TableCard) -> void:
 	Sound.play("ui_card", -3.0)
 	var gp := get_global_mouse_position()
+	if card.get_viewport() == plane:
+		# карта ехала за мышью по плоскому столу: точка броска — оттуда же
+		gp = plane_to_screen(card.get_global_mouse_position())
 	# в ячейку открытого дела
 	if sheet:
 		var sb := sheet.slot_under(gp, card.id)
@@ -547,9 +629,10 @@ func _on_dropped(card: TableCard) -> void:
 		var old = sheet.slot_of(card)
 		if old:
 			old.card = null
-			card.reparent(cards_layer, true)
+			_card_to_desk(card)
 			card.base_scale = 1.0
 			sheet.refresh()
+	gp = screen_to_plane(gp)
 	# на папку дела — подшить улику
 	var case_id := _case_under(gp, card)
 	if case_id != "":
@@ -591,7 +674,7 @@ func _on_clicked(card: TableCard) -> void:
 
 func _return_card(card: TableCard) -> void:
 	if card.get_parent() != cards_layer:
-		card.reparent(cards_layer, true)
+		_card_to_desk(card)
 	var lay = Game.state["layout"].get(card.id)
 	var target := card.position
 	if lay != null:
@@ -612,7 +695,12 @@ func _put_in_slot(card: TableCard, sb) -> void:
 	if old and old != sb:
 		old.card = null
 	sb.card = card
-	card.reparent(sb, true)
+	if card.get_parent() == cards_layer:
+		var center := world_to_screen(card.position + card.size / 2.0)
+		card.reparent(sb, false)
+		card.global_position = center - card.size / 2.0 * card.scale
+	else:
+		card.reparent(sb, true)
 	var fit := minf(1.0, minf(150.0 / card.size.x, 116.0 / card.size.y))
 	var target := Vector2(sb.size.x / 2, (sb.size.y - 22) / 2) - card.size / 2
 	card.rest_rot = 0.0
@@ -967,7 +1055,7 @@ func _toggle_note(card: TableCard) -> void:
 	if note != p:
 		return
 	var ts := table_size()
-	var cr := card.get_global_rect()
+	var cr := plane_rect_to_screen(card.get_global_rect())
 	var pos := Vector2(cr.end.x + 14, cr.position.y)
 	if pos.x + p.size.x > ts.x - 10:
 		pos.x = cr.position.x - p.size.x - 14
@@ -1087,11 +1175,107 @@ func _file_into(case_id: String, card_id: String) -> void:
 # ---------------------------------------------------------------- камера и режиссура
 
 func screen_to_world(sp: Vector2) -> Vector2:
-	return (sp - world.position) / cam_zoom
+	return (screen_to_plane(sp) - world.position) / cam_zoom
 
 
 func world_to_screen(wp: Vector2) -> Vector2:
-	return wp * cam_zoom + world.position
+	return plane_to_screen(wp * cam_zoom + world.position)
+
+
+func screen_to_plane(sp: Vector2) -> Vector2:
+	return _apply_h(_h, sp)
+
+
+func plane_to_screen(pp: Vector2) -> Vector2:
+	return _apply_h(_hi, pp)
+
+
+func plane_rect_to_screen(r: Rect2) -> Rect2:
+	var out := Rect2(plane_to_screen(r.position), Vector2.ZERO)
+	for c in [Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y)]:
+		out = out.expand(plane_to_screen(c))
+	return out
+
+
+static func _apply_h(h: PackedFloat32Array, p: Vector2) -> Vector2:
+	if h.size() < 9:
+		return p
+	var w := h[6] * p.x + h[7] * p.y + h[8]
+	return Vector2(h[0] * p.x + h[1] * p.y + h[2], h[3] * p.x + h[4] * p.y + h[5]) / w
+
+
+## Гомография по четырём парам точек (from[i] → to[i]), 3×3 построчно.
+static func _homography(from: Array, to: Array) -> PackedFloat32Array:
+	var m := []
+	for i in 4:
+		var x: float = from[i].x
+		var y: float = from[i].y
+		var u: float = to[i].x
+		var v: float = to[i].y
+		m.append([x, y, 1.0, 0.0, 0.0, 0.0, -u * x, -u * y, u])
+		m.append([0.0, 0.0, 0.0, x, y, 1.0, -v * x, -v * y, v])
+	for col in 8:
+		var piv := col
+		for r in range(col + 1, 8):
+			if absf(m[r][col]) > absf(m[piv][col]):
+				piv = r
+		var tmp = m[col]
+		m[col] = m[piv]
+		m[piv] = tmp
+		for r in 8:
+			if r != col:
+				var f: float = m[r][col] / m[col][col]
+				for c in range(col, 9):
+					m[r][c] -= f * m[col][c]
+	var h := PackedFloat32Array()
+	for r in 8:
+		h.append(m[r][8] / m[r][r])
+	h.append(1.0)
+	return h
+
+
+## Обе стороны трапеции центрируем относительно оптической оси.
+func _update_plane() -> void:
+	if plane == null:
+		return
+	var ts := table_size()
+	if ts.x < 10.0 or ts.y < 10.0:
+		return
+	var near := ts.x / NEAR_SCALE
+	plane_size = Vector2(ts.x / FAR_SCALE, ts.y / DEPTH_RATIO).round()
+	var cx := plane_size.x / 2.0
+	var screen := [Vector2.ZERO, Vector2(ts.x, 0), ts, Vector2(0, ts.y)]
+	var flat := [Vector2.ZERO, Vector2(plane_size.x, 0), Vector2(cx + near / 2.0, plane_size.y), Vector2(cx - near / 2.0, plane_size.y)]
+	_h = _homography(screen, flat)
+	_hi = _homography(flat, screen)
+	desk_input.size = plane_size
+	# запас по разрешению, чтобы ближний край и мелкий текст не мылились
+	var px := get_viewport().get_final_transform().get_scale()
+	var ss := clampf(maxf(px.x, px.y), 1.0, 2.5) * 1.15
+	plane.size_2d_override = Vector2i(plane_size)
+	plane.size = Vector2i((plane_size * ss).round())
+	plane_mat.set_shader_parameter("h0", Vector3(_h[0], _h[1], _h[2]))
+	plane_mat.set_shader_parameter("h1", Vector3(_h[3], _h[4], _h[5]))
+	plane_mat.set_shader_parameter("h2", Vector3(_h[6], _h[7], _h[8]))
+	plane_mat.set_shader_parameter("screen_size", ts)
+	plane_mat.set_shader_parameter("plane_size", plane_size)
+
+
+## Точка плоского стола, которая видна в центре экрана: камера держит над ней cam_pos.
+func _plane_anchor() -> Vector2:
+	return screen_to_plane(table_size() / 2.0)
+
+
+## Сдвиг мыши на экране → сдвиг по плоскому столу в этом месте.
+func _plane_delta(sp: Vector2, rel: Vector2) -> Vector2:
+	return screen_to_plane(sp) - screen_to_plane(sp - rel)
+
+
+## Карта возвращается из ячейки листа (он плоский, поверх стола) на стол — туда, где она видна.
+func _card_to_desk(card: TableCard) -> void:
+	var center := card.get_global_transform_with_canvas() * (card.size / 2.0)
+	card.reparent(cards_layer, false)
+	card.position = screen_to_world(center) - card.size / 2.0
 
 
 func _home_rect() -> Rect2:
@@ -1099,7 +1283,8 @@ func _home_rect() -> Rect2:
 
 
 func _fit_zoom(r: Rect2) -> float:
-	var ts := table_size()
+	# по ближнему, самому узкому краю
+	var ts := Vector2(table_size().x / NEAR_SCALE, plane_size.y)
 	return clampf(minf(ts.x / r.size.x, ts.y / r.size.y), ZOOM_MIN, ZOOM_MAX)
 
 
@@ -1130,8 +1315,12 @@ func focus_rect(r: Rect2, zoom_mul := 1.0, force := false) -> void:
 
 ## Видна ли область целиком при нынешней камере.
 func _visible_rect() -> Rect2:
+	# прямоугольник, целиком помещающийся в видимую трапецию
 	var ts := table_size()
-	return Rect2(screen_to_world(Vector2.ZERO), ts / cam_zoom)
+	var top := screen_to_world(Vector2(ts.x / 2.0, 0)).y
+	var bl := screen_to_world(Vector2(0, ts.y))
+	var br := screen_to_world(ts)
+	return Rect2(bl.x, top, br.x - bl.x, bl.y - top)
 
 
 func shake(amount := 6.0) -> void:
@@ -1167,7 +1356,7 @@ func _end_pan() -> void:
 func _zoom_at(screen_point: Vector2, factor: float) -> void:
 	# точка стола под курсором держится под курсором на всём пути масштабирования
 	if not _anchored or _anchor_screen.distance_to(screen_point) > 2.0:
-		_anchor_world = screen_to_world(screen_point)
+		_anchor_world = (screen_to_plane(screen_point) - (_plane_anchor() - cam_pos * cam_zoom)) / cam_zoom
 		_anchor_screen = screen_point
 	_anchored = true
 	zoom_target = clampf(zoom_target * factor, ZOOM_MIN, ZOOM_MAX)
@@ -1176,8 +1365,8 @@ func _zoom_at(screen_point: Vector2, factor: float) -> void:
 
 
 func _clamp_camera() -> void:
-	var ts := table_size()
-	var half := ts / 2.0 / zoom_target
+	# по ближнему краю: дальний шире, но за краем мира там тоже дерево стола
+	var half := Vector2(table_size().x / NEAR_SCALE, plane_size.y) / 2.0 / zoom_target
 	var margin := Vector2(160, 120)
 	var lo := half - margin
 	var hi := WORLD - half + margin
@@ -1191,13 +1380,12 @@ func _clamp_camera() -> void:
 func _apply_camera() -> void:
 	if world == null:
 		return
-	var ts := table_size()
 	var off := Vector2.ZERO
 	if _shake > 0.05:
 		off = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake
 	world.scale = Vector2.ONE * cam_zoom
 	# без округления до пикселя: при плавном движении и масштабе оно давало дрожь
-	world.position = ts / 2.0 - cam_pos * cam_zoom + off
+	world.position = _plane_anchor() - cam_pos * cam_zoom + off
 
 
 ## Плавное приближение к цели с затуханием скорости (без рывка в начале и в конце).
@@ -1212,6 +1400,9 @@ static func _damp(cur: float, target: float, vel: float, smooth: float, dt: floa
 
 func _process(delta: float) -> void:
 	_clock += delta
+	if _plane_hover and get_viewport().gui_get_hovered_control() != self and Input.get_mouse_button_mask() == 0:
+		_plane_hover = false
+		plane.notification(Node.NOTIFICATION_VP_MOUSE_EXIT)
 	var moved := cam_pos.distance_to(cam_target) > 0.05 or absf(cam_zoom - zoom_target) > 0.0002 \
 		or _shake > 0.05 or _cam_vel.length() > 0.5 or absf(_zoom_vel) > 0.0005
 	if not moved or _panning:
@@ -1223,8 +1414,7 @@ func _process(delta: float) -> void:
 	_zoom_vel = z.y
 	if _anchored:
 		# пока идёт масштаб к курсору, центр вычисляется так, чтобы точка под курсором не уплывала
-		var ts := table_size()
-		cam_pos = _anchor_world - (_anchor_screen - ts / 2.0) / cam_zoom
+		cam_pos = _anchor_world - (screen_to_plane(_anchor_screen) - _plane_anchor()) / cam_zoom
 		var keep := cam_pos
 		cam_target = cam_pos
 		_clamp_camera()
@@ -1275,7 +1465,7 @@ func _input(e: InputEvent) -> void:
 			_end_pan()
 		_panning = false
 	elif e is InputEventMouseMotion and _panning and (e.button_mask & (MOUSE_BUTTON_MASK_RIGHT | MOUSE_BUTTON_MASK_MIDDLE)):
-		_pan_by(e.relative)
+		_pan_by(_plane_delta(e.position, e.relative))
 	elif e is InputEventKey and e.pressed and not e.echo:
 		var step := 160.0 / cam_zoom
 		match e.keycode:
@@ -1307,6 +1497,8 @@ func _input(e: InputEvent) -> void:
 ## Курсор над списком, который есть куда прокручивать (дела на открытке, длинная записка).
 func _over_scrollable() -> bool:
 	var c := get_viewport().gui_get_hovered_control()
+	if c == self:
+		c = plane.gui_get_hovered_control()
 	while c != null and c != self:
 		if c is ScrollContainer:
 			var sc := c as ScrollContainer

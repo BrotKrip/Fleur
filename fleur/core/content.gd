@@ -86,7 +86,7 @@ func figure_lighting(id: String, phase: String, shot_profile := "") -> Dictionar
 
 
 ## Текстовый формат сцен (data/scenes/*.scene) — чтобы сцены можно было писать как прозу.
-##   @id, @title, @after          — заголовок сцены
+##   @id имя / @after следующая_сцена
 ##   @bg имя [профиль_света] / @show id [left|center|right] / @hide id
 ##   @label имя / @goto имя / @if {условие JSON} -> имя / @do [эффекты JSON] / @end
 ##   N: текст                      — повествование

@@ -1,6 +1,5 @@
 @id city_furina_glasses
 @after city_last_walk
-@title Что надеть богине
 @bg vasari street_night
 @show char_furina left happy
 @show char_neuvillette right

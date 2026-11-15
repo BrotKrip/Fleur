@@ -8,6 +8,9 @@ fleur/feature_profiles/
 fleur/script_templates/
 fleur/text_editor_themes/
 
+# Локальные референсы персонажей
+/fleur/assets/art/characters/ref/
+
 # Готовые сборки
 fleur/export/
 build/

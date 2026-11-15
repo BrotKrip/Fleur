@@ -1,6 +1,5 @@
 @id city_josie_sofa
 @after city_josie_cafe
-@title Стульчик у камина
 @bg apartment_evening
 @if {"phase":"morning"} -> prepare_evening
 @if {"phase":"day"} -> close_shutters

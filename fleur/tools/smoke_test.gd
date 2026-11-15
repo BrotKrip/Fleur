@@ -84,6 +84,9 @@ func play_scene() -> void:
 	var plan: Array = choice_plan.get(sid, [])
 	var shot_done := false
 	trace.append(stamp() + " сцена " + sid)
+	var calendar := {"first_evening": 1, "charlotte_first": 2, "premiere_eve": 19, "premiere_incident": 20}
+	if calendar.has(sid):
+		expect(Game.state.day == calendar[sid], "Сцена открылась не в свой день: " + sid)
 	for k in 800:
 		if Game.mode != "vn" or Game.main.screen != vn:
 			return
@@ -354,6 +357,7 @@ func _run() -> void:
 	await shot("table_day1")
 	var s: Dictionary = Game.state
 	expect(s["cards"].has("ap_charm") and s["cards"].has("ap_candor"), "карты подходов на столе")
+	expect(not Rules.actions_for(s, "loc_lutes").has(Content.actions.meet_charlotte), "Шарлотта ещё не пришла в первый день")
 
 	# Разговор с подходом: тема + манера, подход уходит на отдых.
 	await talk_ui("arue", "sl_eye", "ap_purse")
@@ -391,7 +395,7 @@ func _run() -> void:
 	for f in ["louis_talk_done", "father_talk_done", "first_arc_done", "arc_epilogue_seen", "louis_warehouse_asked", "father_warehouse_asked"]:
 		expect(s["flags"].get(f, false), "не дошли до " + f)
 	for f in ["chevreuse_office_shared", "josie_arrived", "city_night_finished", "clorinde_button_night",
-			"ledgers_read", "furina_sketch_ready", "furina_sketch_delivered", "article_seen"]:
+			"ledgers_read", "furina_sketch_ready", "furina_sketch_delivered", "submerged_cellar_checked", "article_seen"]:
 		expect(s["flags"].get(f, false), "пропущен эпизод до расследования: " + f)
 	await shot("table_epilogue")
 	var used := PackedStringArray()

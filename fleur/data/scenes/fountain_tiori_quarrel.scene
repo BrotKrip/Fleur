@@ -38,6 +38,9 @@ npc_aurelie: В мастерской можете спросить Орели. �
 N: Дверь захлопнулась. До последней минуты он считал её Оливией, и догонять Тиори с этим открытием не хотелось.
 @do [{"flag":"aurelie_followed"}]
 @label after
+@hide char_tiori
+@hide npc_aurelie
+@show npc_chestnut_vendor right
 N: У фонтана торговец взял у него пустой кулёк.
 npc_chestnut_vendor: Ещё насыпать?
 N: Флёр покачал головой и пошёл домой.

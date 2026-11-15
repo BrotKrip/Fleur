@@ -20,6 +20,17 @@ const OBJECT_SIZES := {
 	"plate": Vector2(114, 104), "spine": Vector2(210, 54), "pearl": Vector2(78, 78),
 	"crate": Vector2(200, 140), "coat": Vector2(160, 150),
 }
+## Толщина предметов: [глубина, цвет у лицевой стороны, цвет у стола]. Книги рисуются отдельно.
+const EDGES := {
+	"portrait": [3.0, Color("d8c79f"), Color("8c7853")],
+	"folder": [3.5, Color("bf9d62"), Color("765b33")],
+	"calendar": [3.0, Color("ddd0b0"), Color("8f7f60")],
+	"photo": [2.5, Color("e4dccb"), Color("8d8574")],
+	"token": [4.5, Color("c9a04c"), Color("5a4117")],
+	"trait": [4.5, Color("c9a04c"), Color("5a4117")],
+	"object": [0.0, Color.BLACK, Color.BLACK],
+}
+const PAPER_EDGE := [2.0, Color("dccfae"), Color("968665")]
 const BOOK_COLORS := {"sl_eye": Color("26385a"), "sl_family": Color("5a2224")}
 const PHASE_UNTIL := ["до утра", "до полудня", "до вечера", "до ночи"]
 const OBJECT_ART := {"bottle": "nectar_bottle", "crate": "nectar_crate", "hairpin": "pearl_pin", "coat": "tailored_coat"}
@@ -28,6 +39,7 @@ var id := ""
 var d: Dictionary = {}
 var look := "note"
 var item_art: Texture2D
+var paper_art: Texture2D
 var token_art: Texture2D
 var book_cover: Texture2D
 var lift := 0.0
@@ -56,6 +68,8 @@ func setup(card_id: String) -> void:
 		book_cover = Art.prop(id)
 	if d.get("type") == "item":
 		item_art = Art.prop(id)
+	if look in ["note", "clipping", "photo", "label"] or d.get("shape") == "newspaper":
+		paper_art = Art.prop(id + "_print")
 	seed_v = Look.hash_seed(id)
 	size = size_for(d)
 	pivot_offset = size / 2.0
@@ -169,7 +183,7 @@ func silhouette() -> PackedVector2Array:
 		"portrait", "book":
 			return Look.rrect(r, 7)
 		"label":
-			return Look.rrect(r, 26)
+			return Look.rrect(r, 3)
 		"object":
 			return PackedVector2Array()
 		_:
@@ -195,11 +209,27 @@ func _draw() -> void:
 		_draw_object(Vector2.ZERO, Color(0, 0, 0, 0))
 	else:
 		Look.soft_shadow(self, sil, sh_off, sh_spread, sh_alpha)
+		_draw_edge(sil)
 		call("_draw_" + look)
 	if hovered and not dragging and (item_art or look in ["object", "label", "photo", "token", "trait"]):
 		_draw_name_tag()
 	if bool(inst().get("fresh", false)) and not dragging:
 		_draw_fresh_mark()
+
+
+## Толщина карты у ближнего края. Направление «вниз» берётся экранное: карта может лежать повёрнутой.
+func _draw_edge(sil: PackedVector2Array) -> void:
+	var down := Vector2(0, 1).rotated(-get_global_transform().get_rotation())
+	if look == "book":
+		var base: Color = BOOK_COLORS.get(id, Color("3e2a1c"))
+		for i in range(9, 0, -1):
+			var col := Color("e9dec1") if i % 2 == 0 else Color("d3c5a1")
+			if i >= 8 or i == 1:
+				col = base.darkened(0.2 + 0.04 * i)
+			draw_colored_polygon(Look.offset(sil, down * i), col)
+		return
+	var e: Array = EDGES.get(look, PAPER_EDGE)
+	Look.thickness(self, sil, e[0], e[1], e[2], down)
 
 
 func _f(kind: String) -> Font:
@@ -341,11 +371,24 @@ func _draw_clipping() -> void:
 	Look.fill_v(self, sil, Look.NEWSPRINT.lerp(Color("d8c79a"), age), Color("d0c5ad").lerp(Color("c7b27c"), age))
 	_paper_grain(sil, 0.23)
 	var f := _f("serif_bold")
-	draw_multiline_string(f, Vector2(10, 26), title(), HORIZONTAL_ALIGNMENT_LEFT, size.x - 20, 16, 2, Color("1e1a16"))
-	draw_line(Vector2(10, 58), Vector2(size.x - 10, 58), Color(0.2, 0.18, 0.15, 0.6), 1.0)
-	var col_w := (size.x - 26) / 2.0
-	Look.fake_lines(self, Rect2(10, 66, col_w, 44), Color(0.25, 0.22, 0.2, 0.35), 6.0, seed_v)
-	Look.fake_lines(self, Rect2(16 + col_w, 66, col_w, 44), Color(0.25, 0.22, 0.2, 0.35), 6.0, seed_v + 7)
+	if paper_art:
+		Look.text_c(self, f, size.x / 2 - 4, 31, title(), 15, Look.INK, size.x - 33)
+	else:
+		draw_multiline_string(f, Vector2(10, 26), title(), HORIZONTAL_ALIGNMENT_LEFT, size.x - 20, 16, 2, Color("1e1a16"))
+	var rule_y := 51.0 if paper_art else 58.0
+	draw_line(Vector2(10, rule_y), Vector2(size.x - 10, rule_y), Color(0.2, 0.18, 0.15, 0.6), 1.0)
+	if paper_art and id == "it_article_proof":
+		var strip := DeskProp.draw_sprite(self, paper_art, Rect2(5, 61, size.x - 10, 52))
+		var mark := strip.position + strip.size * Vector2(0.60, 0.64)
+		Look.text_c(self, _f("type"), mark.x, mark.y, "Д-18", 15, Look.INK, strip.size.x * 0.34)
+	elif paper_art:
+		var plate := Rect2(8, 57, 75, 57)
+		draw_texture_rect_region(paper_art, plate, Art.cover_region(paper_art, plate.size))
+		draw_multiline_string(_f("serif_italic"), Vector2(89, 72), "Ткани и старый пресс.", HORIZONTAL_ALIGNMENT_LEFT, size.x - 96, 11, 3, Look.INK)
+	else:
+		var col_w := (size.x - 26) / 2.0
+		Look.fake_lines(self, Rect2(10, 66, col_w, 44), Color(0.25, 0.22, 0.2, 0.35), 6.0, seed_v)
+		Look.fake_lines(self, Rect2(16 + col_w, 66, col_w, 44), Color(0.25, 0.22, 0.2, 0.35), 6.0, seed_v + 7)
 	_lifetime_note(Vector2(size.x - 128, size.y - 4), Color("4a4038"))
 
 
@@ -354,6 +397,16 @@ func _draw_note() -> void:
 	var sil := silhouette()
 	Look.fill_v(self, sil, Color("fbf6ea"), Color("ece3cf"))
 	_paper_grain(sil, 0.16)
+	if paper_art:
+		Look.text_c(self, _f("serif_bold"), size.x * 0.5 - 6, 24, title(), 14, Look.INK, size.x - 35)
+		draw_line(Vector2(9, 33), Vector2(size.x - 9, 33), Color("b3a07e"), 1)
+		var sample := DeskProp.draw_sprite(self, paper_art, Rect2(4, 39, size.x - 8, 73))
+		if id == "it_warehouse_pass":
+			var signed_at := sample.position + sample.size * Vector2(0.58, 0.62)
+			Look.text_c(self, _f("hand"), signed_at.x, signed_at.y, "Луи-Марк", 13, Color("273a50"), sample.size.x * 0.5)
+		draw_multiline_string(_f("serif"), Vector2(8, 125), Rules.txt(d.get("text"), state()), HORIZONTAL_ALIGNMENT_LEFT, size.x - 16, 11, 4, Look.INK)
+		_lifetime_note(Vector2(size.x - 128, size.y - 5))
+		return
 	var y := 40.0
 	while y < size.y - 6:
 		draw_line(Vector2(4, y), Vector2(size.x - 4, y), Color(0.45, 0.6, 0.8, 0.35), 1.0)
@@ -372,6 +425,21 @@ func _draw_photo() -> void:
 	Look.fill_v(self, card, Color("f7f3e8"), Color("e6dfcc"))
 	_paper_grain(card, 0.14)
 	var img := Rect2(10, 10, size.x - 20, 116)
+	if paper_art:
+		draw_texture_rect_region(paper_art, img, Art.cover_region(paper_art, img.size))
+		if id == "info_warehouse":
+			draw_string(_f("type"), Vector2(16, 44), "Д-18", HORIZONTAL_ALIGNMENT_LEFT, 56, 16, Color("323449"))
+			draw_string(_f("type"), Vector2(16, 62), "Нектар", HORIZONTAL_ALIGNMENT_LEFT, 70, 11, Color("464252"))
+		elif id == "info_father_order":
+			draw_string(_f("type"), Vector2(19, 43), "КОПИЯ", HORIZONTAL_ALIGNMENT_LEFT, 68, 11, Color("685649"))
+		Look.outline(self, Look.rrect(img, 1), Color("ac9776"))
+	else:
+		_draw_photo_placeholder(img)
+	draw_multiline_string(_f("hand"), Vector2(10, 146), title(), HORIZONTAL_ALIGNMENT_CENTER, size.x - 20, 13, 2, Color("2d3a5a"))
+	Look.outline(self, card, Color(0.4, 0.33, 0.25, 0.5))
+
+
+func _draw_photo_placeholder(img: Rect2) -> void:
 	var ip := Look.rrect(img, 1)
 	Look.fill_v(self, ip, Color("7a6650"), Color("2b2119"))
 	var c := img.get_center()
@@ -387,32 +455,25 @@ func _draw_photo() -> void:
 			draw_circle(c, 26, lightc.darkened(0.4))
 	# лёгкая засветка
 	draw_colored_polygon(PackedVector2Array([img.position, img.position + Vector2(50, 0), img.position + Vector2(0, 60)]), Color(1, 0.95, 0.85, 0.12))
-	draw_multiline_string(_f("hand"), Vector2(10, 146), title(), HORIZONTAL_ALIGNMENT_CENTER, size.x - 20, 13, 2, Color("2d3a5a"))
-	Look.outline(self, card, Color(0.4, 0.33, 0.25, 0.5))
 
 
-# ---- отклеенная винная этикетка (особая улика)
+# ---- улики: одинаковая роза, разные отметки на этикетках
 func _draw_label() -> void:
-	var r := Rect2(Vector2.ZERO, size)
-	var sil := Look.rrect(r, 26)
-	Look.fill_v(self, sil, Color("f3e7c6"), Color("e2cf9f"))
-	_paper_grain(sil, 0.22)
-	Look.outline(self, Look.rrect(r.grow(-5), 22), Look.GOLD, 1.5)
-	Look.outline(self, Look.rrect(r.grow(-9), 19), Color(Look.GOLD, 0.6), 1.0)
-	# лоза
-	var pts := PackedVector2Array()
-	for i in 21:
-		var x := 24.0 + (size.x - 48) * i / 20.0
-		pts.append(Vector2(x, 36 + sin(i * 0.9) * 5))
-	draw_polyline(pts, Color("7d6420"), 1.5, true)
-	for i in range(2, 20, 4):
-		draw_circle(pts[i] + Vector2(0, -5), 3.2, Color("6a7a2a"))
-	Look.text_c(self, _f("serif_bold"), size.x / 2, 66, "FLEUR", 18, Color("5a3a12"))
-	# пустое место для номера партии, обведённое красным карандашом
-	var box := Rect2(size.x / 2 - 32, 78, 64, 16)
-	draw_rect(box, Color(0.35, 0.25, 0.12, 0.6), false, 1.0)
-	draw_arc(box.get_center(), 40, 0, TAU, 40, Color(0.75, 0.15, 0.12, 0.7), 2.0, true)
-	Look.outline(self, sil, Color(0.4, 0.3, 0.15, 0.6))
+	var backing := silhouette()
+	Look.fill_v(self, backing, Color("e4d6b6"), Color("c8b596"))
+	_paper_grain(backing, 0.22)
+	var marks := ["Северный склон", "Д-18"]
+	for i in 2:
+		var slip := Rect2(4 + i * 8, 4 + i * 53, size.x - 16, 56)
+		var edge := Look.rrect(slip, 11)
+		draw_colored_polygon(edge, Color("f7efd6") if i == 0 else Color("f1deb2"))
+		_paper_grain(edge, 0.18)
+		Look.outline(self, Look.rrect(slip.grow(-2), 10), Color("94764a"), 1.2)
+		var center := slip.get_center().x
+		if paper_art:
+			DeskProp.draw_sprite(self, paper_art, Rect2(center - 40, slip.position.y + 4, 80, 18))
+		Look.text_c(self, _f("serif_bold"), center, slip.position.y + 34, "FLEUR", 13, Color("5a3a12"))
+		Look.text_c(self, _f("type"), center, slip.position.y + 48, marks[i], 11, Color("63432f"))
 
 
 # ---- папка дела
@@ -661,11 +722,19 @@ func _draw_object(off: Vector2, shadow: Color) -> void:
 			var np := Look.rrect(Rect2(0, 0, w, h), 1)
 			draw_colored_polygon(np, C.call(Look.NEWSPRINT))
 			if not sh:
+				_paper_grain(np, 0.23)
 				draw_colored_polygon(Look.rrect(Rect2(w / 2, 0, w / 2, h), 1), Color(0, 0, 0, 0.05))
 				Look.text_c(self, _f("serif_bold"), w / 2, 22, "ПАРОВАЯ ПТИЦА", 15, Color("1e1a16"), w)
 				draw_line(Vector2(8, 30), Vector2(w - 8, 30), Color(0.2, 0.18, 0.15, 0.7), 1.5)
-				for i in 3:
-					Look.fake_lines(self, Rect2(10 + i * (w - 20) / 3.0, 40, (w - 20) / 3.0 - 8, h - 50), Color(0.25, 0.22, 0.2, 0.3), 6.0, seed_v + i)
+				if paper_art:
+					var engraving := Rect2(8, 36, w * 0.46, 70)
+					draw_texture_rect_region(paper_art, engraving, Art.cover_region(paper_art, engraving.size))
+					Look.text_c(self, _f("serif_italic"), engraving.get_center().x, 119, "Пассаж Вазари", 10, Look.INK, engraving.size.x)
+					var headline := "Расходы на ремонт причала" if int(state()["day"]) == 1 else "Расписание аквабусов"
+					draw_multiline_string(_f("serif_bold"), Vector2(engraving.end.x + 8, 52), headline, HORIZONTAL_ALIGNMENT_LEFT, w - engraving.end.x - 15, 12, 4, Look.INK)
+				else:
+					for i in 3:
+						Look.fake_lines(self, Rect2(10 + i * (w - 20) / 3.0, 40, (w - 20) / 3.0 - 8, h - 50), Color(0.25, 0.22, 0.2, 0.3), 6.0, seed_v + i)
 				draw_line(Vector2(w / 2, 4), Vector2(w / 2, h - 4), Color(0, 0, 0, 0.15), 1.0)
 		"crate":
 			var cr := Rect2(10, 14, w - 20, h - 28)

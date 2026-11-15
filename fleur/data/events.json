@@ -1,4 +1,12 @@
 {
+	"ev_first_evening": {
+		"when": {"day": 1, "phase": "evening", "flag": "prologue_done", "noFlag": "met_charlotte"},
+		"effects": [{"scene": "first_evening"}]
+	},
+	"ev_second_day_coffee": {
+		"when": {"day": 2, "phase": "day", "flag": "prologue_done", "noFlag": ["first_coffee_started", "met_charlotte"]},
+		"effects": [{"flag": "first_coffee_started"}, {"scene": "charlotte_first"}]
+	},
 	"ev_skate_rumor": {
 		"when": {
 			"all": [
@@ -290,7 +298,7 @@
 					]
 				},
 				{
-					"flag": "furina_sketch_delivered"
+					"flag": "submerged_cellar_checked"
 				},
 				{
 					"noFlag": "article_seen"
@@ -362,7 +370,8 @@
 					"phase": "day"
 				},
 				{
-					"noFlag": "halsey_docks_done"
+					"noFlag": "halsey_docks_done",
+					"not": {"dayGte": 19}
 				},
 				{
 					"lacks": "note_halsey_docks"
@@ -377,6 +386,92 @@
 			}
 		]
 	},
+	"ev_halsey_sitting": {
+		"when": {
+			"flag": "halsey_docks_done",
+			"dayGte": 6,
+			"not": {
+				"dayGte": 19
+			},
+			"noFlag": "halsey_sat"
+		},
+		"title": "Хэлси ищет натурщика",
+		"text": "«Если будете у причала днём, заходите. Мне нужен кто-нибудь, умеющий сидеть без дела. Х.»",
+		"effects": [
+			{
+				"add": "inv_halsey_sitting"
+			}
+		]
+	},
+	"ev_premiere_eve": {
+		"when": {
+			"dayGte": 19
+		},
+		"effects": [
+			{
+				"scene": "premiere_eve"
+			}
+		]
+	},
+	"ev_premiere_incident": {
+		"when": {
+			"any": [
+				{
+					"day": 20,
+					"phase": [
+						"day",
+						"evening",
+						"night"
+					]
+				},
+				{
+					"dayGte": 21
+				}
+			]
+		},
+		"effects": [
+			{
+				"scene": "premiere_incident"
+			}
+		]
+	},
+	"ev_premiere_reply": {
+		"when": {
+			"daysSince": [
+				"premiere_witness",
+				1
+			]
+		},
+		"effects": [
+			{
+				"if": {
+					"flag": "premiere_lumine_meeting"
+				},
+				"then": [
+					{
+						"add": "inv_premiere_cafe"
+					},
+					{
+						"notice": {
+							"title": "Письмо из Берилла",
+							"text": "Ответ Хэлси пришёл с утренней почтой. Флёр послал Люмин записку: днём он будет ждать её в «Лютесе»."
+						}
+					}
+				],
+				"else": [
+					{
+						"add": "info_halsey_letter"
+					},
+					{
+						"notice": {
+							"title": "Пришёл ответ из Берилла",
+							"text": "Хэлси отозвалась. В жандармерию доставлено её письмо с именами трёх человек, которые видели её в день представления."
+						}
+					}
+				]
+			}
+		]
+	},
 	"ev_world_magicians_posters": {
 		"when": {
 			"all": [
@@ -387,15 +482,31 @@
 					"phase": "morning"
 				},
 				{
-					"lacks": "rum_magicians_premiere"
+					"lacks": "rum_magicians_premiere",
+					"not": {"dayGte": 20}
 				}
 			]
 		},
-		"title": "Новые афиши у Оперы",
-		"text": "На тумбах появились свежие листы: через несколько дней Лини и Линетт дают большое представление в «Эпиклезе». Билеты перепродают уже у аквабуса, хотя касса клянётся, что всё это безобразие началось не у неё.",
+		"logText": "У остановки в Пассаже вывесили афишу Лини и Линетт. У кассы в Опере уже толпятся перекупщики.",
 		"effects": [
 			{
 				"add": "rum_magicians_premiere"
+			}
+		]
+	},
+	"ev_premiere_read_poster": {
+		"when": {
+			"dayGte": 15,
+			"not": {
+				"dayGte": 19
+			}
+		},
+		"effects": [
+			{
+				"add": "rum_magicians_premiere"
+			},
+			{
+				"scene": "premiere_poster"
 			}
 		]
 	},
@@ -409,7 +520,8 @@
 					"phase": "morning"
 				},
 				{
-					"lacks": "rum_traveler_road"
+					"lacks": "rum_traveler_road",
+					"not": {"dayGte": 19}
 				}
 			]
 		},

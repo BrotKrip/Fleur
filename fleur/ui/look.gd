@@ -334,6 +334,17 @@ static func fill_v(ci: CanvasItem, pts: PackedVector2Array, top: Color, bottom: 
 	ci.draw_polygon(pts, cols)
 
 
+## Торец предмета: стол виден чуть со стороны ближнего края, поэтому под силуэтом
+## проступает толщина (светлее у лицевой стороны, темнее у стола). down — «вниз по экрану».
+static func thickness(ci: CanvasItem, pts: PackedVector2Array, depth: float, top: Color, bottom: Color, down := Vector2(0, 1)) -> void:
+	if pts.size() < 3 or depth <= 0.0:
+		return
+	var n := int(ceil(depth))
+	for i in range(n, 0, -1):
+		var k := float(i) / n
+		ci.draw_colored_polygon(offset(pts, down * (depth * k)), top.lerp(bottom, k))
+
+
 static func outline(ci: CanvasItem, pts: PackedVector2Array, col: Color, w := 1.0) -> void:
 	var closed := pts.duplicate()
 	closed.append(pts[0])

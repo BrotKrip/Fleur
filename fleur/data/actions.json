@@ -169,6 +169,7 @@
 	"coffee": {
 		"at": "loc_lutes",
 		"title": "Взять холодный кофе",
+		"visible": {"any": [{"day": 1}, {"flag": "met_charlotte"}]},
 		"cost": 1,
 		"outcomes": [
 			{
@@ -453,6 +454,20 @@
 			}
 		]
 	},
+	"submerged_cellar": {
+		"at": "loc_docks",
+		"title": "Купить костюм и нырнуть с Жози",
+		"desc": "Днём с мостков можно спуститься в семейный отсек и проверить, какое вино там хранится.",
+		"phases": ["morning", "day"],
+		"cost": 0,
+		"once": true,
+		"intent": "main",
+		"visible": {
+			"flag": "furina_sketch_delivered",
+			"noFlag": "submerged_cellar_checked"
+		},
+		"outcomes": [{"effects": [{"scene": "submerged_cellar"}]}]
+	},
 	"warehouse": {
 		"at": "loc_docks",
 		"title": "Посетить городской склад",
@@ -500,7 +515,7 @@
 	"meet_charlotte": {
 		"at": "loc_lutes",
 		"title": "Выпить кофе у окна",
-		"desc": "Свежая газета и привычный столик. Разговор с Шарлоттой займёт остаток дня.",
+		"desc": "Столик у окна, кофе на льду и свежая «Паровая птица».",
 		"cost": 0,
 		"once": true,
 		"outcomes": [
@@ -517,12 +532,15 @@
 				{
 					"flag": "prologue_done"
 				},
+				{"dayGte": 2},
+				{"noFlag": "first_coffee_started"},
 				{
 					"noFlag": "met_charlotte"
 				}
 			]
 		},
 		"phases": [
+			"morning",
 			"day"
 		],
 		"intent": "main"
@@ -901,7 +919,7 @@
 	},
 	"attend_theatre": {
 		"at": "loc_epiclese",
-		"title": "Посмотреть выступление Лини и Линетт",
+		"title": "Пойти на вечер иллюзий с оркестром",
 		"desc": "Дорога через Маркот и вечер в «Эпиклезе».",
 		"cost": 0,
 		"once": true,
@@ -917,7 +935,8 @@
 		"visible": {
 			"all": [
 				{
-					"has": "inv_theatre"
+					"has": "inv_theatre",
+					"not": {"any": [{"day": 20}, {"day": 21}]}
 				},
 				{
 					"noFlag": "theatre_seen"
@@ -1147,6 +1166,9 @@
 			"all": [
 				{
 					"has": "inv_article_layout"
+				},
+				{
+					"flag": "submerged_cellar_checked"
 				},
 				{
 					"noFlag": "article_seen"
@@ -1974,6 +1996,57 @@
 			}
 		]
 	},
+	"halsey_sitting": {
+		"at": "loc_docks",
+		"title": "Попозировать Хэлси",
+		"desc": "Художница устроилась с альбомом на лестнице у причала.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"has": "inv_halsey_sitting",
+			"not": {
+				"dayGte": 19
+			}
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "halsey_sitting"
+					}
+				]
+			}
+		]
+	},
+	"premiere_lumine_cafe": {
+		"at": "loc_lutes",
+		"title": "Встретить Люмин с письмом Хэлси",
+		"desc": "Хэлси ответила из Берилла. Люмин знает, в каком кафе ждать.",
+		"cost": 0,
+		"once": true,
+		"intent": "side",
+		"visible": {
+			"has": "inv_premiere_cafe"
+		},
+		"phases": [
+			"day",
+			"evening"
+		],
+		"outcomes": [
+			{
+				"effects": [
+					{
+						"scene": "premiere_lumine_cafe"
+					}
+				]
+			}
+		]
+	},
 	"halsey_docks": {
 		"at": "loc_docks",
 		"title": "Спуститься на крик у нижних причалов",
@@ -1987,7 +2060,8 @@
 					"has": "note_halsey_docks"
 				},
 				{
-					"noFlag": "halsey_docks_done"
+					"noFlag": "halsey_docks_done",
+					"not": {"dayGte": 19}
 				}
 			]
 		},

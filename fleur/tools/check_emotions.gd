@@ -75,7 +75,7 @@ func _run() -> void:
 	root.add_child(load("res://main.tscn").instantiate())
 	await create_timer(1.4).timeout
 	game.state = rules.new_state()
-	var sample := "@id __emotion_check\n@title Проверка эмоций\n@bg vasari\n@show char_charlotte right улыбка\nN: Выход на сцену с улыбкой.\nchar_charlotte [серьёзно]: Реплика меняет выражение лица.\n@mood char_charlotte тревога\nN: Смена эмоции во время повествования.\nchar_charlotte [обычно]: Возврат к базовому спрайту.\n@hide char_charlotte\n@show char_josie left смех\nN: Жози выходит на сцену со смехом."
+	var sample := "@id __emotion_check\n@bg vasari\n@show char_charlotte right улыбка\nN: Выход на сцену с улыбкой.\nchar_charlotte [серьёзно]: Реплика меняет выражение лица.\n@mood char_charlotte тревога\nN: Смена эмоции во время повествования.\nchar_charlotte [обычно]: Возврат к базовому спрайту.\n@hide char_charlotte\n@show char_josie left смех\nN: Жози выходит на сцену со смехом."
 	content.scenes["__emotion_check"] = content.parse_scene(sample, "__emotion_check.scene")
 	game.enter_scene("__emotion_check", {})
 	await create_timer(3.0).timeout
@@ -116,6 +116,7 @@ func _run() -> void:
 	check(is_equal_approx(material.get_shader_parameter("brightness"), night.brightness), "При смене времени сохранился дневной свет")
 	if output != "":
 		await _gallery(game, catalog)
+	await root.get_node("Sound").drain()
 	print("EMOTIONS CHECK: ", "OK" if failed == 0 else "FAILED", " (", failed, ")")
 	quit(0 if failed == 0 else 1)
 

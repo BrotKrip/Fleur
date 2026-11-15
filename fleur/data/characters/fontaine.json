@@ -408,6 +408,12 @@
 		"role": "major",
 		"title": "Путешественница",
 		"subtitle": "Странница из другого мира",
+		"schedule": [
+			{
+				"when": {"flag": "premiere_witness"},
+				"map": {"day": "loc_lutes", "evening": "loc_epiclese"}
+			}
+		],
 		"tags": [
 			"traveler"
 		],

@@ -126,6 +126,7 @@ func _draw() -> void:
 	var r := Rect2(Vector2.ZERO, size)
 	var card := Look.rrect(r, 4)
 	Look.soft_shadow(self, card, Vector2(6, 10), 10, 0.55)
+	Look.thickness(self, card, 3.0, Color("dccdaa"), Color("8f7d5a"))
 	Look.fill_v(self, card, Color("f4ecda"), Color("e4d6b8"))
 	Look.texture_polygon(self, card, Art.surface("paper"), 1.0, Color(1, 1, 1, 0.62))
 	Look.engraved_corners(self, Rect2(IMG_W + 6, 7, size.x - IMG_W - 14, size.y - 14), Color(0.46, 0.35, 0.17, 0.25), 12)

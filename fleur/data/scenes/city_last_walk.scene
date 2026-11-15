@@ -1,5 +1,4 @@
 @id city_last_walk
-@title Две дороги от фонтана
 @bg vasari street_night
 @show char_navia right
 @show char_josie left

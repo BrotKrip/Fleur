@@ -22,7 +22,7 @@ func _ready() -> void:
 			tooltip_text = "Записная книжка: что было"
 			rotation = 0.12
 		"inkwell":
-			size = Vector2(192, 72)
+			size = Vector2(158, 84)
 	pivot_offset = size / 2
 	mouse_filter = Control.MOUSE_FILTER_STOP if kind != "inkwell" else Control.MOUSE_FILTER_IGNORE
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -65,16 +65,13 @@ func _draw() -> void:
 			draw_line(Vector2(0, 130) + lift, Vector2(118, 112) + lift, Color("c9a23a"), 6.0, true)
 			draw_line(Vector2(118, 112) + lift, Vector2(128, 110) + lift, Color("2a2018"), 3.0, true)
 		"inkwell":
-			var tray := Look.rrect(Rect2(4, 3, size.x - 8, size.y - 7), 8)
-			Look.soft_shadow(self, tray, Vector2(2, 3), 3, 0.45)
-			Look.fill_v(self, tray, Color("344253"), Color("202a38"))
-			Look.outline(self, tray, Look.BRASS, 2)
-			var c := Vector2(41, size.y / 2)
-			draw_circle(c, 24, Color("243859"), true, -1, true)
-			draw_circle(c, 16, Look.BRASS, true, -1, true)
-			draw_circle(c, 12, Color("0a1120"), true, -1, true)
-			draw_line(Vector2(82, 51), Vector2(158, 27), Look.BRASS, 3, true)
-			draw_colored_polygon(PackedVector2Array([Vector2(106, 44), Vector2(124, 28), Vector2(169, 17), Vector2(157, 31), Vector2(130, 42)]), Color("dfcfab"))
+			var c := Vector2(33, 46)
+			draw_colored_polygon(Look.ellipse(c + Vector2(2, 3), Vector2(24, 22), 8), Color(0.07, 0.04, 0.01, 0.35))
+			draw_colored_polygon(Look.ellipse(c, Vector2(24, 22), 8), Color("31528a"))
+			draw_colored_polygon(Look.ellipse(c + Vector2(0, -4), Vector2(16, 15)), Look.BRASS)
+			draw_colored_polygon(Look.ellipse(c + Vector2(0, -4), Vector2(12, 11)), Color("0a1120"))
+			draw_line(Vector2(48, 70), Vector2(138, 13), Look.BRASS, 2.5, true)
+			draw_colored_polygon(PackedVector2Array([Vector2(70, 57), Vector2(87, 36), Vector2(147, 10), Vector2(130, 31), Vector2(96, 51)]), Color("dfcfab"))
 
 
 ## Область видимого предмета: прозрачные поля PNG не влияют на размер на столе.

@@ -1,6 +1,12 @@
 {
 	"backgrounds": {
 		"menu": "night_quay",
+		"magic_poster": {"day": "passage", "evening": "passage_night", "night": "passage_night"},
+		"cafe_notebook": "cafe",
+		"ledger_detail": "apartment_day",
+		"manor_register": {"day": "estate", "night": "estate_night"},
+		"submerged_store": "open_water",
+		"magic_stage": "opera",
 		"apartment": {"day": "apartment_day", "evening": "apartment_night", "night": "apartment_night"},
 		"apartment_morning": "apartment_day",
 		"apartment_evening": "apartment_night",
@@ -56,6 +62,12 @@
 	},
 	"music": {
 		"menu": "ballad_of_many_waters",
+		"magic_poster": "ballad_of_many_waters",
+		"cafe_notebook": "cakes_and_ale",
+		"ledger_detail": "anns_anapausis",
+		"manor_register": "anns_anapausis",
+		"submerged_store": "ballad_of_many_waters",
+		"magic_stage": "le_spectacle",
 		"apartment_morning": "anns_anapausis",
 		"vasari": "ballad_of_many_waters",
 		"vasari_fair": "cakes_and_ale",

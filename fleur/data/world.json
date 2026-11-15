@@ -181,6 +181,36 @@
 		}
 	},
 	"backgrounds": {
+		"magic_poster": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
+			"label": "Пассаж Вазари",
+			"colors": ["#37514d", "#bd9d65", "#d9c290"]
+		},
+		"cafe_notebook": {
+			"lighting": {"day": "day", "evening": "street_evening", "night": "street_night"},
+			"label": "Кафе «Лютес»",
+			"colors": ["#61483d", "#c69e69", "#d6c4a6"]
+		},
+		"ledger_detail": {
+			"lighting": "window_left_day",
+			"label": "Квартира, утро",
+			"colors": ["#66523c", "#a48051", "#e9d5a5"]
+		},
+		"manor_register": {
+			"lighting": "window_left_day",
+			"label": "Поместье Флёров",
+			"colors": ["#71583d", "#bf9d6f", "#ddcba6"]
+		},
+		"submerged_store": {
+			"lighting": "grotto",
+			"label": "Подводный склад",
+			"colors": ["#173a49", "#34767e", "#8bb7aa"]
+		},
+		"magic_stage": {
+			"lighting": "stage",
+			"label": "Зал «Эпиклеза»",
+			"colors": ["#392b3d", "#713d41", "#c5a369"]
+		},
 		"apartment": {
 			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dark_room"},
 			"label": "Квартира, улица Изумрудных Фонарей",

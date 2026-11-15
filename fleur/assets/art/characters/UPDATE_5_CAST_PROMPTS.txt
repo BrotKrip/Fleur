@@ -1,0 +1,54 @@
+Fontaine cast, updates 5–5.1
+
+Style reference board assembled from npc_aurelie.png, npc_henri.png, npc_sedene.png, watchman.png, npc_debor_manager.png and npc_tiori_apprentice.png, in that order.
+
+Shared sprite direction
+Create ONE production-ready isolated dialogue sprite for a French Belle Époque fantasy visual novel set in Fontaine. The attached contact sheet illustrates the game's established character rendering STYLE ONLY. One single new individual, no other figures, no montage, NO contact sheet. Match the sophisticated 2D hand-inked anime illustration: firm, tapering brown contour lines, expressive but anatomically credible hands and faces, delicate cel shading with painted folds, afternoon light from upper left, matte tactile fabric, slightly muted storybook palette. Friendly natural face, subtle facial muscles, ordinary relaxed brows, no theatrical smirk. Vertical 2:3 composition, generous clearance around head, sides and any hat/ears/hands, centered conversation stance in a gentle three-quarter turn toward viewer, crisp silhouette, alpha background (true transparency). Absolutely no color plate or backdrop or scenery, text, lettering, rule, floor, badge, watermark, border, sparkles, cast shadow, frames or graphic elements outside figure.
+
+char_halsey.png
+Halsey, an established woman artist of Fontaine in her late twenties. As specified by the author, long warm auburn/chestnut hair, blue-grey eyes, an unadorned head, beige/taupe fitted canvas walking jacket trimmed in muted mulberry over a cream blouse. Long hair loosely pinned back at the temples, still visibly long. Quiet intelligent level expression. Protectively holds a thin, CLOSED chestnut leather portfolio of finished studies vertically across her middle with one arm at an angle; her other hand rests lightly on the strap. A discreet ultramarine paint smudge on her cuff and not much else. Portrait from crown to mid-thigh, adult stature.
+
+npc_chestnut_vendor.png
+A burly mature male street seller of roast chestnuts on the Vasari Passage. Dark curly hair, an amiable well-used face, soot at brow, thick brown mustache, worn short burnt umber cap, rough cream linen shirt, sleeves rolled back, rust leather waistcoat and cocoa apron. Holds up a little kraft-paper cone with several distinct glossy dark oval nuts visible near the chest. Free hand at belt. Friendly level gaze and closed mouth. Portrait from the crown of cap to mid-thigh.
+
+npc_odile.png
+Odile, an adult woman master embroiderer from the textile workshop's second courtyard. Practical pale olive skin, dark chin-length wavy bob with a streak of silver pinned back at one temple, clever steady eyes. Wearing a slate-blue fitted bodice, linen underblouse, muted indigo apron with a dark pen in pocket. In her hands a folded navy textile sample displaying one elegant fish woven in silver thread. Attentive and quite matter-of-fact, calm natural mouth. Portrait from head to mid-thigh.
+
+npc_old_weaver.png
+An elderly male master tapestry weaver in his early seventies, good-humoured and attentive. Lean, wiry frame, soft wrinkled face, white sideburns and thinning brushed-back grey hair, thick white eyebrows, no hat. Muted olive-grey vest and weathered brown trousers over a muted stone linen workshirt with rolled cuffs. Large worn hands, a tiny tan wooden boat shuttle with thread tucked in one hand against his waist. His other hand relaxed. Upright slightly stooped elegant silhouette, looking into conversation. Framed crown to mid-thigh.
+
+npc_aurelie_sister.png
+Aurélie's adult city-dwelling sister. The very first mauve-clad woman in the reference is her sister ONLY. Make her related, a different person. She is slightly older, with a recognisable family resemblance in the cheeks and chestnut curls and warm skin, her wavy hair worn shoulder-length in a low twist with a modest forest-green ribbon and a few grey threads. Soft hazel eyes, an amused but restrained look. A sage and tan Belle Epoque day dress with warm cream collar, narrow belt. One hand gently gestures directions, other forearm resting by her waist, no tools. Portrait from crown to mid-thigh.
+
+npc_fry_seller.png
+A lively, capable middle-aged woman who sells fried potatoes through her kitchen window in the Lyon district of Fontaine. Sturdy frame and strong forearms, warm brown skin, curly black hair in a rust-red tied kerchief, clean golden-ochre rolled-sleeve blouse, well-washed linen apron, cinnamon-brown skirt. Holding a small unbranded waxed-paper cone of golden fried potato batons; free hand rests on side. Soft knowing, closed-mouth expression. Never draw a counter/window, only the isolated woman. Mid-thigh crop.
+
+npc_desk_melusine.png
+A distinct small nonhuman Melusine pass registrar at Fontaine's Maison Gardiennage, proportions and specific species anatomy of the BLUE CREATURE in column THREE of the attached style board. Big rounded head, very long upright fin-like external ears, short compact body, little mitten paws, little feet, small tapered tail, soft mint/aqua skin with pale peach markings, sea-green tuft, deep teal eyes. Original town-clerk uniform, ink-blue short tailored coat with pale piping, little brass pin, light collar; she holds a closed purple pass register against her chest. Calm, alert. Show WHOLE compact creature including both ear tips and both feet, ample margin. NO human ears, NO human child, NO animal fur. Plain transparent cutout.
+
+npc_duty_officer.png
+Adult male rank-and-file Fontaine Special Security Patrol duty officer, late twenties, not an aristocrat. Neat cropped dark hair, medium-brown skin, clean-shaven, clear alert eyes. Patrolman's compact dark navy French-inspired kepi, slate-blue structured field jacket with mulberry accent, short capelet, leather crossbelt and small brass insignia. Gentle tired expression, restrained policeman's at-ease posture with one hand on gloves, elbows close. Draw from crown of hat to mid-thigh; no weapons or scenery.
+
+npc_markot_lady.png
+A silver-haired theatre-going grandmother from Marcotte Station. Animated but dignified middle-class Fontaine lady in her sixties with charming eyes, softly lined face, upswept silver hair, a small plum velvet hat worn to one side. Mauve-violet wool walking jacket over a silvery blouse, ivory gloves. Folds the corner of a cream opera program as she looks toward the conversation; no legible words or symbols on it. Very understated smile with lips closed. Portrait framed including her hat to mid-thigh.
+
+npc_theatre_girl.png
+A curious little French-inspired Fontaine theatregoer, about 9 years old. Child proportions, round apple cheeks, bright clear brown eyes, dark copper braids and two blue ribbons. Modest muted dusty-rose long-sleeve Victorian child's dress with rounded ivory collar, deep burgundy sash, warm brown boots. Holding ONE magician's red diamond playing card, masterpiece of simple readable shape, against her chest. A delighted but quiet expression, lips gently closed. No makeup. Include entire child from head to just below knees with empty transparent padding at top and sides. Plain cutout.
+
+npc_bassoonist.png
+Adult male orchestral bassoon player from the Opera Epiclese. Tall, spare, early forties, long thoughtful face, wavy light-brown hair, round gold-rimmed glasses, trimmed sideburns. Dark graphite evening tailcoat, muted moss waistcoat, ivory shirt, white bow tie. Holds his recognizable polished reddish brown wooden BASSOON vertically alongside his shoulder close to body; distinct folded bassoon, silver keys and graceful curved silver bocal near top, NOT a saxophone, clarinet or oboe. Shy open straight gaze and quiet mouth. Framed crown to mid-thigh; frame entire top of instrument, isolate figure only.
+
+npc_seamstress.png
+A professional adult whitework seamstress in the Baroness's atelier in Fontaine. Brown-skinned woman with dark hair braided into a practical crown, expressive steady eyes, no hat. High-collared chalk-blue blouse, stone-grey fitted waistcoat, warm ivory work apron over a navy skirt. In her hands she holds a small folded piece of white linen with an edge of delicately embroidered white eyelets; a thimble on one finger. Practical unassuming pose, quiet kind expression. Isolated portrait from head through mid-thigh.
+
+npc_storekeeper.png
+A middle-aged male dockside warehouse ledger keeper in Fontaine. Weather-beaten broad face, tan complexion, greying dark hair under a charcoal newsboy cap, tidy short grizzled beard. Wearing salt-faded teal overshirt, olive-brown stout waistcoat and unadorned dark wool trousers. He hugs a closed, fat russet ledger with pale page edges against his waist; a short pencil tucked behind ear. A sensible appraising gaze, straightforward neutral mouth; a worker, no rank insignia. Portrait crown-to-mid-thigh.
+
+Halsey expressions
+You are editing an exact registration character sprite head for a visual novel. Input is a square crop, edited image MUST use identical crop and match pixel registration to input. Preserve the EXACT position of the eyes, brows, nose center, mouth center and chin; preserve face angle, proportions, eye colour, skin tones, lighting, palette, fine contour style, collar, hair locks and every feature except expression. Only edit the mouth, brows and eyelids. The character is an auburn-haired Fontaine portrait artist. No text, no additional objects, no background (cutout), no reframing, zoom, mirroring or repositioning. Single face filling exactly the same portion of square as reference.
+
+char_halsey/worried.png
+Switch neutral to understated aftershock after an attempted robbery: inner eyebrows tip up and draw together a few millimetres, eyes slightly more open and lips held close, corners easing down. She is alert and still composed. Preserve adult likeness, avoid melodrama or tears.
+
+char_halsey/smile.png
+Let her be caught by a gentle joke: a small, genuine, balanced, soft smile with corners lifted on both sides, lips a little apart, cheeks and lower eyelids just barely lifted. Restrained warmth, not smug or flirty. Preserve the understated adult face.

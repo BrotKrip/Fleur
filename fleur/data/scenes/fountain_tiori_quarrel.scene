@@ -1,6 +1,7 @@
 @id fountain_tiori_quarrel
 
 @bg vasari
+@look npc_aurelie fountain_walk
 @show npc_aurelie right
 @show char_tiori left
 char_tiori [раздражение]: О, боги. Шевалье де ла Флёр. Мне говорили, у фонтана уже высохло. Надо было догадаться, что и ты успел занять место.

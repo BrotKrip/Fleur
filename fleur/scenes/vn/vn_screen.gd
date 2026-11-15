@@ -395,6 +395,12 @@ func _run() -> void:
 		elif n.has("mood"):
 			_set_mood(str(n["mood"]), str(n.get("as", "")))
 			i += 1
+		elif n.has("look"):
+			var pid := str(n["look"])
+			looks[pid] = str(n.get("as", ""))
+			if figures.has(pid):
+				figures[pid].set_look(looks[pid])
+			i += 1
 		elif n.has("hide"):
 			_hide(str(n["hide"]))
 			i += 1
@@ -503,6 +509,7 @@ func _apply_environment(animate: bool, fade_same_backdrop: bool) -> void:
 ## Эмоции персонажей в этой сцене. Сохраняются, пока сцена не сменит их,
 ## и применяются, даже если персонаж ещё не вышел на экран.
 var moods := {}
+var looks := {}
 
 
 func _set_mood(pid: String, m: String) -> void:
@@ -521,7 +528,7 @@ func _show(pid: String, at: String, m := "") -> void:
 		_place_figure(figures[pid])
 		return
 	var f := VNFigure.new()
-	f.setup(pid, str(moods.get(pid, "")))
+	f.setup(pid, str(moods.get(pid, "")), str(looks.get(pid, "")))
 	f.use_parent_material = true
 	f.set_meta("at", at)
 	figures_layer.add_child(f)

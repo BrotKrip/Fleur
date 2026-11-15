@@ -23,14 +23,16 @@ var _talk := 0.0
 var base_scale := 1.0
 var portrait: Texture2D
 var mood := ""
+var look := ""
 var _prev_portrait: Texture2D
 var _blend := 1.0
 
 
-func setup(id: String, start_mood := "") -> void:
+func setup(id: String, start_mood := "", start_look := "") -> void:
 	pid = id
 	mood = start_mood
-	portrait = Art.portrait(id, mood)
+	look = start_look
+	portrait = Art.portrait(id, mood, look)
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	size = FRAME_SIZE
 	pivot_offset = Vector2(size.x * 0.5, size.y)
@@ -40,7 +42,16 @@ func setup(id: String, start_mood := "") -> void:
 ## Сменить эмоцию. Если спрайт тот же (нет отдельного файла) — ничего не мигает.
 func set_mood(m: String) -> void:
 	mood = m
-	var tex := Art.portrait(pid, m)
+	_update_portrait()
+
+
+func set_look(value: String) -> void:
+	look = value
+	_update_portrait()
+
+
+func _update_portrait() -> void:
+	var tex := Art.portrait(pid, mood, look)
 	if tex == portrait:
 		return
 	_prev_portrait = portrait

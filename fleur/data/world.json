@@ -212,9 +212,19 @@
 			"label": "Зал «Эпиклеза»",
 			"colors": ["#392b3d", "#713d41", "#c5a369"]
 		},
+		"magic_stage_aftermath": {
+			"lighting": "stage",
+			"label": "Сцена после падения резервуара",
+			"colors": ["#392b3d", "#713d41", "#c5a369"]
+		},
 		"epiclese_court": {
 			"lighting": "stage",
 			"label": "«Эпиклез»: зал суда",
+			"colors": ["#342840", "#5a2a32", "#c5a369"]
+		},
+		"epiclese_empty_uniform": {
+			"lighting": "stage",
+			"label": "«Эпиклез»: свидетельское место",
 			"colors": ["#342840", "#5a2a32", "#c5a369"]
 		},
 		"opera_backstage": {
@@ -253,6 +263,11 @@
 				"#6a3a28",
 				"#1a1420"
 			]
+		},
+		"apartment_washroom": {
+			"lighting": "dark_room",
+			"label": "Ванная Шевалье",
+			"colors": ["#101823", "#384358", "#705036"]
 		},
 		"apartment_night": {
 			"lighting": "dark_room",

@@ -1,7 +1,7 @@
 @id louis_conversation
 
 @bg lutes
-@show char_louis center
+@show char_louis left
 N: Брат ждал их с пальто на коленях: Аруэ дважды предлагал его повесить, и Луи-Марк оба раза поблагодарил и остался сидеть со своей ношей.
 @if {"flag":"louis_read_result_first"} -> letter
 @if {"flag":"louis_invited_by_brother"} -> kin
@@ -16,6 +16,8 @@ N: Он и правда расстёгивал перевязь, чтобы се
 @label seated
 N: Луи-Марк занял обычное место брата спиной к стене, и Флёр кое-как пристроил ножны между стульями.
 char_louis [серьёзно]: Спрашивайте оба. Я распорядился придержать для вас эту папку в конторе, а заодно пропустил завтрак.
+@look char_charlotte reporting
+@show char_charlotte right
 N: Шарлотта подвинула ему хлеб, положила рядом заключение и выписку, и Луи прижал угол большим пальцем, трещинка на котором была забита фиолетовыми чернилами.
 @if {"flag":"warehouse_official_copy"} -> stamp
 @if {"flag":"warehouse_foreman_spoken"} -> master

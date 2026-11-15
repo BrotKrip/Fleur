@@ -93,6 +93,7 @@ func figure_lighting(id: String, phase: String, shot_profile := "") -> Dictionar
 ##   кто: текст                    — реплика (fleur, char_..., или говорящий из world.json)
 ##   кто [эмоция]: текст           — реплика со сменой эмоции (держится, пока не сменят)
 ##   @show id [место] [эмоция] / @mood id эмоция — выход с эмоцией / смена без реплики
+##   @look id образ — сменить одежду или позу в этой сцене; @look id — вернуть обычный вид
 ##   @choice, затем строки «- метка | текст», под ними «  ? {условие}», «  ! [эффекты]»
 ##   и «  ~ ap_charm» — вариант требует подхода Флёра (карта должна быть готова) и тратит его
 ## «кто [эмоция]: текст»
@@ -152,9 +153,10 @@ func parse_scene(text: String, fname := "") -> Dictionary:
 					if parts.size() > 2:
 						shown["mood"] = " ".join(parts.slice(2))
 					nodes.append(shown)
-				"mood":
+				"mood", "look":
 					var mp := arg.split(" ", false, 1)
-					nodes.append({"mood": mp[0], "as": mp[1] if mp.size() > 1 else ""})
+					if not mp.is_empty():
+						nodes.append({cmd: mp[0], "as": mp[1] if mp.size() > 1 else ""})
 				"hide":
 					nodes.append({"hide": arg})
 				"label":

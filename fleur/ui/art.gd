@@ -41,8 +41,19 @@ static func background(id: String) -> Texture2D:
 ## Ищется: characters/<id>/<эмоция>.png, затем characters/<id>_<эмоция>.png,
 ## затем обычный спрайт (characters/<id>/neutral.png или characters/<id>.png).
 ## Русские названия эмоций переводятся в имена файлов через "mood_aliases" в data/world.json.
-static func portrait(pid: String, mood := "") -> Texture2D:
+## Для сценического образа ищем looks/<look>/<эмоция>.png, затем neutral.png того же образа.
+static func portrait(pid: String, mood := "", look := "") -> Texture2D:
 	var file := mood_file(mood)
+	if look != "":
+		var folder := ROOT + "characters/" + pid + "/looks/" + look + "/"
+		if file != "" and file != "neutral":
+			var expression := _texture(folder + file + ".png", true)
+			if expression:
+				return expression
+		var outfit := _texture(folder + "neutral.png", true)
+		if outfit:
+			return outfit
+		_warn_missing(pid, "looks/" + look + "/neutral")
 	if file != "" and file != "neutral":
 		for path in [ROOT + "characters/" + pid + "/" + file + ".png", ROOT + "characters/" + pid + "_" + file + ".png"]:
 			var found := _texture(path, true)
@@ -68,7 +79,7 @@ static func _warn_missing(pid: String, file: String) -> void:
 	if _warned.has(key) or not _texture(ROOT + "characters/" + pid + ".png") and not _texture(ROOT + "characters/" + pid + "/neutral.png"):
 		return
 	_warned[key] = true
-	push_warning("Нет спрайта эмоции: %scharacters/%s/%s.png — показан обычный." % [ROOT, pid, file])
+	push_warning("Не найден вариант спрайта: %scharacters/%s/%s.png — показан обычный." % [ROOT, pid, file])
 
 
 static func background_tint(id: String) -> Color:

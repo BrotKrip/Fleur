@@ -367,6 +367,10 @@ func _place_figure(f: VNFigure) -> void:
 		# Паймон парит у плеча собеседника; ступни видны над окном реплики.
 		lift = maxf(lift + f.base_scale * f.size.y * 0.32, s.y - box.position.y + 12.0)
 		f.base_scale *= 0.60
+	var portrait_scale := float(Content.def(f.pid).get("vn_scale", 1.0))
+	# У невысокой фигуры руки с предметом остаются видны над репликой.
+	lift += f.size.y * f.base_scale * (1.0 - portrait_scale) * 0.2
+	f.base_scale *= portrait_scale
 	f.position = Vector2(x - f.size.x / 2, s.y - f.size.y - lift)
 
 

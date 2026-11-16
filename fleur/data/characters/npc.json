@@ -433,6 +433,7 @@
 		}
 	},
 	"npc_sedene": {
+		"vn_scale": 0.78,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",
@@ -459,6 +460,7 @@
 		}
 	},
 	"npc_talokard": {
+		"vn_scale": 0.78,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",
@@ -484,6 +486,7 @@
 		}
 	},
 	"npc_mamere": {
+		"vn_scale": 0.78,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",
@@ -509,6 +512,7 @@
 		}
 	},
 	"npc_kosynzyana": {
+		"vn_scale": 0.78,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",
@@ -533,6 +537,7 @@
 		}
 	},
 	"npc_canotila": {
+		"vn_scale": 0.78,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",

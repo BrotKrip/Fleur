@@ -1,0 +1,49 @@
+Временные спрайты второстепенных персонажей Fleur
+
+У этих 48 персонажей пока нет собственного портрета в ref/. Образцы для их рисунков перечислены ниже. Для последующей замены отдельного персонажа достаточно найти его игровой ID.
+
+Для каждого нейтрального рисунка встроенному генератору изображений передавались авторские образцы. Рисунок глаз, прядей, контуров и теней сверялся с этими образцами. Возраст, одежда, профессия и предметы в руках взяты из истории самого персонажа. Для взрослых использовался портрет до бедра, для мелюзин — пропорции и кадрирование двух присланных рисунков.
+
+Образцы вида мелюзин хранятся в ref/melusines/. На рисунках одна пара гладких полосатых отростков поднимается со лба и загибается на концах. По бокам головы видны волосы. Светлая нижняя часть мордочки, крошечный нос, цельные лапки с выемкой под большой палец и хвост с плавником читаются по силуэту. Цвета и служебная форма зависят от персонажа.
+
+У восьми мелюзин в карточках указан vn_scale = 0.78. Это размер фигуры на сцене рядом с человеком. Для портрета на столе используется весь исходный рисунок.
+
+Эмоции взяты из действующих сцен. При смене выражения сохраняются поза, масштаб, одежда и прозрачный силуэт. У Лилиан есть второй комплект в сером костюме ассистента для показаний в суде.
+
+Слева — имена авторских PNG из ref/. Справа — игровые ID персонажей.
+
+adrian.png + boatman.png  →  npc_esmon
+adrian.png + gaston.png  →  npc_bussy, npc_crowd_voice
+adrian.png + marcel.png  →  npc_flask_man, npc_mystery_writer
+adrian.png + silver.png  →  npc_boucicaut
+arue.png + gaston.png  →  npc_chestnut_vendor
+arue.png + silver.png  →  npc_jules
+aurelie.png + lynette.png  →  npc_aurelie_sister
+aurelie.png + navia.png  →  npc_fry_seller
+boatman.png + adrian.png  →  npc_cellar_keeper, watchman
+boatman.png + louis.png  →  npc_livre
+boatman.png + silver.png  →  npc_foreman, npc_storekeeper
+boatman.png + wriothesley.png  →  npc_henri
+charlotte.png + lynette.png  →  npc_estelle
+charlotte.png + tiori.png  →  npc_marta
+clorinde.png + aurelie.png  →  npc_gallery_voice
+eloise.png + aurelie.png  →  npc_gallery_old_woman
+eloise.png + emilie.png  →  npc_cashier
+eloise.png + furina.png  →  npc_markot_lady
+eloise.png + lynette.png  →  npc_odile
+eloise.png + navia.png  →  npc_mekignon, npc_verdier
+gaston.png + adrian.png  →  npc_bourdieu, npc_old_weaver
+louis.png + silver.png  →  npc_vonn
+lynette.png + eloise.png  →  char_halsey
+lynette.png + furina.png  →  npc_liliane
+marcel.png + boatman.png  →  npc_caron
+marcel.png + louis.png  →  npc_bassoonist
+melusines/painter.png + melusines/officer.png  →  npc_canotila, npc_desk_melusine, npc_guard_melusine, npc_kosynzyana, npc_mamere, npc_sedene, npc_talokard, npc_tristana
+newsboy.png + louis.png  →  npc_jules_son
+paimon.png + lynette.png  →  npc_theatre_girl
+paimon.png + newsboy.png  →  npc_hearth_girl
+silver.png + adrian.png  →  npc_trouin
+silver.png + louis.png  →  npc_debor_manager
+tiori.png + emilie.png  →  npc_seamstress
+tiori.png + lynette.png  →  npc_tiori_apprentice
+wriothesley.png + louis.png  →  npc_duty_officer

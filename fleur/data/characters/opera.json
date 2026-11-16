@@ -108,6 +108,7 @@
 		"placeholder": {"hair": "8a6a4a", "coat": "2a3a5a", "trim": "c0a050", "hat": "kepi", "hat_color": "2a3a5a", "eyes": "6a5a4a", "short": true}
 	},
 	"npc_tristana": {
+		"vn_scale": 0.78,
 		"type": "person", "look": "portrait", "role": "episodic",
 		"title": "Тристана",
 		"subtitle": "Мелюзина у дверей «Эпиклеза»",

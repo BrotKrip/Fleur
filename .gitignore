@@ -24,6 +24,7 @@ tmp/
 .claude/settings.local.json
 
 story
+.codex-remote-attachments
 
 # Мусор систем и редакторов
 Thumbs.db

@@ -193,7 +193,7 @@ tools/godot/Godot_v4.7.2-stable_win64_console.exe --headless --path fleur -- --d
 
 Когда появится `assets/art/characters/<id>.png`, он заменит заготовку без правки данных.
 
-У всех 82 персонажей базы есть основные PNG. Отдельно в `assets/art/characters/duel_thug_*.png` лежат портреты двух противников для поединка на причалах. Запросы для иллюстраций хранятся рядом с рисунками в файлах `*PROMPTS.txt`.
+У всех 82 персонажей базы есть основные PNG. Отдельно в `assets/art/characters/duel_thug_*.png` лежат портреты двух противников для поединка на причалах. Запросы для иллюстраций хранятся рядом с рисунками в файлах `*PROMPTS.txt`. Для нового персонажа образцы рисунка берут из авторской папки `ref/`, даже когда в ней ещё нет его собственного портрета. [Как подбирать референсы и рисовать эмоции](fleur/assets/art/characters/PROMPTS.txt).
 
 Проверка всех базовых PNG, их импорта, прозрачности и подключения через `Art.portrait`:
 
@@ -248,6 +248,7 @@ char_charlotte [обычно]: …                   вернуть обычны
 | `npc_aurelie` | `laugh`, `serious` |
 | `npc_boatman` | `serious`, `smile` |
 | `char_chevreuse` | `annoyed`, `smile` |
+| `char_childe` (Тарталья) | `bored`, `confused`, `excited`, `laugh`, `sly`, `smile` |
 | `courier` | `smile`, `worried` |
 | `char_emilie` | `serious`, `thoughtful` |
 | `char_escoffier` | `determined`, `smile` |
@@ -261,6 +262,7 @@ char_charlotte [обычно]: …                   вернуть обычны
 | `char_navia` | `laugh`, `serious` |
 | `char_neuvillette` | `smile`, `thoughtful` |
 | `npc_newsboy` | `happy`, `surprised` |
+| `char_paimon` (Паймон) | `bored`, `excited`, `happy`, `indignant`, `proud`, `scared`, `shocked`, `smug`, `surprised` |
 | `char_ronova` | `serious`, `smug` |
 | `char_sigewinne` | `happy`, `worried` |
 | `char_silver` | `serious`, `smile` |
@@ -269,7 +271,7 @@ char_charlotte [обычно]: …                   вернуть обычны
 | `viscount` | `smug`, `surprised` |
 | `char_wriothesley` | `serious`, `smug` |
 
-Основные спрайты этих 33 персонажей в `characters/<id>.png` взяты из `ref/`. Игровые PNG сжаты без потерь с помощью oxipng. Для эмоций используются `characters/<id>/<emotion>.png`. Запросы для первых восьми наборов находятся в папках персонажей. Для остальных 25 они собраны в `REF_CAST_A_PROMPTS.txt`, `REF_CAST_B_PROMPTS.txt`, `REF_CAST_C_PROMPTS.txt` и `REF_STORY_DUEL_PROMPTS.txt` рядом с основными PNG. В поединке на причалах выражение противника зависит от его намерения и от того, удалось ли раскрыть его защиту. Обновлённые выражения Лини и Линетт описаны в `REF_TWINS_EXPRESSIONS.txt`, остальные варианты лёгкой иронии — в `REF_SUBTLE_EXPRESSIONS.txt`.
+Для этих 35 персонажей авторские оригиналы лежат в `ref/`, игровые портреты — в `characters/<id>.png`, эмоции — в `characters/<id>/<emotion>.png`. Запросы для первых восьми наборов находятся в папках персонажей. Ещё 25 наборов описаны в `REF_CAST_A_PROMPTS.txt`, `REF_CAST_B_PROMPTS.txt`, `REF_CAST_C_PROMPTS.txt` и `REF_STORY_DUEL_PROMPTS.txt` рядом с основными PNG. В поединке на причалах выражение противника зависит от его намерения и от того, удалось ли раскрыть его защиту. Обновлённые выражения Лини и Линетт описаны в `REF_TWINS_EXPRESSIONS.txt`, остальные варианты лёгкой иронии — в `REF_SUBTLE_EXPRESSIONS.txt`.
 
 Проверка наличия всех нужных эмоций, прозрачности и команд `@show`, `@mood`, реплик с эмоциями и возврата `[обычно]`:
 

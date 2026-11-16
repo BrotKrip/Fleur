@@ -363,6 +363,10 @@ func _place_figure(f: VNFigure) -> void:
 			f.base_scale = minf(normal_scale, maxf(0.55, stage_width / (float(ids.size()) * 220.0)))
 			# При уменьшении группового кадра лица остаются над диалоговой рамкой.
 			lift = (normal_scale - f.base_scale) * f.size.y * 0.65
+	if f.pid == "char_paimon":
+		# Паймон парит у плеча собеседника; ступни видны над окном реплики.
+		lift = maxf(lift + f.base_scale * f.size.y * 0.32, s.y - box.position.y + 12.0)
+		f.base_scale *= 0.60
 	f.position = Vector2(x - f.size.x / 2, s.y - f.size.y - lift)
 
 

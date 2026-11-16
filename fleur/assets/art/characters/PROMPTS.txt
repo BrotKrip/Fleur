@@ -1,7 +1,14 @@
-Reference-based revision, 2026-11-14.
-Current base sprites are unmodified copies of the user's ref/*.png files, mapped to char_<name>.png (eloise.png keeps its name).
-Current emotion sprites were edited with built-in image_gen from those references. Exact prompts: <character_id>/PROMPTS.txt.
-Previous base sprites are archived in output/sprites_before_references/.
+Как рисовать персонажей Fleur
+
+Авторские рисунки лежат в ref/. Когда есть рисунок самого персонажа, сохрани исходный PNG в этой папке и возьми его за нейтральный спрайт. Если размер отличается от игрового, пропорционально впиши фигуру в прозрачный холст. Сверь высоту лица и положение персонажа в кадре с соседями по сцене.
+
+Для персонажа без собственного рисунка возьми внешность, одежду и приметы из его карточки и реплик. Приложи к заданию 2–3 авторских PNG из ref/, близких по возрасту или роли. Укажи, что берёшь с каждого. Например, для молодого артиста у Лини можно посмотреть построение глаз и прядей, у Луи-Марка — форму теней на жилете и рукавах. У нового героя должны быть свои черты, костюм и жест.
+
+В чистой копии репозитория папка ref/ может отсутствовать. Авторские рисунки для сравнения также есть среди игровых нейтральных портретов, например char_lyney.png, char_lynette.png, char_furina.png и char_louis.png. Полный перечень приведён в README в разделе «Эмоции персонажей».
+
+Сравни готового героя с авторскими рисунками при том размере, в котором игрок видит разговор. Проверь толщину линии у глаз, форму и цвет прядей, границы теней на ткани, силуэт и выражение лица. Для смены эмоции используй нейтральный спрайт этого героя. Меняй брови, веки и рот по смыслу реплики, сохраняя одежду, силуэт и положение головы при переключении.
+
+Первые восемь наборов по авторским рисункам, 2026-11-14. Запросы для отдельных эмоций лежат в <character_id>/PROMPTS.txt, прежние варианты — в output/sprites_before_references/.
 
 Historical prompts below describe the superseded temporary base sprites, not the current reference-based art.
 Temporary character art. Generated with the built-in image_gen tool, 2026-11-14.

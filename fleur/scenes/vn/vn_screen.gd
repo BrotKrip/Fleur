@@ -8,6 +8,7 @@ extends Control
 const Decor := preload("res://ui/ambient_canvas.gd")
 const FIGURE_LIGHT := preload("res://shaders/figure_lighting.gdshader")
 const BACKGROUND_FADE := 0.65
+static var _backdrop_colors: Dictionary[String, PackedColorArray] = {}
 var scene: Dictionary
 var ctx: Dictionary
 var api: Dictionary
@@ -360,16 +361,14 @@ func _place_figure(f: VNFigure) -> void:
 			var index := ids.find(f.pid)
 			var stage_width := s.x * 0.41
 			x = s.x * 0.56 + stage_width * (float(index) + 0.5) / float(ids.size())
-			f.base_scale = minf(normal_scale, maxf(0.55, stage_width / (float(ids.size()) * 220.0)))
-			# При уменьшении группового кадра лица остаются над диалоговой рамкой.
-			lift = (normal_scale - f.base_scale) * f.size.y * 0.65
-	if f.pid == "char_paimon":
-		# Паймон парит у плеча собеседника; ступни видны над окном реплики.
-		lift = maxf(lift + f.base_scale * f.size.y * 0.32, s.y - box.position.y + 12.0)
-		f.base_scale *= 0.60
-	var portrait_scale := float(Content.def(f.pid).get("vn_scale", 1.0))
-	# У невысокой фигуры руки с предметом остаются видны над репликой.
-	lift += f.size.y * f.base_scale * (1.0 - portrait_scale) * 0.2
+			# Места достаточно, когда соседние лица читаются отдельно. Плечи могут перекрываться.
+			f.base_scale = minf(normal_scale, maxf(0.55, stage_width / (float(ids.size()) * 180.0)))
+	var character := Content.def(f.pid)
+	var portrait_scale := float(character.get("vn_scale", 1.0))
+	if character.get("vn_float", false):
+		# Парящая фигура держится у плеча собеседника, ступни видны над репликой.
+		lift = maxf(f.base_scale * f.size.y * 0.32, s.y - box.position.y + 12.0)
+	# Один нижний край для всех стоящих фигур, в том числе при выборе ответа.
 	f.base_scale *= portrait_scale
 	f.position = Vector2(x - f.size.x / 2, s.y - f.size.y - lift)
 
@@ -485,12 +484,42 @@ func _set_bg(id: String, light_profile := "") -> void:
 	_fit_location()
 
 
+## Усредняем на уровне лиц и плеч. В кэше остаются только два цвета без текстуры.
+func _reflected_light(texture: Texture2D) -> PackedColorArray:
+	if texture == null:
+		var colors: Array = Content.background(current_bg).get("colors", [])
+		var middle := Color(str(colors[1])) if colors.size() > 1 else Color(0.45, 0.45, 0.45)
+		return PackedColorArray([middle, middle])
+	var path := texture.resource_path
+	if _backdrop_colors.has(path):
+		return _backdrop_colors[path]
+	var image := texture.get_image()
+	if image == null or image.is_empty() or (image.is_compressed() and image.decompress() != OK):
+		return PackedColorArray([Color(0.45, 0.45, 0.45), Color(0.45, 0.45, 0.45)])
+	var sides := PackedColorArray()
+	for half in 2:
+		var sum := Color(0, 0, 0, 0)
+		for row in 6:
+			for col in 8:
+				var u := 0.5 * half + (col + 0.5) / 16.0
+				var v := 0.14 + (row + 0.5) * 0.09
+				sum += image.get_pixel(int(u * image.get_width()), int(v * image.get_height()))
+		sides.append(sum / 48.0)
+	_backdrop_colors[path] = sides
+	return sides
+
+
 ## Одна палитра на весь кадр, включая уходящие фигуры и обе позы во время смены эмоции.
 func _apply_environment(animate: bool, fade_same_backdrop: bool) -> void:
 	lighting_phase = int(Game.state.get("phase", 1))
 	Sound.environment("backgrounds", current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting, score_override)
 	var profile := Content.figure_lighting(current_bg, Rules.PHASE_KEYS[lighting_phase], shot_lighting)
+	var backdrop_tint := Art.background_tint(current_bg) * Color.from_string(profile.get("backdrop_tint", ""), Color.WHITE)
+	var reflected := _reflected_light(background_art.texture)
+	var reflected_tint := backdrop_tint if background_art.texture else Color.WHITE
 	var uniforms := {
+		"backdrop_left": reflected[0] * reflected_tint,
+		"backdrop_right": reflected[1] * reflected_tint,
 		"ambient_color": Color.from_string(profile.get("ambient_color", ""), Color.WHITE),
 		"ambient_strength": float(profile.get("ambient_strength", 0.0)),
 		"brightness": float(profile.get("brightness", 1.0)),
@@ -507,7 +536,6 @@ func _apply_environment(animate: bool, fade_same_backdrop: bool) -> void:
 			lighting_tween.tween_property(figure_material, "shader_parameter/" + key, uniforms[key], BACKGROUND_FADE)
 		else:
 			figure_material.set_shader_parameter(key, uniforms[key])
-	var backdrop_tint := Art.background_tint(current_bg) * Color.from_string(profile.get("backdrop_tint", ""), Color.WHITE)
 	if fade_same_backdrop and animate:
 		lighting_tween.tween_property(background_art, "modulate", backdrop_tint, BACKGROUND_FADE)
 	else:

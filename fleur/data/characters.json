@@ -1,5 +1,6 @@
 {
 	"char_josie": {
+		"vn_scale": 0.96,
 		"id": "char_josie",
 		"type": "person",
 		"look": "portrait",
@@ -31,6 +32,8 @@
 		]
 	},
 	"char_charlotte": {
+		"vn_scale": 0.94,
+		"vn_pose_y": {"home": 0.045, "nightshirt": 0.045, "by_fire": -0.055, "press_break": -0.19},
 		"id": "char_charlotte",
 		"type": "person",
 		"look": "portrait",
@@ -72,6 +75,7 @@
 		]
 	},
 	"char_clorinde": {
+		"vn_scale": 1.05,
 		"id": "char_clorinde",
 		"type": "person",
 		"look": "portrait",
@@ -95,6 +99,7 @@
 		]
 	},
 	"char_tiori": {
+		"vn_scale": 0.93,
 		"id": "char_tiori",
 		"type": "person",
 		"look": "portrait",

@@ -26,6 +26,8 @@ var mood := ""
 var look := ""
 var _prev_portrait: Texture2D
 var _blend := 1.0
+var _pose_y := 0.0
+var _prev_pose_y := 0.0
 
 
 func setup(id: String, start_mood := "", start_look := "") -> void:
@@ -33,6 +35,7 @@ func setup(id: String, start_mood := "", start_look := "") -> void:
 	mood = start_mood
 	look = start_look
 	portrait = Art.portrait(id, mood, look)
+	_pose_y = _portrait_offset()
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	size = FRAME_SIZE
 	pivot_offset = Vector2(size.x * 0.5, size.y)
@@ -55,15 +58,36 @@ func _update_portrait() -> void:
 	if tex == portrait:
 		return
 	_prev_portrait = portrait
+	_prev_pose_y = _pose_y
 	portrait = tex
+	_pose_y = _portrait_offset()
 	_blend = 0.0
+
+
+func _portrait_offset() -> float:
+	# Когда для образа нет PNG, обычный портрет сохраняет свою посадку.
+	if look.is_empty() or portrait == null or portrait.resource_path.get_base_dir().get_file() != look:
+		return 0.0
+	var offsets: Dictionary = Content.def(pid).get("vn_pose_y", {})
+	return float(offsets.get(look, 0.0)) * FRAME_SIZE.y
+
+
+func _portrait_rect(texture: Texture2D, offset_y: float) -> Rect2:
+	var source := texture.get_size()
+	var fitted := source * minf(size.x / source.x, size.y / source.y)
+	# При подъёме лица приближаем весь портрет относительно его нижней кромки.
+	# Так даже у поясного портрета видимый срез не повиснет над краем экрана.
+	if offset_y < 0.0:
+		fitted *= 1.0 - offset_y / fitted.y
+	var bottom := size.y + maxf(0.0, offset_y)
+	return Rect2(Vector2((size.x - fitted.x) * 0.5, bottom - fitted.y), fitted)
 
 
 func _process(delta: float) -> void:
 	_t += delta
 	_blend = minf(1.0, _blend + delta / 0.18)
 	_talk = lerpf(_talk, 1.0 if speaking else 0.0, 1.0 - exp(-8.0 * delta))
-	var shade := 1.0 - (0.28 if dim else 0.0) * (1.0 - _talk)
+	var shade := 1.0 - (0.12 if dim else 0.0) * (1.0 - _talk)
 	modulate = Color(shade, shade, shade, modulate.a)
 	scale = Vector2.ONE * base_scale * (1.0 + 0.012 * _talk)
 	queue_redraw()
@@ -71,15 +95,10 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	if portrait:
-		var source := portrait.get_size()
-		var fit := minf(size.x / source.x, size.y / source.y)
-		var fitted := source * fit
 		var breath_offset := sin(_t * 1.4) * 1.3
-		var target := Rect2(Vector2((size.x - fitted.x) * 0.5, size.y - fitted.y + breath_offset), fitted)
 		if _prev_portrait and _blend < 1.0:
-			var ps := _prev_portrait.get_size() * minf(size.x / _prev_portrait.get_size().x, size.y / _prev_portrait.get_size().y)
-			draw_texture_rect(_prev_portrait, Rect2(Vector2((size.x - ps.x) * 0.5, size.y - ps.y + breath_offset), ps), false, Color(1, 1, 1, 1.0 - _blend))
-		draw_texture_rect(portrait, target, false, Color(1, 1, 1, _blend if _prev_portrait else 1.0))
+			draw_texture_rect(_prev_portrait, _portrait_rect(_prev_portrait, breath_offset + _prev_pose_y), false, Color(1, 1, 1, 1.0 - _blend))
+		draw_texture_rect(portrait, _portrait_rect(portrait, breath_offset + _pose_y), false, Color(1, 1, 1, _blend if _prev_portrait else 1.0))
 		return
 	# Внешность для резервного рисунка: поле "placeholder" в данных персонажа, иначе встроенная таблица.
 	var st: Dictionary = Content.def(pid).get("placeholder", STYLES.get(pid, {}))

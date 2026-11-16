@@ -162,6 +162,7 @@
 		"color": "#a08098"
 	},
 	"npc_theatre_girl": {
+		"vn_scale": 0.74,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -267,6 +268,7 @@
 		"color": "#7a6a5a"
 	},
 	"npc_hearth_girl": {
+		"vn_scale": 0.8,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",

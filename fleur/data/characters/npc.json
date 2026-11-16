@@ -1,5 +1,6 @@
 {
 	"courier": {
+		"vn_scale": 0.88,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -236,6 +237,7 @@
 		}
 	},
 	"npc_tiori_apprentice": {
+		"vn_scale": 0.93,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -259,6 +261,7 @@
 		}
 	},
 	"npc_newsboy": {
+		"vn_scale": 0.79,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",

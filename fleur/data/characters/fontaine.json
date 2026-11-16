@@ -1,5 +1,7 @@
 {
 	"char_navia": {
+		"vn_scale": 1.02,
+		"vn_pose_y": {"hatless": 0.035},
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -36,6 +38,7 @@
 		]
 	},
 	"char_silver": {
+		"vn_scale": 1.06,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",
@@ -61,6 +64,7 @@
 		}
 	},
 	"char_melus": {
+		"vn_scale": 1.02,
 		"type": "person",
 		"look": "portrait",
 		"role": "secondary",
@@ -85,6 +89,7 @@
 		}
 	},
 	"char_furina": {
+		"vn_scale": 0.96,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -114,6 +119,7 @@
 		}
 	},
 	"char_neuvillette": {
+		"vn_scale": 1.07,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -140,6 +146,8 @@
 		}
 	},
 	"char_lyney": {
+		"vn_scale": 0.98,
+		"vn_pose_y": {"bareheaded": 0.055, "crushed_hat": 0.055},
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -170,6 +178,8 @@
 		}
 	},
 	"char_lynette": {
+		"vn_scale": 0.92,
+		"vn_pose_y": {"court": 0.075, "seated": 0.075, "tea": 0.075},
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -200,6 +210,7 @@
 		}
 	},
 	"char_freminet": {
+		"vn_scale": 0.89,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -231,6 +242,7 @@
 		}
 	},
 	"char_arlecchino": {
+		"vn_scale": 1.045,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -257,6 +269,7 @@
 		}
 	},
 	"char_wriothesley": {
+		"vn_scale": 1.065,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -283,6 +296,7 @@
 		}
 	},
 	"char_sigewinne": {
+		"vn_scale": 0.74,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -417,6 +431,8 @@
 		]
 	},
 	"char_lumine": {
+		"vn_scale": 0.87,
+		"vn_pose_y": {"trial_notes": 0.04, "trial_sleep": 0.04},
 		"type": "person",
 		"look": "portrait",
 		"role": "major",
@@ -459,6 +475,8 @@
 		}
 	},
 	"char_paimon": {
+		"vn_scale": 0.6,
+		"vn_float": true,
 		"type": "person",
 		"look": "portrait",
 		"role": "major",

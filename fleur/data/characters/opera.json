@@ -41,6 +41,7 @@
 		"placeholder": {"hair": "4a3a2a", "coat": "6a5a3a", "trim": "a08040", "hat": "beret", "hat_color": "3a3a3a", "eyes": "5a4a3a", "short": true}
 	},
 	"char_childe": {
+		"vn_scale": 1.07,
 		"type": "person", "look": "portrait", "role": "secondary",
 		"title": "Чайльд",
 		"subtitle": "Банк Северного королевства",
@@ -54,6 +55,7 @@
 		"placeholder": {"hair": "c8642c", "coat": "4a4a52", "trim": "b02a2a", "hat": "", "eyes": "3a6aa0", "short": true}
 	},
 	"npc_jules_son": {
+		"vn_scale": 0.75,
 		"type": "person", "look": "portrait", "role": "episodic",
 		"title": "Жюль-младший",
 		"subtitle": "Сын перекупщика",

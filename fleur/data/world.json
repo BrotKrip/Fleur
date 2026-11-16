@@ -58,7 +58,7 @@
 			"ambient_strength": 0.065,
 			"brightness": 0.99,
 			"light_color": "#ffe3b6",
-			"light_strength": 0.037,
+			"light_strength": 0.13,
 			"light_side": -1
 		},
 		"window_right_day": {
@@ -66,7 +66,7 @@
 			"ambient_strength": 0.065,
 			"brightness": 0.99,
 			"light_color": "#ffedcf",
-			"light_strength": 0.035,
+			"light_strength": 0.12,
 			"light_side": 1
 		},
 		"dusk_room": {
@@ -89,8 +89,8 @@
 			"ambient_color": "#8998bd",
 			"ambient_strength": 0.4,
 			"brightness": 0.865,
-			"light_color": "#ffb472",
-			"light_strength": 0.29,
+			"light_color": "#ffad61",
+			"light_strength": 0.60,
 			"light_side": 1
 		},
 		"street_evening": {
@@ -129,7 +129,7 @@
 			"ambient_strength": 0.3,
 			"brightness": 0.89,
 			"light_color": "#ffd197",
-			"light_strength": 0.095,
+			"light_strength": 0.19,
 			"light_side": 1
 		},
 		"docks_at_night": {
@@ -137,7 +137,7 @@
 			"ambient_strength": 0.47,
 			"brightness": 0.815,
 			"light_color": "#ffd18e",
-			"light_strength": 0.068,
+			"light_strength": 0.22,
 			"light_side": -1
 		},
 		"dock_store": {
@@ -153,7 +153,7 @@
 			"ambient_strength": 0.245,
 			"brightness": 0.925,
 			"light_color": "#ffd298",
-			"light_strength": 0.095,
+			"light_strength": 0.18,
 			"light_side": 1
 		},
 		"stage": {

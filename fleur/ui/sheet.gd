@@ -66,12 +66,31 @@ func add_kicker(t: String) -> Label:
 	return l
 
 
-func add_title(t: String) -> Label:
+func add_title(t: String, portrait: Texture2D = null) -> Label:
 	var l := Label.new()
 	l.text = t
 	l.theme_type_variation = "InkTitle"
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	body.add_child(l)
+	if portrait == null:
+		body.add_child(l)
+		return l
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	body.add_child(row)
+	var cameo := Control.new()
+	cameo.custom_minimum_size = Vector2(86, 102)
+	cameo.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	cameo.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	cameo.draw.connect(func():
+		var center := cameo.size * 0.5
+		var radii := Vector2(41, 49)
+		var oval := Look.ellipse(center, radii, 64)
+		Look.fill_v(cameo, oval, Color("d9c9a7"), Color("b5a17c"))
+		Look.draw_portrait(cameo, portrait, center, radii, 0.52)
+		Look.outline(cameo, oval, Look.BRASS_DARK, 1.5))
+	row.add_child(cameo)
+	l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_child(l)
 	return l
 
 

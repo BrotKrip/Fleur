@@ -612,7 +612,8 @@ func resolve_talk(s: Dictionary, ctx: Dictionary) -> Dictionary:
 				var once_key := "talk:%s:%s:%d" % [who, key, i]
 				if e.get("once", false) and s["flags"].get(once_key, false):
 					if e.has("again"):
-						return {"entry": {"text": e["again"], "cost": 0}, "key": once_key, "general": true, "uses_approach": false}
+						var repeat_entry := {"text": e["again"], "mood": e.get("again_mood", ""), "cost": 0}
+						return {"entry": repeat_entry, "key": once_key, "general": true, "uses_approach": false}
 					continue
 				var general: bool = key == "*" or pair[0] == "_default"
 				return {"entry": e, "key": once_key, "general": general, "uses_approach": e.has("approach")}
@@ -630,6 +631,7 @@ func perform_talk(a: Dictionary, s: Dictionary, ctx: Dictionary, api: Dictionary
 	var ap = ctx["slots"].get("approach")
 	var res := resolve_talk(s, ctx)
 	var e: Dictionary = res["entry"]
+	var mood := str(e.get("mood", ""))
 	var parts := PackedStringArray()
 	var text := _talk_text(e.get("text"), s, ctx)
 	if text != "":
@@ -646,6 +648,7 @@ func perform_talk(a: Dictionary, s: Dictionary, ctx: Dictionary, api: Dictionary
 			var at := _talk_text(ar.get("text", ""), s, ctx)
 			if at != "":
 				parts.append(at)
+				mood = str(ar.get("mood", mood))
 			apply(ar.get("effects"), s, ctx, api)
 		spend_approach(s, str(ap), api)
 	if e.has("scene"):
@@ -657,7 +660,7 @@ func perform_talk(a: Dictionary, s: Dictionary, ctx: Dictionary, api: Dictionary
 	if int(cost) > 0:
 		advance(s, int(cost), api)
 	var title := _talk_text(e.get("title", "Разговор: {who}"), s, ctx)
-	return {"title": title, "text": full, "silent": e.has("scene") and full == ""}
+	return {"title": title, "text": full, "speaker": who, "mood": mood, "silent": e.has("scene") and full == ""}
 
 
 # ---------------------------------------------------------------- дело по стадиям

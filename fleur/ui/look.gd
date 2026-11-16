@@ -262,11 +262,11 @@ static func engraved_corners(ci: CanvasItem, rect: Rect2, color := GOLD, length 
 
 
 ## Верх спрайта в овальной фотографической рамке; UV обрезаются самой рамкой.
-static func draw_portrait(ci: CanvasItem, texture: Texture2D, center: Vector2, radii: Vector2) -> void:
+static func draw_portrait(ci: CanvasItem, texture: Texture2D, center: Vector2, radii: Vector2, width_fraction := 0.86) -> void:
 	var pts := ellipse(center, radii, 64)
 	var uv := PackedVector2Array()
 	var ts := texture.get_size()
-	var source_w := ts.x * 0.86
+	var source_w := ts.x * width_fraction
 	var source_h := minf(ts.y * 0.72, source_w * radii.y / radii.x)
 	var source := Rect2((ts.x - source_w) * 0.5, ts.y * 0.015, source_w, source_h)
 	for point in pts:

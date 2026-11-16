@@ -275,7 +275,7 @@
 			"regen": 3,
 			"decisive": "Пятое касание",
 			"style": "Рад даже проигранному обмену и сразу просит продолжать.",
-			"portrait_moods": {"attack": "excited", "decisive": "smile", "open": "surprised"},
+			"portrait_moods": {"attack": "excited", "decisive": "smile", "open": "confused"},
 			"pattern": [
 				{"kind": "attack", "n": 9, "count": 2, "label": "Два касания"},
 				{"kind": "press", "n": 12, "label": "Теснит к портьере"},
@@ -286,6 +286,7 @@
 		"clorinde": {
 			"title": "Клоринда",
 			"pid": "char_clorinde",
+			"portrait_moods": {"attack": "serious", "counter": "determined", "feint": "sly"},
 			"balance": 46,
 			"regen": 4,
 			"reads": 2,
@@ -330,6 +331,7 @@
 		"lamotte": {
 			"title": "Виконт де Ламотт",
 			"pid": "viscount",
+			"portrait_moods": {"attack": "serious", "taunt": "smug", "open": "surprised"},
 			"balance": 40,
 			"regen": 3,
 			"fury_on_block": 3,

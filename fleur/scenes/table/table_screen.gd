@@ -1097,7 +1097,10 @@ func _after(res: Dictionary) -> void:
 	if res.get("silent", false):
 		flow()
 		return
-	_read(res.get("title", ""), res.get("text", ""), res.get("changes", []), "result", flow)
+	var portrait: Texture2D
+	if res.has("speaker"):
+		portrait = Art.portrait(res["speaker"], res.get("mood", ""))
+	_read(res.get("title", ""), res.get("text", ""), res.get("changes", []), "result", flow, portrait)
 
 
 ## После письма Люмин город и личные встречи остаются доступны.
@@ -1136,7 +1139,7 @@ func flow() -> void:
 
 # ---------------------------------------------------------------- чтение (события, итоги)
 
-func _read(title: String, text: String, changes: Array, kind: String, then: Callable) -> void:
+func _read(title: String, text: String, changes: Array, kind: String, then: Callable, portrait: Texture2D = null) -> void:
 	if text == "" and _changes_lines(changes).is_empty():
 		then.call()
 		return
@@ -1148,7 +1151,7 @@ func _read(title: String, text: String, changes: Array, kind: String, then: Call
 	var sh := Sheet.new(600 if kind != "result" else 560, 0.28)
 	if kind == "intro":
 		sh.add_kicker("Кур-де-Фонтейн")
-	sh.add_title(title)
+	sh.add_title(title, portrait)
 	if text != "":
 		var l := sh.add_text(text)
 		l.add_theme_font_size_override("font_size", 19)

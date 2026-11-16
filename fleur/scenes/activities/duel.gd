@@ -505,7 +505,6 @@ func _ready() -> void:
 		v.chosen.connect(_choose_target)
 		enemy_row.add_child(v)
 		enemy_views[e["uid"]] = v
-		_last_intents[e["uid"]] = str(e["intent"])
 
 	init_coin = Control.new()
 	init_coin.size = Vector2(300, 64)

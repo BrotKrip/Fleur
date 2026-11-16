@@ -4,9 +4,10 @@ extends Control
 ## Интерфейс активности: setup(params, queue_item), get_title(); по окончании — Game.finish_activity().
 
 const KIND_COLOR := {"attack": Color("8c2a22"), "guard": Color("24486a"), "skill": Color("3c5a2a")}
-const CONTEXT_TITLE := {"training": "Тренировка", "honor": "Дело чести", "street": "Схватка"}
+const CONTEXT_TITLE := {"training": "Тренировка", "honor": "Дело чести", "street": "Схватка", "friendly": "Дружеский поединок"}
 const END_TITLE := {"win": "Победа", "clean": "Чистая победа", "disarm": "Обезоружен", "throat": "Клинок у горла",
-	"humiliate": "Пуговицы на песке", "loss": "Поражение", "wound": "Ранен", "time": "Ничья", "yield": "Клинок опущен"}
+	"humiliate": "Пуговицы на песке", "loss": "Поражение", "wound": "Ранен", "time": "Ничья", "yield": "Клинок опущен",
+	"childe_mark": "След на рукаве"}
 const CARD_SIZE := Vector2(158, 214)
 const STEEL := Color("dfe8f0")
 const BLOOD := Color("e0482e")

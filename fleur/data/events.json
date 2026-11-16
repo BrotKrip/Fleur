@@ -48,7 +48,8 @@
 						1
 					]
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"title": "Ответ матушки",
 		"text": "«Привози мадемуазель утренним рейсом. Покажу ей мастерские и накормлю вас обоих. Велела оставить к обратному аквабусу экипаж у ворот. Мама». Впервые за долгое время Элоиза не спрашивала, останется ли он на воскресенье.",
@@ -70,7 +71,8 @@
 				{
 					"phase": "evening"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"title": "Ключ повернулся в замке",
 		"text": "Ключ повернулся, хотя Флёр никому не обещал оставить открытым. Этим ключом умеет пользоваться его сестра. Дома его ждёт Жози.",
@@ -92,7 +94,8 @@
 	},
 	"ev_story_city_open": {
 		"when": {
-			"flag": "homecoming_done"
+			"flag": "homecoming_done",
+			"noFlag": "sillage_verdict"
 		},
 		"effects": [
 			{
@@ -141,7 +144,8 @@
 			{
 				"add": "note_samples_ready"
 			}
-		]
+		],
+		"when": {"noFlag": "sillage_verdict"}
 	},
 	"ev_story_epilogue": {
 		"when": {
@@ -152,7 +156,8 @@
 				{
 					"phase": "morning"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"effects": [
 			{
@@ -164,7 +169,7 @@
 		"when": {
 			"flag": "arc_epilogue_seen",
 			"phase": "morning",
-			"noFlag": "eloise_after_print_done"
+			"noFlag": ["eloise_after_print_done", "sillage_verdict"]
 		},
 		"title": "Ответ на письмо",
 		"text": "«Шевалье, я прочла и номер, и твоё письмо. Приезжай в Берилл утром, когда сможешь. Я хочу поговорить с тобой за завтраком. Мама».",
@@ -182,7 +187,8 @@
 			],
 			"noFlag": [
 				"exhibition_signature_pending",
-				"textile_opened"
+				"textile_opened",
+				"sillage_verdict"
 			]
 		},
 		"title": "Образцы привезли в «Дебор»",
@@ -199,7 +205,7 @@
 				"eloise_after_print_done",
 				"offered_awning_help"
 			],
-			"noFlag": "awning_swatch_delivered",
+			"noFlag": ["awning_swatch_delivered", "sillage_verdict"],
 			"lacks": "it_awning_swatch",
 			"phase": "morning"
 		},
@@ -220,7 +226,8 @@
 				{
 					"noFlag": "first_arc_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"title": "Записка из «Паровой птицы»",
 		"text": "«Редактор ставит материал о „Нектаре“ в номер через шесть дней. Я напечатаю то, что смогу подтвердить к этому сроку. Лучше — с тобой. Ш.»",
@@ -233,7 +240,7 @@
 	"ev_article_deadline": {
 		"manual": true,
 		"when": {
-			"noFlag": "first_arc_done"
+			"noFlag": ["first_arc_done", "sillage_verdict"]
 		},
 		"effects": [
 			{
@@ -253,7 +260,8 @@
 				{
 					"phase": "morning"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"effects": [
 			{
@@ -311,7 +319,8 @@
 				{
 					"lacks": "inv_article_layout"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"title": "Записка от Шарлотты",
 		"text": "«Полосу о ремёслах поставили в вёрстку. Если хочешь увидеть, что я оставила от твоих семейных легенд, заходи в редакцию днём. И не опаздывай: наборщик уже смотрит на меня с укором. — Ш.»",
@@ -683,7 +692,8 @@
 				{
 					"phase": "morning"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"effects": [
 			{
@@ -693,5 +703,74 @@
 				"scene": "city_navia_walk"
 			}
 		]
+	},
+	"ev_sillage_open": {
+		"manual": true,
+		"when": {"flag": "build_end"},
+		"logText": "Марсель заказал стол в «Деборе». Мелус будет в Пуассоне через два дня.",
+		"effects": [
+			{"stamp": "sillage_open"},
+			{
+				"add": ["sl_sillage", "loc_poisson", "loc_mermonia", "loc_manor", "loc_beaumont", "loc_debor", "loc_steambird", "loc_perfume", "loc_epiclese"]
+			}
+		]
+	},
+	"ev_sillage_sealed": {
+		"when": {"flag": "sillage_verdict"},
+		"effects": [
+			{
+				"remove": [
+					"dl_article",
+					"inv_note",
+					"inv_debor",
+					"inv_josie_home",
+					"inv_father_talk",
+					"inv_louis_talk",
+					"inv_verdier",
+					"note_city_return",
+					"note_article_wait",
+					"note_estate_books",
+					"inv_article_layout",
+					"note_epilogue",
+					"inv_eloise_after_print",
+					"inv_marcel_lunch",
+					"inv_textile_opening",
+					"note_exhibition",
+					"note_samples_ready",
+					"task_samples",
+					"task_compare",
+					"note_charlotte_result",
+					"aff_nectar"
+				]
+			},
+			{
+				"if": {"noFlag": "first_arc_done"},
+				"then": [{"log": "Семейные документы приобщены к делу. Шарлотта принимает письма о городском вине в редакции."}]
+			}
+		]
+	},
+	"ev_maison_departure": {
+		"when": {"flag": "sillage_verdict", "noFlag": "maison_lumine_departed", "daysSince": ["sillage_verdict", 5], "phase": "morning"},
+		"effects": [{"scene": "maison_depart"}]
+	},
+	"ev_sillage_marcel_table": {
+		"when": {
+			"flag": "build_end", "daysSince": ["sillage_open", 2], "phase": "day",
+			"noFlag": ["sillage_sunday_done", "sillage_old_directions", "sillage_wine_route_done", "sillage_store", "sillage_verdict"]
+		},
+		"effects": [{"scene": "sillage_marcel_sunday"}]
+	},
+	"ev_sillage_summons": {
+		"when": {
+			"flag": "sillage_filed", "noFlag": "sillage_verdict", "phase": "morning",
+			"all": [{"daysSince": ["sillage_open", 6]}, {"daysSince": ["sillage_filed", 2]}]
+		},
+		"title": "Из канцелярии «Эпиклеза»",
+		"text": "Бумаги доставили в Оперу, свидетелям из Берилла отвели места на утреннем рейсе. Через два дня Шевалье просят явиться к секретарю. Навия вписала на полях, что оставит для него стул.",
+		"effects": [{"flag": "sillage_summons"}, {"stamp": "sillage_summons"}]
+	},
+	"ev_sillage_hearing": {
+		"when": {"flag": "sillage_summons", "noFlag": "sillage_verdict", "daysSince": ["sillage_summons", 4], "phase": "morning"},
+		"effects": [{"scene": "sillage_verdict"}]
 	}
 }

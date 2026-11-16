@@ -48,9 +48,16 @@
 		"vision": "Гидро",
 		"tags": ["vision", "fatui"],
 		"color": "#c0603a",
-		"text": "Рыжий молодой человек с весёлыми и совершенно пустыми глазами. Представляется служащим Банка Северного королевства, а дерётся так, как служащих банков не учат. Скучает. Ищет в Фонтейне противника себе по руке.",
+		"text": [
+			{"when": {"noFlag": "sillage_verdict"}, "text": "Рыжий молодой человек с весёлыми и совершенно пустыми глазами. Представляется служащим Банка Северного королевства, а дерётся так, как служащих банков не учат. Скучает. Ищет в Фонтейне противника себе по руке."},
+			{"when": {"flag": "sillage_verdict", "noFlag": "maison_lumine_departed"}, "text": "Тарталья, Одиннадцатый Предвестник Фатуи. Нёвиллет счёл, что обвинять его в исчезновениях оснований нет, но Оратрис признала его виновным. Его увели в Меропид."},
+			{"when": {"flag": "maison_lumine_departed"}, "text": "Тарталья исчез из Меропида. Его Гидро Глаз Бога по-прежнему у Люмин."}
+		],
 		"rel": ["Не знакомы"],
-		"schedule": [{"when": {"all": [{"flag": "childe_met"}, {"noFlag": "premiere_witness"}]}, "map": {"day": "loc_beaumont"}}],
+		"schedule": [
+			{"when": {"flag": ["childe_met", "trial_done"], "noFlag": ["sillage_verdict", "entracte_childe_done"]}, "map": {"day": "loc_beaumont"}},
+			{"when": {"flag": "childe_met", "noFlag": ["premiere_witness", "sillage_verdict"]}, "map": {"day": "loc_beaumont"}}
+		],
 		"notes": "Тарталья, Одиннадцатый Предвестник. Флёр этого не знает.",
 		"placeholder": {"hair": "c8642c", "coat": "4a4a52", "trim": "b02a2a", "hat": "", "eyes": "3a6aa0", "short": true}
 	},

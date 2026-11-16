@@ -13,7 +13,11 @@
 			"rosula"
 		],
 		"color": "#e0b84a",
-		"text": "Навия Каспар, двадцать два года. Огромная чёрная треуголка с синим цветком, зонтик, улыбка, с которой она входит и во дворцы, и в трущобы. Возглавляет «Спина-ди-Росула» после гибели отца. Половина Пуассона называет её старшей сестрой, вторая половина ей что-нибудь должна. Отца её в свете до сих пор вполголоса зовут «Калласом Неверным», и при Навии этого лучше не делать.",
+		"text": [
+			{"text": "Навия Каспар, двадцать два года. Огромная чёрная треуголка с синим цветком, зонтик, улыбка, с которой она входит и во дворцы, и в трущобы. Возглавляет «Спина-ди-Росула» после гибели отца. Половина Пуассона называет её старшей сестрой, вторая половина ей что-нибудь должна."},
+			{"when": {"noFlag": "sillage_verdict"}, "text": "Отца её в свете до сих пор вполголоса зовут «Калласом Неверным», и при Навии этого лучше не делать."},
+			{"when": {"flag": "sillage_verdict"}, "text": "После того как Навия восстановила доброе имя отца в суде, к ней за знакомством приходят люди, которые годами отказывались садиться с ней за один стол."}
+		],
 		"rel": [
 			"Знакомы"
 		],
@@ -442,6 +446,7 @@
 		],
 		"subtitle": "Странница из другого мира",
 		"schedule": [
+			{"when": {"flag": "maison_lumine_departed"}, "map": {}},
 			{
 				"when": {"flag": "trial_done"},
 				"map": {"morning": "loc_lutes", "day": "loc_vasari", "evening": "loc_lutes"}
@@ -490,7 +495,12 @@
 		"rel": [
 			"Слышал"
 		],
-		"schedule": [{"when": {"flag": "trial_done"}, "map": {"morning": "loc_lutes", "day": "loc_vasari", "evening": "loc_lutes"}}, {"when": {"flag": "premiere_witness"}, "map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}}, {"when": {"flag": "premiere_eve_seen"}, "map": {"morning": "loc_vasari", "day": "loc_beaumont", "evening": "loc_vasari"}}],
+		"schedule": [
+			{"when": {"flag": "maison_lumine_departed"}, "map": {}},
+			{"when": {"flag": "trial_done"}, "map": {"morning": "loc_lutes", "day": "loc_vasari", "evening": "loc_lutes"}},
+			{"when": {"flag": "premiere_witness"}, "map": {"morning": "loc_epiclese", "day": "loc_epiclese", "evening": "loc_epiclese", "night": "loc_epiclese"}},
+			{"when": {"flag": "premiere_eve_seen"}, "map": {"morning": "loc_vasari", "day": "loc_beaumont", "evening": "loc_vasari"}}
+		],
 		"notes": "Болтлива, но наблюдательна, хорошо знает мифы и традиции Тейвата.",
 		"placeholder": {
 			"hair": "f4f4f8",

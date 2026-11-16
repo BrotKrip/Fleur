@@ -1100,15 +1100,12 @@ func _after(res: Dictionary) -> void:
 	_read(res.get("title", ""), res.get("text", ""), res.get("changes", []), "result", flow)
 
 
-var _end_shown := false
-
-
-## Конец текущей версии: суд в «Эпиклезе» окончен, двери Оперы открыты.
+## После письма Люмин город и личные встречи остаются доступны.
 func _show_build_end() -> void:
 	var sh := Sheet.new(600, 0.7)
 	sh.add_kicker("Послевкусие")
 	sh.add_title("Продолжение следует")
-	sh.add_text("Суд в «Эпиклезе» окончен, и всех, кто два дня не мог покинуть Оперу, отпустили по домам. На этом текущая версия игры заканчивается.\n\nСтол, люди и всё, что Флёр успел сказать и сделать, сохранены. Когда история продолжится, эта партия пойдёт дальше с того же места.")
+	sh.add_text("Письмо Люмин отправлено в Меропид. Пока она в крепости, Шевалье может вернуться к знакомым и провести в городе свободный вечер.")
 	sh.add_row([
 		Sheet.make_button("Остаться за столом", sh.close),
 		Sheet.make_button("В главное меню", func():
@@ -1124,10 +1121,10 @@ func flow() -> void:
 	if item.is_empty():
 		_highlight_candidates()
 		_update_hint()
-		Game.autosave()
-		if Game.build_ended() and not _end_shown:
-			_end_shown = true
+		if Game.build_ended() and not Game.state["flags"].get("meropide_page_seen", false):
+			Game.state["flags"]["meropide_page_seen"] = true
 			_show_build_end()
+		Game.autosave()
 		return
 	if item["type"] == "notice":
 		sync_cards(true)

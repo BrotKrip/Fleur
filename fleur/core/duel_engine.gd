@@ -87,7 +87,7 @@ func _start_turn(extra_draw := 0, energy_mod := 0) -> void:
 	attacks_this_turn = 0
 	_draw(HAND + extra_draw)
 	if turn > int(def.get("max_rounds", 10)):
-		_finish("time")
+		_finish(str(def.get("timeout_outcome", "time")))
 
 
 func _draw(n: int) -> void:

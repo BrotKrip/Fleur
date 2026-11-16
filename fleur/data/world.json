@@ -534,7 +534,9 @@
 				"#6d695a",
 				"#a5c0c1"
 			]
-		}
+		},
+		"meropide_infirmary": {"label": "Лазарет Меропида", "colors": ["#435b62", "#89a5a0", "#eadbb8"], "lighting": "stone"},
+		"meropide_office": {"label": "Кабинет герцога", "colors": ["#263b37", "#544938", "#ba9362"], "lighting": "amber_lamps"}
 	},
 	"activity_results": {
 		"hunt": {

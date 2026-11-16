@@ -141,8 +141,6 @@ func do_action(action: Dictionary, where: String, slots: Dictionary) -> Dictiona
 	var check := Rules.can_do(action, state, ctx)
 	if not check["ok"]:
 		return {"error": check["reason"]}
-	if build_ended() and Rules.cost_of(action, state) > 0:
-		return {"error": BUILD_END_NOTE}
 	var api := Rules.new_api()
 	Rules.mark_seen(state)
 	var res := Rules.perform(action, state, ctx, api)
@@ -151,17 +149,11 @@ func do_action(action: Dictionary, where: String, slots: Dictionary) -> Dictiona
 	return res
 
 
-## Текущая версия игры заканчивается после суда в «Эпиклезе»: дальше время не идёт.
-const BUILD_END_NOTE := "На этом текущая версия заканчивается. Продолжение следует."
-
-
 func build_ended() -> bool:
-	return not state.is_empty() and state["flags"].get("build_end", false)
+	return not state.is_empty() and state["flags"].get("meropide_interval_done", false)
 
 
 func wait_phase() -> Dictionary:
-	if build_ended():
-		return {"error": BUILD_END_NOTE}
 	var api := Rules.new_api()
 	Rules.mark_seen(state)
 	Rules.log_entry(state, "Флёр позволил времени идти своим чередом.", "action")
@@ -216,6 +208,15 @@ func load_slot(slot: String) -> bool:
 	if data.is_empty() or data.get("incompatible", false):
 		return false
 	state = data["state"]
+	# В старой версии этот флаг ставился в последней строке opera_release.
+	if state["flags"].get("build_end", false) and not state["fired"].has("ev_sillage_open"):
+		Rules.fire_event(state, "ev_sillage_open", Rules.new_api(), true)
+	elif state["fired_at"].has("ev_sillage_open") and not state["counters"].has("day:sillage_open"):
+		var opening_phase := int(state["fired_at"]["ev_sillage_open"])
+		state["counters"]["day:sillage_open"] = 1 + floori(opening_phase / 4.0)
+		# В прежнем разговоре Мелус уже назвал камеру и попросил найти Одиль.
+		if state["flags"].get("sillage_lead", false) and not state["flags"].get("sillage_store", false):
+			state["flags"]["sillage_old_directions"] = true
 	Rules.mark_seen(state)
 	to_table({"title": "День " + str(int(state["day"]))})
 	return true

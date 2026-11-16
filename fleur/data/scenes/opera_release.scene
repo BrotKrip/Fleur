@@ -154,5 +154,5 @@ N: На остановке у тумбы с афишей Лини и Линет�
 N: Флёр рассмеялся вслух, один, под дождём, и подумал, что этот город, кажется, ничем не проймёшь. Потом подумал, что, возможно, это и есть самое страшное.
 @do [{"flag":"ending_alone"}]
 @label end
-@do [{"flag":"build_end"},{"remove":["aff_opera","dl_trial"]},{"relRemove":["npc_liliane","Видел со спины"]},{"add":"npc_liliane"}]
+@do [{"flag":"build_end"},{"remove":["aff_opera","dl_trial"]},{"relRemove":["npc_liliane","Видел со спины"]},{"add":"npc_liliane"},{"event":"ev_sillage_open"}]
 @end

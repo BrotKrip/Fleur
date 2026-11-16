@@ -247,6 +247,11 @@
 		"cost": 1,
 		"outcomes": [
 			{
+				"when": {"flag": "sillage_verdict", "noFlag": "city_after_coffee"},
+				"text": "Мужчина за соседним столом встал ему навстречу и уже шелестел жилетом, доставая карточку, когда жена шепнула ему фамилию. Визитная карточка вернулась под жилет. Пока тот искал предлог побеседовать о погоде, Аруэ успел принести Флёру кофе и усадить на свободное место девушку с полным подолом слив. С нею они просидели до закрытия.",
+				"effects": [{"flag": "city_after_coffee"}]
+			},
+			{
 				"text": "Столики постепенно пустели. Он ещё немного посидел, наблюдая, как официант переставляет свечи, и допил то, что уже давно перестало быть холодным. Встать можно было в любой момент. Он выбрал ещё пять минут."
 			}
 		]
@@ -258,52 +263,23 @@
 		"cost": 0,
 		"outcomes": [
 			{
-				"when": {
-					"counterLt": [
-						"papers_read",
-						1
-					]
-				},
-				"text": "На первой странице — спор о городской смете, дальше программа спектаклей и реклама новой мастерской. В объявлении о пропавшей перчатке владелица особенно просила вернуть правую: левая у неё уже была. Флёр прочитал объявление дважды.",
-				"effects": [
-					{
-						"counter": [
-							"papers_read",
-							1
-						]
-					},
-					{
-						"add": "it_newspaper"
-					}
-				]
+				"when": {"flag": "maison_delegated", "noFlag": "city_after_paper"},
+				"text": "В газетной заметке Жози назвали «господином Жозефом де ла Флёром». Дома сестра долго разглядывала напечатанную рядом собственную подпись и попросила вырезать ей заметку целиком, чтобы отослать в тот самый клуб, куда господину Жозефу полагался свободный вход.",
+				"effects": [{"flag": "city_after_paper"}]
 			},
 			{
-				"when": {
-					"counterLt": [
-						"papers_read",
-						2
-					]
-				},
+				"when": {"counterLt": ["papers_read", 1]},
+				"text": "На первой странице — спор о городской смете, дальше программа спектаклей и реклама новой мастерской. В объявлении о пропавшей перчатке владелица особенно просила вернуть правую: левая у неё уже была. Флёр прочитал объявление дважды.",
+				"effects": [{"counter": ["papers_read", 1]}, {"add": "it_newspaper"}]
+			},
+			{
+				"when": {"counterLt": ["papers_read", 2]},
 				"text": "В сегодняшнем номере обсуждали ремонт террасы, уличный шум и модный цвет сезона. Цвет он считал неудачным, но это не помешало ему рассматривать иллюстрацию дольше остальных материалов.",
-				"effects": [
-					{
-						"counter": [
-							"papers_read",
-							1
-						]
-					}
-				]
+				"effects": [{"counter": ["papers_read", 1]}]
 			},
 			{
 				"text": "В светской колонке перепутали должности двух гостей. Один из них наверняка обрадуется повышению, второй будет ругаться. Флёр отложил газету, прикидывая, с кем из них безопаснее встретиться раньше.",
-				"effects": [
-					{
-						"counter": [
-							"papers_read",
-							1
-						]
-					}
-				]
+				"effects": [{"counter": ["papers_read", 1]}]
 			}
 		]
 	},
@@ -348,6 +324,11 @@
 		"cost": 1,
 		"outcomes": [
 			{
+				"when": {"flag": "maison_sentenced", "noFlag": "city_after_flirt"},
+				"text": "Дама согласилась прокатиться с ним в открытой коляске, только попросила заехать за ней с парадного входа. После суда её родня уж слишком часто объясняла ей, с кем можно появляться на людях. Шевалье обещал подать такую шляпу, что родне впору будет спасать уже его от знакомства с нею. До конца прогулки она так и не поинтересовалась, что он сказал на суде.",
+				"effects": [{"flag": "city_after_flirt"}]
+			},
+			{
 				"text": "Разговор начался с погоды, продолжился платьем и закончился обещанием как-нибудь поужинать. Флёр не считал это твёрдой договорённостью, но ему понравилось, как женщина улыбнулась, прежде чем уйти. На этот раз он запомнил имя."
 			}
 		]
@@ -375,7 +356,8 @@
 				{
 					"noFlag": "bar_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"evening"
@@ -464,7 +446,7 @@
 		"intent": "main",
 		"visible": {
 			"flag": "furina_sketch_delivered",
-			"noFlag": "submerged_cellar_checked"
+			"noFlag": ["submerged_cellar_checked", "sillage_verdict"]
 		},
 		"outcomes": [{"effects": [{"scene": "submerged_cellar"}]}]
 	},
@@ -494,7 +476,8 @@
 				{
 					"noFlag": "warehouse_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -703,7 +686,8 @@
 			}
 		],
 		"visible": {
-			"has": "inv_josie_home"
+			"has": "inv_josie_home",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"evening",
@@ -734,7 +718,8 @@
 				{
 					"noFlag": "josie_dinner_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"evening"
@@ -767,7 +752,8 @@
 				{
 					"flag": "josie_arrived"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning"
@@ -797,7 +783,8 @@
 				{
 					"noFlag": "homecoming_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"evening",
@@ -1006,7 +993,8 @@
 				{
 					"noFlag": "navia_met"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -1140,7 +1128,8 @@
 			}
 		],
 		"visible": {
-			"has": "note_exhibition"
+			"has": "note_exhibition",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -1173,7 +1162,8 @@
 				{
 					"noFlag": "article_seen"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -1197,7 +1187,8 @@
 			}
 		],
 		"visible": {
-			"has": "inv_verdier"
+			"has": "inv_verdier",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -1245,7 +1236,8 @@
 				{
 					"noFlag": "samples_left"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -1288,7 +1280,8 @@
 			}
 		],
 		"visible": {
-			"has": "note_samples_ready"
+			"has": "note_samples_ready",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning",
@@ -1322,7 +1315,8 @@
 				{
 					"noFlag": "first_arc_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning"
@@ -1355,7 +1349,8 @@
 			}
 		],
 		"visible": {
-			"has": "note_epilogue"
+			"has": "note_epilogue",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning"
@@ -1366,7 +1361,8 @@
 		"at": "loc_manor",
 		"title": "Позавтракать с матерью в Берилле",
 		"visible": {
-			"has": "inv_eloise_after_print"
+			"has": "inv_eloise_after_print",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"morning"
@@ -1388,7 +1384,8 @@
 		"at": "loc_debor",
 		"title": "Пообедать с дядей Марселем",
 		"visible": {
-			"has": "inv_marcel_lunch"
+			"has": "inv_marcel_lunch",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"day"
@@ -1410,7 +1407,8 @@
 		"at": "loc_debor",
 		"title": "Зайти на выставку тканей",
 		"visible": {
-			"has": "inv_textile_opening"
+			"has": "inv_textile_opening",
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"day"
@@ -1447,6 +1445,11 @@
 		"daily": true,
 		"outcomes": [
 			{
+				"when": {"flag": "maison_delegated", "noFlag": "city_after_dinner"},
+				"text": "Пока брат счищал пригоревший сыр со сковороды, Жози выложила на стол три письма по конторе. Шевалье выбрал среднее. Сестра объявила, что ему выпало пригласить в театр хорошенькую заведующую складом, выдержала его взгляд и добавила, что два других конверта содержали ровно то же самое поручение, но речь в них шла о её дядьях.",
+				"effects": [{"flag": "city_after_dinner"}]
+			},
+			{
 				"text": "За ужином Жози рассказывала о своей прогулке, а он — о том, где сегодня опять потерял время. На важные темы не выходили. Когда еда закончилась, сестра забрала хлебную корку и продолжила читать; Флёр убрал тарелки."
 			}
 		]
@@ -1462,7 +1465,8 @@
 				{
 					"noFlag": "bottles_compared"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"once": true,
 		"cost": 0,
@@ -1499,7 +1503,8 @@
 		"at": "loc_mermonia",
 		"title": "Принести недостающую подпись",
 		"visible": {
-			"flag": "exhibition_signature_pending"
+			"flag": "exhibition_signature_pending",
+			"noFlag": "sillage_verdict"
 		},
 		"once": true,
 		"cost": 1,
@@ -1540,7 +1545,8 @@
 				{
 					"noFlag": "first_arc_done"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"slots": [
 			{
@@ -1592,7 +1598,8 @@
 						"loc_steambird"
 					]
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"slots": [
 			{
@@ -1862,7 +1869,8 @@
 		"desc": "Распаковать вещи, пока сестра дожидается своего подарка.",
 		"visible": {
 			"flag": "homecoming_done",
-			"noFlag": ["city_night_finished", "city_cafe_done"]
+			"noFlag": ["city_night_finished", "city_cafe_done",
+				"sillage_verdict"]
 		},
 		"phases": [
 			"morning",
@@ -1889,7 +1897,7 @@
 		"desc": "Свести цифры из Берилла, пока помнишь, что показывал отец.",
 		"visible": {
 			"flag": "city_night_finished",
-			"noFlag": "ledgers_read"
+			"noFlag": ["ledgers_read", "sillage_verdict"]
 		},
 		"phases": [
 			"morning",
@@ -1914,7 +1922,7 @@
 		"desc": "Рассказать хозяйке мастерской о ночной беседе и предложить заказ.",
 		"visible": {
 			"flag": "ledgers_read",
-			"noFlag": "furina_sketch_ready"
+			"noFlag": ["furina_sketch_ready", "sillage_verdict"]
 		},
 		"phases": [
 			"morning",
@@ -1939,7 +1947,7 @@
 		"desc": "Исполнить уговор с Тиори и выяснить, как добраться до Нёвиллета.",
 		"visible": {
 			"flag": "furina_sketch_ready",
-			"noFlag": "furina_sketch_delivered"
+			"noFlag": ["furina_sketch_delivered", "sillage_verdict"]
 		},
 		"phases": [
 			"morning",
@@ -2164,7 +2172,8 @@
 				{
 					"noFlag": "clorinde_button_night"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"phases": [
 			"evening",
@@ -2194,7 +2203,8 @@
 				{
 					"noFlag": "clorinde_button_night"
 				}
-			]
+			],
+			"noFlag": "sillage_verdict"
 		},
 		"outcomes": [
 			{
@@ -2706,5 +2716,368 @@
 		"outcomes": [
 			{}
 		]
+	},
+	"sillage_marcel_sunday": {
+		"at": "loc_debor",
+		"title": "Зайти к Марселю в «Дебор»",
+		"desc": "У дяди лежит вещица, с которой он очень хочет управиться до встречи с Элоизой.",
+		"visible": {"flag": "build_end", "noFlag": ["sillage_sunday_done", "sillage_verdict"]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"phases": ["morning", "day"],
+		"outcomes": [{"effects": [{"scene": "sillage_marcel_sunday"}]}]
+	},
+	"sillage_marcel_errand": {
+		"at": "loc_docks",
+		"title": "Принять приглашение Марселя к старому шлюзу",
+		"desc": "Там собираются пускать лодки. Марсель просил одеться без церемоний.",
+		"visible": {"flag": "sillage_sunday_done", "noFlag": ["sillage_errand_done", "sillage_verdict"], "daysSince": ["sillage_sunday_done", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["day", "evening"],
+		"outcomes": [{"effects": [{"scene": "sillage_marcel_errand"}]}]
+	},
+	"sillage_marcel_love": {
+		"at": "loc_apartment",
+		"title": "Пригласить Марселя на рюмку",
+		"desc": "У Марселя свободный вечер, дома найдётся вино и что-нибудь к нему.",
+		"visible": {"flag": "sillage_sunday_done", "noFlag": ["sillage_love_done", "sillage_verdict"], "daysSince": ["sillage_sunday_done", 2]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening", "night"],
+		"outcomes": [{"effects": [{"scene": "sillage_marcel_love"}]}]
+	},
+	"sillage_ribbon_guess": {
+		"at": "loc_vasari",
+		"title": "Остановиться у парикмахерской в Пассаже",
+		"desc": "У витрины Флёр узнаёт знакомую косу.",
+		"visible": {"flag": "build_end", "noFlag": ["sillage_ribbon_seen", "sillage_verdict"], "daysSince": ["sillage_open", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["day", "evening"],
+		"outcomes": [{"effects": [{"scene": "sillage_ribbon_guess"}]}]
+	},
+	"sillage_ribbon_return": {
+		"at": "loc_damoville",
+		"title": "Заглянуть в галерею по просьбе Марты",
+		"desc": "Марта назвала день, когда её стоит искать у торговых столов.",
+		"visible": {"flag": "sillage_ribbon_seen", "noFlag": ["sillage_ribbon_returned", "sillage_verdict"], "daysSince": ["sillage_ribbon_seen", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["day"],
+		"outcomes": [{"effects": [{"scene": "sillage_ribbon_return"}]}]
+	},
+	"sillage_plastron": {
+		"at": "loc_manor",
+		"title": "Принести Элоизе старый фехтовальный нагрудник",
+		"desc": "Матушка вытребовала из гардеробной две рапиры и оставила сыну записку с размером перчаток.",
+		"visible": {"flag": "build_end", "noFlag": ["sillage_plastron_done", "sillage_verdict"], "daysSince": ["sillage_open", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["morning", "day"],
+		"outcomes": [{"effects": [{"scene": "sillage_plastron"}]}]
+	},
+	"sillage_assaut": {
+		"at": "loc_beaumont",
+		"title": "Прийти на встречу Элоизы и Изоры",
+		"desc": "Женщины договорились занять площадку в «Бомонте» и обещали пустить одного зрителя.",
+		"visible": {"flag": "sillage_plastron_done", "noFlag": ["sillage_assaut_done", "sillage_verdict"], "daysSince": ["sillage_plastron_done", 2]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["day", "evening"],
+		"outcomes": [{"effects": [{"scene": "sillage_assaut"}]}]
+	},
+	"sillage_billiards": {
+		"at": "loc_lutes",
+		"title": "Провести вечер за бильярдом с Сильвером",
+		"desc": "В комнатах над кафе зажигают лампы, и сегодня Сильвер свободен.",
+		"visible": {"flag": "sillage_filed", "noFlag": ["sillage_billiards_done", "sillage_verdict"]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening", "night"],
+		"outcomes": [{"effects": [{"scene": "sillage_billiards"}]}]
+	},
+	"sillage_wine_yard": {
+		"at": "loc_manor",
+		"title": "Показать Анри плетёнку Калласа",
+		"desc": "Похожее стекло вдвоём было легче таскать. Анри ещё помнит, кто плёл к нему корзины.",
+		"visible": {"flag": "sillage_lead", "noFlag": ["sillage_wine_yard_done", "sillage_old_directions", "sillage_store", "sillage_verdict"]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"phases": ["morning", "day"],
+		"outcomes": [{"effects": [{"scene": "sillage_wine_yard"}]}]
+	},
+	"sillage_wine_route": {
+		"at": "loc_docks",
+		"title": "Застать Берту с утренним грузом",
+		"desc": "Берта сама принимала пустое стекло в городе. Она придёт к нижней пристани на следующий день.",
+		"visible": {"flag": "sillage_wine_yard_done", "noFlag": ["sillage_wine_route_done", "sillage_store", "sillage_verdict"], "daysSince": ["sillage_wine_yard_done", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"phases": ["morning", "day"],
+		"outcomes": [{"effects": [{"scene": "sillage_wine_route"}]}]
+	},
+	"sillage_melus": {
+		"at": "loc_poisson",
+		"title": "Заглянуть на пристань к Мелусу",
+		"desc": "Навия просила зайти: после ужина у неё разболтался каблук, а у Мелуса появились вопросы о старой пристани.",
+		"visible": {"flag": "build_end", "noFlag": ["sillage_lead", "sillage_verdict"], "daysSince": ["sillage_open", 2]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "sillage_melus"}]}]
+	},
+	"sillage_supper": {
+		"at": "loc_poisson",
+		"title": "Остаться к пирогу с сюрпризом",
+		"desc": "Для бумажных корон на кухне Спины ещё есть свободный стул.",
+		"visible": {"flag": "build_end", "noFlag": ["sillage_supper_done", "faubourg_navia_done"]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening", "night"],
+		"outcomes": [{"effects": [{"scene": "sillage_supper"}]}]
+	},
+	"sillage_lock": {
+		"at": "loc_docks",
+		"title": "Открыть боковую камеру склада",
+		"desc": "Войти с берега можно по семейному ключу. Смотритель на месте, а подруга Одиль ждёт ответа.",
+		"visible": {"any": [{"flag": "sillage_wine_route_done"}, {"flag": "sillage_old_directions"}], "noFlag": ["sillage_store", "sillage_verdict"]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "sillage_lock"}]}]
+	},
+	"sillage_recu": {
+		"at": "loc_perfume",
+		"title": "Проверить маркировку вместе с Эмилией",
+		"desc": "Этикетка складывается вдвое. Шарлотта и Эмилия могут осмотреть её до сдачи бумаг.",
+		"visible": {"flag": "sillage_store", "noFlag": ["sillage_filed", "sillage_receipt_checked"]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"outcomes": [{"effects": [{"scene": "sillage_recu"}]}]
+	},
+	"sillage_deposition": {
+		"at": "loc_mermonia",
+		"title": "Дать показания о семейном складе",
+		"desc": "В Мермонии ждут книгу смотрителя, копию для родных можно подготовить здесь же.",
+		"visible": {"flag": "sillage_store", "noFlag": "sillage_filed"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "sillage_deposition"}]}]
+	},
+	"entracte_beaumont_late": {
+		"at": "loc_beaumont",
+		"title": "Навестить Эстель в мастерской",
+		"desc": "У кузницы ждут кредиторы. Эстель оставила дверь во двор открытой.",
+		"visible": {"flag": "build_end", "noFlag": ["childe_met", "sillage_verdict"]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"outcomes": [{"effects": [{"scene": "beaumont_collectors"}]}]
+	},
+	"entracte_childe": {
+		"at": "loc_beaumont",
+		"title": "Принять вызов Чайльда",
+		"desc": "Чайльд предлагает выйти к нему с рапирой и посмотреть, чего стоит фамилия на площадке.",
+		"visible": {
+			"flag": ["build_end", "childe_met"], "noFlag": ["entracte_childe_done", "sillage_verdict"],
+			"any": [{"daysSince": ["sillage_childe_met", 1]}, {"counterLt": ["day:sillage_childe_met", 1]}]
+		},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"outcomes": [{"effects": [{"scene": "entracte_childe"}]}]
+	},
+	"sillage_verdict": {
+		"at": "loc_epiclese",
+		"title": "Прийти на заседание с Навией",
+		"desc": "Флёра вызвали свидетельствовать о складе. Защиту своего отца ведёт сама Навия.",
+		"visible": {"flag": "sillage_summons", "noFlag": "sillage_verdict", "daysSince": ["sillage_summons", 2]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "sillage_verdict"}]}]
+	},
+	"entracte_josie": {
+		"at": "loc_apartment",
+		"title": "Провести вечер с Жози",
+		"desc": "Сестра оставила распоряжения насчёт семейного спектакля.",
+		"visible": {"flag": "build_end", "noFlag": "entracte_josie_done"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening", "night"],
+		"outcomes": [{"effects": [{"scene": "entracte_josie"}]}]
+	},
+	"maison_assises": {
+		"at": "loc_epiclese",
+		"title": "Занять место семьи в зале суда",
+		"desc": "Суд отдельно рассмотрит показания о том, что делали отец и Луи-Марк.",
+		"visible": {"flag": "sillage_verdict", "noFlag": "maison_sentenced", "daysSince": ["sillage_verdict", 2]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "maison_assises"}]}]
+	},
+	"maison_paie": {
+		"at": "loc_manor",
+		"title": "Выдать в Берилле жалованье",
+		"desc": "Матушка передала ключ от конторы. Люди уже завели очередь к столу младшего де ла Флёра.",
+		"visible": {"flag": "maison_sentenced", "noFlag": "maison_payroll"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "maison_paie"}]}]
+	},
+	"maison_procuration": {
+		"at": "loc_apartment",
+		"title": "Обсудить с Жози право подписи",
+		"desc": "Дома есть чистый бланк доверенности и сестра, у которой свои планы на утро.",
+		"visible": {"flag": "maison_payroll", "noFlag": "maison_delegated"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "maison_procuration"}]}]
+	},
+	"maison_depart": {
+		"at": "loc_lutes",
+		"title": "Увидеться с Люмин перед отъездом",
+		"desc": "Она попросила заглянуть в кафе. Следующее письмо придётся посылать через крепость.",
+		"visible": {"flag": "sillage_verdict", "noFlag": "maison_lumine_departed", "daysSince": ["sillage_verdict", 3]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "maison_depart"}]}]
+	},
+	"etoile_quay": {
+		"at": "loc_docks",
+		"title": "Спуститься к водомеру у пристани",
+		"desc": "Землемер из Снежной ищет человека, который знает здешние причалы.",
+		"visible": {"flag": "sillage_verdict", "noFlag": "etoile_found"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "etoile_quay"}]}]
+	},
+	"etoile_thaw": {
+		"at": "loc_docks",
+		"title": "Посмотреть, как клин отзовётся на Крио",
+		"desc": "Шарлотта принесёт камеру, если Флёр принесёт находку.",
+		"visible": {"flag": "etoile_found", "noFlag": "etoile_thaw_known"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"outcomes": [{"effects": [{"scene": "etoile_thaw"}]}]
+	},
+	"faubourg_colonne": {
+		"at": "loc_steambird",
+		"title": "Прочесть новую полосу с Шарлоттой",
+		"desc": "У покупателей семейного вина остались свои вопросы к редакции.",
+		"visible": {"flag": "sillage_verdict", "noFlag": "faubourg_column_done"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"outcomes": [{"effects": [{"scene": "faubourg_colonne"}]}]
+	},
+	"faubourg_comptoir": {
+		"at": "loc_debor",
+		"title": "Принять приглашение за чужой столик",
+		"desc": "Торговка из шестого ряда заплатила за два кофе и просила Гастона застать Шевалье лично.",
+		"visible": {"flag": ["maison_sentenced", "maison_lumine_departed"], "noFlag": "faubourg_promised"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "faubourg_comptoir"}]}]
+	},
+	"faubourg_entrepot": {
+		"at": "loc_docks",
+		"title": "Явиться к сроку в торговую контору",
+		"desc": "Скатерти уже на городском складе. Бланш помнит число, которое ей назвали.",
+		"visible": {"flag": "faubourg_promised", "noFlag": "faubourg_settled", "daysSince": ["faubourg_promised", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "faubourg_entrepot"}]}]
+	},
+	"entracte_clorinde": {
+		"at": "loc_lutes",
+		"title": "Помочь Клоринде разобрать старинный танец",
+		"desc": "Оркестранты договорились занять террасу после закрытия.",
+		"visible": {"flag": "maison_lumine_departed", "noFlag": "entracte_clorinde_done"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening"],
+		"outcomes": [{"effects": [{"scene": "entracte_clorinde"}]}]
+	},
+	"entracte_lynette": {
+		"at": "loc_debor",
+		"title": "Заглянуть на детский спектакль в «Дебор»",
+		"desc": "Линетт оставила у служебного входа место для помощника.",
+		"visible": {"flag": "maison_lumine_departed", "noFlag": "entracte_lynette_done"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["day", "evening"],
+		"outcomes": [{"effects": [{"scene": "entracte_lynette"}]}]
+	},
+	"faubourg_navia": {
+		"at": "loc_poisson",
+		"title": "Поужинать с Навией у неё дома",
+		"desc": "Навия просила прийти без парадного жилета. На кухне будут знать, куда его проводить.",
+		"visible": {"flag": "maison_lumine_departed", "noFlag": "faubourg_navia_done"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening", "night"],
+		"outcomes": [{"effects": [{"scene": "faubourg_navia"}]}]
+	},
+	"maison_infirmerie": {
+		"at": "loc_meropide",
+		"title": "Отнести письма в лазарет",
+		"desc": "В крепости старшая медсестра принимает семейную почту.",
+		"visible": {"flag": ["maison_delegated", "maison_lumine_departed"], "noFlag": "maison_audience"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "maison_infirmerie"}]}]
+	},
+	"maison_duc": {
+		"at": "loc_meropide",
+		"title": "Явиться на приём к герцогу",
+		"desc": "Сиджвин нашла место в расписании Ризли. Прошение Флёр понесёт сам.",
+		"visible": {"flag": "maison_audience", "noFlag": "maison_refused"},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"outcomes": [{"effects": [{"scene": "maison_duc"}]}]
+	},
+	"faubourg_poste": {
+		"at": "loc_apartment",
+		"title": "Ответить на почту из Меропида",
+		"desc": "Разобрать домашнюю почту вместе с Жози и написать Люмин.",
+		"visible": {
+			"flag": ["maison_refused", "faubourg_settled", "etoile_found"],
+			"noFlag": "meropide_interval_done",
+			"daysSince": ["maison_lumine_departed", 5]
+		},
+		"once": true,
+		"cost": 0,
+		"intent": "main",
+		"phases": ["morning", "day"],
+		"outcomes": [{"effects": [{"scene": "faubourg_poste"}]}]
 	}
 }

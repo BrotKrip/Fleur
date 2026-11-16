@@ -268,6 +268,21 @@
 		}
 	],
 	"opponents": {
+		"childe": {
+			"title": "Чайльд",
+			"pid": "char_childe",
+			"balance": 36,
+			"regen": 3,
+			"decisive": "Пятое касание",
+			"style": "Рад даже проигранному обмену и сразу просит продолжать.",
+			"portrait_moods": {"attack": "excited", "decisive": "smile", "open": "surprised"},
+			"pattern": [
+				{"kind": "attack", "n": 9, "count": 2, "label": "Два касания"},
+				{"kind": "press", "n": 12, "label": "Теснит к портьере"},
+				{"kind": "guard", "n": 7, "label": "Даёт перевести дух"},
+				{"kind": "attack", "n": 17, "label": "Поединок продолжается"}
+			]
+		},
 		"clorinde": {
 			"title": "Клоринда",
 			"pid": "char_clorinde",
@@ -848,6 +863,23 @@
 						"summary": "Флёр отступил к освещённой улице. Иногда это и есть победа."
 					}
 				]
+			}
+		},
+		"childe_bout": {
+			"title": "Четыре отметины на куртке",
+			"context": "friendly",
+			"bg": "practice",
+			"enemies": ["childe"],
+			"max_rounds": 5,
+			"timeout_outcome": "loss",
+			"intro": "Чайльд ведёт четыре — ноль. В этом последнем обмене ещё можно оставить белую метку на его рукаве.",
+			"finishers": [
+				{"id": "mark_cuff", "title": "Оставить метку на рукаве", "outcome": "childe_mark", "text": "Достать отворот манжеты, пока он ещё виден."}
+			],
+			"outcomes": {
+				"childe_mark": [{"summary": "На отвороте его манжеты белеет полоска краски. Чайльд ответил пятым касанием.", "effects": [{"scene": "entracte_childe_after"}]}],
+				"loss": [{"summary": "Эстель насчитала на куртке Флёра пять отметин. Чайльд выиграл поединок.", "effects": [{"scene": "entracte_childe_after"}]}],
+				"yield": [{"summary": "Флёр опустил рапиру. Чайльд выиграл со счётом четыре — ноль.", "effects": [{"scene": "entracte_childe_after"}]}]
 			}
 		},
 		"beaumont_collectors": {

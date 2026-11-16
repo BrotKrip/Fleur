@@ -71,19 +71,20 @@
 		"title": "Тетрадь о Глазах Бога",
 		"text": [
 			{
-				"text": "Флёр записывает чужие истории и пытается найти способ получить собственный Глаз Бога. Пока ни одна закономерность не выдержала знакомства со следующим рассказом."
+				"text": "Флёр записывает чужие истории и пытается найти способ получить собственный Глаз Бога. Пока ни одна закономерность не выдержала знакомства со следующим рассказом.",
+				"when": {"noFlag": "etoile_found"}
 			},
 			{
-				"when": {
-					"flag": "eye:char_charlotte"
-				},
+				"when": {"flag": "eye:char_charlotte"},
 				"text": "Шарлотта заметила свой Глаз в типографии после истории с Долландером. Точного момента появления она не знает."
 			},
 			{
-				"when": {
-					"flag": "eye:char_josie"
-				},
+				"when": {"flag": "eye:char_josie"},
 				"text": "Жози не скрывает секрет, которым можно воспользоваться. Она просто не помнит событие с той точностью, какой ждёт брат."
+			},
+			{
+				"when": {"flag": "etoile_found"},
+				"text": "Звёздный клин у Шевалье свой. Записи о Глазах Бога всё ещё рассказывают ему о людях, которых он расспрашивал."
 			}
 		]
 	},
@@ -93,43 +94,37 @@
 		"title": "Род Флёр",
 		"text": [
 			{
-				"text": "Отец ведёт хозяйство, Луи-Марк управляет городскими делами, мать заботится о тканях и семье. Флёр редко приезжает в поместье, Жози часто появляется у него без предупреждения."
+				"text": "Отец ведёт хозяйство, Луи-Марк управляет городскими делами, мать заботится о тканях и семье. Флёр редко приезжает в поместье, Жози часто появляется у него без предупреждения.",
+				"when": {"noFlag": "maison_sentenced"}
 			},
+			{"when": {"flag": "manor_done"}, "text": "Поездка дала Шарлотте материал о ремёслах, а Флёру — повод снова поговорить с родителями."},
 			{
-				"when": {
-					"flag": "manor_done"
-				},
-				"text": "Поездка дала Шарлотте материал о ремёслах, а Флёру — повод снова поговорить с родителями."
-			},
-			{
-				"when": {
-					"flag": "father_talk_done"
-				},
+				"when": {"flag": "father_talk_done"},
 				"text": "Адриан подтвердил, что знал о жалобах и согласовал добавку. О её точной природе Шевалье по-прежнему ничего не знает."
 			},
 			{
-				"when": {
-					"flag": "eloise_after_print_done"
-				},
+				"when": {"flag": "eloise_after_print_done"},
 				"text": "Матушка сняла городской «Нектар» с меню выставки. Счёт и бутылку велела оставить вместе до разговора с управляющим."
 			},
 			{
-				"when": {
-					"flag": "marcel_pays_exam"
-				},
+				"when": {"flag": "marcel_pays_exam"},
 				"text": "Марсель подтвердил, что поставляет добавку. Проверку он оплатит, а специалиста выберут Шарлотта и Флёр. Заключение придёт им напрямую."
 			},
 			{
-				"when": {
-					"flag": "fleur_pays_exam"
-				},
+				"when": {"flag": "fleur_pays_exam"},
 				"text": "Марсель подтвердил, что поставляет добавку, и отдал свой экземпляр счёта. Флёр передал его Шарлотте. За проверку он решил заплатить сам."
 			},
 			{
-				"when": {
-					"flag": "textile_opened"
-				},
+				"when": {"flag": "textile_opened"},
 				"text": "На выставке в «Деборе» Одиль вписала в карточку под серебряными рыбками имена всех, кто работал над тканью."
+			},
+			{
+				"when": {"flag": "maison_sentenced"},
+				"text": "Адриан и Луи-Марк отбывают разные сроки по семейному делу. В Берилле ожидают решений Шевалье."
+			},
+			{
+				"when": {"flag": "maison_delegated"},
+				"text": "Право подписи согласовано с Жози. Условия доверенности брат и сестра определили сами."
 			}
 		]
 	},
@@ -1269,192 +1264,76 @@
 		"title": "На уме",
 		"text": [
 			{
-				"when": {"day": 1, "flag": "prologue_done", "noFlag": "met_charlotte"},
+				"when": {"day": 1, "flag": "prologue_done", "noFlag": ["met_charlotte", "sillage_verdict"]},
 				"text": "На сегодня решительно никаких обязательств. Можно проведать знакомых, погулять по городу или вернуться домой."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "prologue_done"
-						},
-						{
-							"noFlag": "met_charlotte"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "prologue_done"}, {"noFlag": "met_charlotte"}], "noFlag": "sillage_verdict"},
 				"text": "Днём — холодный кофе в «Лютесе». После матушкиного письма особенно хочется провести хотя бы час без семейных дел."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "opening_done"
-						},
-						{
-							"noFlag": "chevreuse_visited"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "opening_done"}, {"noFlag": "chevreuse_visited"}], "noFlag": "sillage_verdict"},
 				"text": "Утром или днём зайти к Шеврёз в Палату. Картошка по дороге будет убедительнее официального визита."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "chevreuse_visited"
-						},
-						{
-							"noFlag": "tiori_encountered"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "chevreuse_visited"}, {"noFlag": "tiori_encountered"}], "noFlag": "sillage_verdict"},
 				"text": "После Палаты пройти через Пассаж. У фонтана можно посидеть хотя бы пять минут и не заниматься семейным вином."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "tiori_encountered"
-						},
-						{
-							"noFlag": "josie_arrived"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "tiori_encountered"}, {"noFlag": "josie_arrived"}], "noFlag": "sillage_verdict"},
 				"text": "К вечеру вернуться домой. У Жози есть свой ключ, а с её привычками это почти равнозначно назначенной встрече."
 			},
 			{
-				"when": {
-					"has": "inv_josie_home"
-				},
+				"when": {"has": "inv_josie_home", "noFlag": "sillage_verdict"},
 				"text": "Жози уже дома. Стоит хотя бы выслушать, от кого и от чего она на этот раз сбежала."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "manor_invited"
-						},
-						{
-							"flag": "josie_arrived"
-						},
-						{
-							"noFlag": "manor_done"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "manor_invited"}, {"flag": "josie_arrived"}, {"noFlag": "manor_done"}], "noFlag": "sillage_verdict"},
 				"text": "Утром — рейс в Берилл вместе с Шарлоттой. Матушка ждёт к обеду; перед дорогой лучше проститься с Жози дома."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "manor_done"
-						},
-						{
-							"noFlag": "homecoming_done"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "manor_done"}, {"noFlag": "homecoming_done"}], "noFlag": "sillage_verdict"},
 				"text": "Поездка закончена. Успеть на обратный рейс и вернуться в квартиру в столице."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "homecoming_done"
-						},
-						{
-							"noFlag": "city_night_finished"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "homecoming_done"}, {"noFlag": "city_night_finished"}], "noFlag": "sillage_verdict"},
 				"text": "Разобрать вещи с Жози. Вечер ещё длинный; она явно не собирается отпускать брата спать сразу."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "city_night_finished"
-						},
-						{
-							"noFlag": "ledgers_read"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "city_night_finished"}, {"noFlag": "ledgers_read"}], "noFlag": "sillage_verdict"},
 				"text": "При дневном свете разобрать отцовские книги дома. Вчерашняя прогулка уже дала достаточно поводов не откладывать."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "ledgers_read"
-						},
-						{
-							"noFlag": "furina_sketch_ready"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "ledgers_read"}, {"noFlag": "furina_sketch_ready"}], "noFlag": "sillage_verdict"},
 				"text": "Нужен приличный эскиз очков для Фурины. Самое неприятное подходящее имя — Тиори."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "furina_sketch_ready"
-						},
-						{
-							"noFlag": "furina_sketch_delivered"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "furina_sketch_ready"}, {"noFlag": "furina_sketch_delivered"}], "noFlag": "sillage_verdict"},
 				"text": "Отнести эскизы Тиори в Мермонию. Показать Нёвиллету накладную и спросить, что ещё можно проверить, когда суммы в книгах сходятся."
 			},
 			{
-				"when": {
-					"flag": "furina_sketch_delivered",
-					"noFlag": ["submerged_cellar_checked", "bar_done"]
-				},
+				"when": {"flag": "furina_sketch_delivered", "noFlag": ["submerged_cellar_checked", "bar_done", "sillage_verdict"]},
 				"text": "Днём в доках продают водолазные костюмы. Взять с собой Жози и спуститься к семейным запасам вина."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "furina_sketch_delivered"
-						},
-						{
-							"noFlag": "article_seen"
-						},
-						{
-							"lacks": "inv_article_layout"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "furina_sketch_delivered"}, {"noFlag": "article_seen"}, {"lacks": "inv_article_layout"}], "noFlag": "sillage_verdict"},
 				"text": "Шарлотта верстает материал о ремёслах. Когда полоса будет готова, она обещала дать знать; пока день принадлежит Флёру."
 			},
 			{
-				"when": {
-					"has": "inv_article_layout"
-				},
+				"when": {"has": "inv_article_layout", "noFlag": "sillage_verdict"},
 				"text": "Шарлотта ждёт в редакции над готовой полосой. Зайти к ней днём, пока набор не ушёл дальше."
 			},
 			{
-				"when": {
-					"all": [
-						{
-							"flag": "article_seen"
-						},
-						{
-							"noFlag": "first_arc_done"
-						}
-					]
-				},
+				"when": {"all": [{"flag": "article_seen"}, {"noFlag": "first_arc_done"}], "noFlag": "sillage_verdict"},
 				"text": "Дальше ведёт папка «Вопросы к семейному вину». В ней уже записано, что именно сейчас можно проверить."
 			},
 			{
-				"text": "Ничего срочного. Можно прожить кусок дня по собственному вкусу и посмотреть, что принесёт город."
+				"text": "Ничего срочного. Можно прожить кусок дня по собственному вкусу и посмотреть, что принесёт город.",
+				"when": {"noFlag": "sillage_verdict"}
+			},
+			{
+				"when": {"flag": "build_end"},
+				"text": "Мои ближайшие дела записаны в книжке «После „Эпиклеза“». Свободный вечер можно провести с друзьями."
 			}
 		]
 	},
@@ -1754,5 +1633,95 @@
 		"caption": "Фонтан Люсин.",
 		"title": "Вода, которая растворяет",
 		"text": "После суда в «Эпиклезе» весь город повторяет слова из записной книжки погибшего ассистента: вода Первозданного моря растворяет уроженцев Фонтейна. Одни называют это выдумкой, другие вспоминают пророчество. Жандарм, начавший называть главаря, растворился на глазах у публики."
+	},
+	"loc_meropide": {
+		"type": "location",
+		"title": "Крепость Меропид",
+		"subtitle": "Спуск в подводную крепость",
+		"bg": "meropide_infirmary",
+		"pin": [0.28, 0.2],
+		"text": "У подъёмника сверяют пропуска. Лазарет принимает семейную почту, в кабинет герцога нужен отдельный допуск."
+	},
+	"it_pyro_wedge": {
+		"type": "item",
+		"look": "card",
+		"title": "Пиро Звёздный клин",
+		"text": "Кристалл из Снежной отзывается на прикосновение Флёра. Ему хочется показать находку Жози и достать старую тетрадь о Глазах Бога."
+	},
+	"info_solar_thaw": {
+		"type": "info",
+		"look": "note",
+		"title": "Солярная ростепель",
+		"text": "В доках Шарлотта помогла испытать клин на Крио. Возле места реакции смог восстановиться слабевший участок артерии земли."
+	},
+	"info_sillage_glass": {
+		"type": "info",
+		"look": "note",
+		"title": "Оттиск возвратной тары",
+		"text": "Под наружной этикеткой уцелела отметка о возврате стекла. Эмилия опечатала контрольный образец, а Шарлотта записала, откуда он взят."
+	},
+	"note_cloths": {
+		"type": "invitation",
+		"look": "note",
+		"title": "Девять скатертей",
+		"text": "Вернуться к Бланш на городской склад у нижних причалов со следующего дня."
+	},
+	"sl_sillage": {
+		"type": "storyline",
+		"look": "book",
+		"title": "После «Эпиклеза»",
+		"text": [
+			{"when": {"noFlag": ["sillage_sunday_done", "sillage_verdict"]}, "text": "Марсель заказал стол в «Деборе» и просил заглянуть к обеду."},
+			{"when": {"noFlag": "sillage_lead"}, "text": "Через два дня после вечера в Опере Мелус вернётся на пристань в Пуассоне. Там же пекут пирог к вечернему чаю."},
+			{"when": {"flag": "sillage_lead", "noFlag": ["sillage_old_directions", "sillage_store", "sillage_wine_yard_done"]}, "text": "Плетёнка с пустой бутыли похожа на те, что лежали за прессом в Берилле. Спросить у Анри, когда буду дома."},
+			{"when": {"flag": "sillage_wine_yard_done", "noFlag": ["sillage_wine_route_done", "sillage_store"]}, "text": "На другой день после поездки к Анри Берту можно застать на нижних причалах. Анри сказал спросить у вывески с котом."},
+			{"when": {"any": [{"flag": "sillage_wine_route_done"}, {"flag": "sillage_old_directions"}], "noFlag": "sillage_store"}, "text": "За вторыми воротами у причала сидит семейный смотритель. У него есть ключ от камеры, куда обещали работу Одиль."},
+			{
+				"when": {"flag": "sillage_store", "noFlag": "sillage_filed"},
+				"text": "Отнести бумаги в Мермонию. Если хочется понять отметку на таре, прежде заглянуть к Эмилии."
+			},
+			{"when": {"noFlag": ["entracte_childe_done", "sillage_verdict"]}, "text": "Если захочется размяться, зайти к Эстель в «Бомонт». Там можно застать Чайльда."},
+			{
+				"when": {"flag": "sillage_filed", "noFlag": ["sillage_summons", "sillage_verdict"]},
+				"text": "Показания переданы. Канцелярия вызовет свидетелей из Берилла и пришлёт день заседания с утренней почтой."
+			},
+			{"when": {"flag": "sillage_summons", "noFlag": "sillage_verdict"}, "text": "Через два дня после получения повестки явиться в «Эпиклез» к секретарю. Навия обещала занять место."},
+			{
+				"when": {"flag": "sillage_verdict", "noFlag": "maison_sentenced"},
+				"text": "Через два дня после суда над Марселем семью вызывают в «Эпиклез» на отдельное заседание."
+			},
+			{
+				"when": {"flag": "sillage_verdict", "noFlag": "maison_lumine_departed"},
+				"text": "Люмин просила встретиться в «Лютесе» через три дня после суда."
+			},
+			{"when": {"flag": "maison_sentenced", "noFlag": "maison_payroll"}, "text": "В Берилле наступил день выплаты жалованья."},
+			{"when": {"flag": "maison_payroll", "noFlag": "maison_delegated"}, "text": "Вернуться к Жози с ключами конторы."},
+			{"when": {"flag": "sillage_verdict", "noFlag": "etoile_found"}, "text": "Землемер в доках спрашивала о местных галереях."},
+			{
+				"when": {"flag": ["maison_sentenced", "maison_lumine_departed"], "noFlag": "faubourg_promised"},
+				"text": "Гастон придержал два места в «Деборе» по просьбе торговки бельём."
+			},
+			{
+				"when": {"flag": "faubourg_promised", "noFlag": "faubourg_settled"},
+				"text": "На другой день заглянуть на склад у причалов и рассчитаться с Бланш."
+			},
+			{
+				"when": {"flag": ["maison_delegated", "maison_lumine_departed"], "noFlag": "maison_audience"},
+				"text": "Семейные письма ждут в лазарете крепости."
+			},
+			{"when": {"flag": "maison_audience", "noFlag": "maison_refused"}, "text": "В крепости назначен приём у Ризли."},
+			{
+				"when": {"flag": ["maison_refused", "faubourg_settled", "etoile_found"], "noFlag": "meropide_interval_done"},
+				"text": "На пятый день после отъезда Люмин приходит почта. Разобрать её можно дома утром или днём."
+			},
+			{
+				"when": {"flag": "meropide_interval_done"},
+				"text": "Ответ Люмин отправлен. Пока она в крепости, у Шевалье остаются собственные дела и свободные вечера."
+			},
+			{
+				"when": {"flag": "sillage_verdict", "noFlag": "faubourg_column_done"},
+				"text": "В «Паровой птице» Шарлотта собирает письма покупателей. Решить с ней, кто будет вскрывать конверты."
+			}
+		]
 	}
 }

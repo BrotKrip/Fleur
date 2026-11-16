@@ -87,6 +87,8 @@ func play_scene() -> void:
 	var calendar := {"first_evening": 1, "charlotte_first": 2, "premiere_eve": 19, "opera_arrival": 20, "premiere_incident": 20, "trial_opening": 22}
 	if calendar.has(sid):
 		expect(Game.state.day == calendar[sid], "Сцена открылась не в свой день: " + sid)
+	if sid == "sillage_verdict":
+		expect(Rules.test({"daysSince": ["sillage_summons", 2]}, Game.state), "Суд открылся раньше назначенного дня")
 	for k in 800:
 		if Game.mode != "vn" or Game.main.screen != vn:
 			return
@@ -365,7 +367,7 @@ func _run() -> void:
 	expect(Rules.is_resting(s, "ap_purse"), "кошелёк отдыхает после разговора")
 	await shot("table_after_talk")
 
-	# Первый акт целиком.
+	# Основной маршрут через суды и семейные дела.
 	var done_count := {}
 	var saved := false
 	var epilogue_checked := false
@@ -373,7 +375,7 @@ func _run() -> void:
 		if s["flags"].get("arc_epilogue_seen", false) and not epilogue_checked:
 			epilogue_checked = true
 			await shot("table_epilogue")
-		if s["flags"].get("build_end", false):
+		if Game.build_ended():
 			break
 		if not saved and s["flags"].get("louis_talk_done", false):
 			expect(Game.save_slot(test_slot), "сохранение")
@@ -392,12 +394,16 @@ func _run() -> void:
 		else:
 			table()._on_wait()
 			await settle()
-		expect(int(s["day"]) < 40, "сюжет застрял")
-	# Оперная арка: расследование, суд и конец текущей версии.
+		expect(int(s["day"]) < 60, "сюжет застрял")
+	# Опера, дело о складе, жизнь города во время отсутствия Люмин.
 	for f in ["twins_met", "opera_arrived", "premiere_witness", "opera_investigation_done", "trial_started", "trial_done", "liliane_revealed", "vonn_exposed", "build_end"]:
 		expect(s["flags"].get(f, false), "оперная арка не дошла до " + f)
-	expect(Game.build_ended(), "после суда версия закончилась")
-	expect(Game.wait_phase().has("error"), "после конца версии время не идёт")
+	for f in ["sillage_lead", "sillage_wine_route_done", "sillage_store", "sillage_filed", "sillage_summons", "sillage_verdict",
+			"maison_sentenced", "maison_delegated", "maison_lumine_departed", "maison_refused",
+			"faubourg_settled", "etoile_found", "meropide_interval_done"]:
+		expect(s["flags"].get(f, false), "продолжение не дошло до " + f)
+	expect(Game.build_ended(), "глава заканчивается ответом Люмин")
+	expect(not Game.wait_phase().has("error"), "после письма свободное время доступно")
 	print("SMOKE опера: дело ", Rules.case_stage(s, "aff_opera") if s["cards"].has("aff_opera") else "закрыто",
 		", Люмин: ", s["rel"].get("char_lumine", []), ", Линетт: ", s["rel"].get("char_lynette", []))
 	await shot("table_build_end")

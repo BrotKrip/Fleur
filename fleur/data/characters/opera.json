@@ -1,5 +1,6 @@
 {
 	"npc_cowell": {
+		"vn_scale": 0.84,
 		"type": "person", "look": "portrait", "role": "secondary",
 		"title": "Коуэлл",
 		"subtitle": "Ассистент Лини",

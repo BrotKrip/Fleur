@@ -3065,6 +3065,86 @@
 		"intent": "main",
 		"outcomes": [{"effects": [{"scene": "maison_duc"}]}]
 	},
+	"adele_arrival": {
+		"at": "loc_docks",
+		"title": "Задержаться у багажа с мондского рейса",
+		"desc": "Женщина в окошке багажной конторы пытается спустить на мостовую сундук. Одно из его отделений уже открылось.",
+		"visible": {"dayGte": 6, "noFlag": "adele_met"},
+		"phases": ["morning", "day"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "adele_arrival"}]}]
+	},
+	"adele_gambit": {
+		"at": "loc_lutes",
+		"title": "Подсесть к Адель в «Лютесе»",
+		"desc": "В углу кафе на столе стоит крепость с подъёмным мостом. Адель ищет человека, который согласится рискнуть её деревяшками.",
+		"visible": {"flag": "adele_met", "noFlag": "adele_gambit_done", "daysSince": ["adele_met", 2]},
+		"phases": ["day", "evening"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "adele_gambit"}]}]
+	},
+	"adele_rings": {
+		"at": "loc_vasari",
+		"title": "Прокатиться с Адель на карусели",
+		"desc": "В Пассаже завели ярмарочную карусель. Адель уже знает, на какую лошадь хочет сесть.",
+		"visible": {"flag": ["build_end", "adele_gambit_done"], "noFlag": "adele_rings_done", "daysSince": ["adele_gambit_done", 2]},
+		"phases": ["day"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "adele_rings"}]}]
+	},
+	"adele_salon": {
+		"at": "loc_debor",
+		"title": "Заглянуть к Адель в «Дебор»",
+		"desc": "В отеле сегодня чествуют старых постояльцев. Альбина пригласила Адель за свой стол.",
+		"visible": {"flag": ["sillage_verdict", "adele_rings_done"], "noFlag": "adele_salon_done", "daysSince": ["adele_rings_done", 2]},
+		"phases": ["day", "evening"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "adele_salon"}]}]
+	},
+	"adele_window": {
+		"at": "loc_docks",
+		"title": "Прийти вечером к Адель",
+		"desc": "Адель назвала ему адрес своей комнаты над причалами.",
+		"visible": {"flag": ["maison_lumine_departed", "adele_salon_done"], "noFlag": "adele_window_done", "daysSince": ["adele_salon_done", 2]},
+		"phases": ["evening"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "adele_window"}]}]
+	},
+	"eirin_cane": {
+		"at": "loc_gardinage",
+		"title": "Заглянуть к Шеврёз в Палату",
+		"desc": "В дверях мелькнула незнакомая женщина с охапкой тростей. Из кабинета доносится довольный голос Шеврёз.",
+		"visible": {"dayGte": 8, "noFlag": "eirin_cane"},
+		"phases": ["morning", "day"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "eirin_cane"}]}]
+	},
+	"eirin_bureau": {
+		"at": "loc_valentine",
+		"title": "Зайти в приёмную Эйрин",
+		"desc": "Сегодня Эйрин принимает у себя. Можно посмотреть, как идут дела у Валентайн.",
+		"visible": {"dayGte": 13, "flag": "eirin_cane", "noFlag": "eirin_bureau", "daysSince": ["eirin_cane", 2]},
+		"phases": ["morning", "day"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "eirin_bureau"}]}]
+	},
+	"eirin_print": {
+		"at": "loc_steambird",
+		"title": "Застать Валентайн в редакции",
+		"desc": "В редакции готовят место для съёмки. Эйрин обещала показать Шевалье, что получилось с морской невестой.",
+		"visible": {"flag": ["build_end", "eirin_bureau"], "noFlag": "eirin_print", "daysSince": ["eirin_bureau", 2]},
+		"phases": ["morning", "day"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "eirin_print"}]}]
+	},
+	"eirin_market": {
+		"at": "loc_vasari",
+		"title": "Найти Эйрин в Пассаже",
+		"desc": "Эйрин засиделась у часовщика. Издали видно, что обе руки у неё заняты.",
+		"visible": {"flag": ["sillage_verdict", "eirin_print"], "noFlag": "eirin_market", "daysSince": ["eirin_print", 2]},
+		"phases": ["morning", "day"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "eirin_market"}]}]
+	},
+	"eirin_upstairs": {
+		"at": "loc_valentine",
+		"title": "Навестить Эйрин после работы",
+		"desc": "К вечеру в бюро закрывают приёмную. Эйрин предложила ему прийти как раз к этому часу.",
+		"visible": {"flag": ["maison_lumine_departed", "eirin_market"], "noFlag": "eirin_upstairs", "daysSince": ["eirin_market", 2]},
+		"phases": ["evening"], "once": true, "cost": 0, "intent": "side",
+		"outcomes": [{"effects": [{"scene": "eirin_upstairs"}]}]
+	},
 	"faubourg_poste": {
 		"at": "loc_apartment",
 		"title": "Ответить на почту из Меропида",

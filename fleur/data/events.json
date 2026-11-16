@@ -760,6 +760,10 @@
 		},
 		"effects": [{"scene": "sillage_marcel_sunday"}]
 	},
+	"ev_eirin_gardinage_address": {
+		"when": {"flag": "build_end", "lacks": "loc_gardinage"},
+		"effects": [{"add": "loc_gardinage"}]
+	},
 	"ev_sillage_summons": {
 		"when": {
 			"flag": "sillage_filed", "noFlag": "sillage_verdict", "phase": "morning",

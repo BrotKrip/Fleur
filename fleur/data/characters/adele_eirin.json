@@ -1,0 +1,42 @@
+{
+	"char_adele": {
+		"type": "person", "look": "portrait", "role": "secondary",
+		"title": "Адель", "subtitle": "Пассажирка с мондского рейса",
+		"color": "#8c6281", "rel": ["Знакомы"],
+		"text": [
+			{"when": {"flag": "adele_romance"}, "text": "У нижней пристани Флёр теперь всякий раз поднимает голову к знакомому окну. Рассказать Адель об этой привычке он пока не решился. С неё станется выглянуть и проверить, со всех ли сторон её дом производит на него такое впечатление."},
+			{"when": {"flag": "adele_friends"}, "text": "Адель обжилась в комнате у нижних причалов. За кофе с ней всегда можно узнать, чем кончилось очередное сражение Имперства. Если Шевалье надеется на этот раз одержать победу самому, придётся освободить столик и расставить фигуры."},
+			{"when": {"flag": "adele_salon_done", "noFlag": "adele_window_done"}, "text": "Адель оставила ему адрес у нижних причалов. Через пару дней можно будет прийти вечером, когда она вернётся к себе."},
+			{"when": {"flag": "adele_rings_done", "noFlag": "adele_salon_done"}, "text": "Адель освоилась в Пассаже и присматривается к столикам в «Деборе». Пожалуй, скоро Флёру придётся просить у неё разрешения присесть в его любимом отеле."},
+			{"when": {"flag": "adele_gambit_done", "noFlag": "adele_rings_done"}, "text": "Из Мондштадта Адель привезла свою игру и весьма невысокое мнение о мужчинах, которые позволяют даме выиграть. Ей ещё хочется покататься на карусели в Пассаже."},
+			{"when": {"noFlag": "adele_gambit_done"}, "text": "Адель сошла с мондского рейса и с тех пор говорит о Кошачьем Имперстве так, как Шевалье у себя дома говорит о Берилле. Через пару дней, днём или к вечеру, они могут встретиться за кофе в «Лютесе»."}
+		],
+		"schedule": [
+			{"when": {"flag": "adele_salon_done"}, "map": {"morning": "loc_lutes", "day": "loc_vasari", "evening": "loc_docks"}},
+			{"when": {"flag": ["sillage_verdict", "adele_rings_done"]}, "map": {"morning": "loc_vasari", "day": "loc_debor", "evening": "loc_debor"}},
+			{"when": {"flag": ["build_end", "adele_gambit_done"]}, "map": {"morning": "loc_docks", "day": "loc_vasari", "evening": "loc_lutes"}},
+			{"when": {"flag": "adele_met"}, "map": {"morning": "loc_docks", "day": "loc_lutes", "evening": "loc_lutes"}}
+		],
+		"placeholder": {"hair": "50352f", "coat": "eee9dc", "trim": "4d414c", "eyes": "8883bc", "hat": "catears", "hat_color": "50352f", "long": true}
+	},
+	"char_eirin": {
+		"type": "person", "look": "portrait", "role": "secondary",
+		"title": "Эйрин Валентайн", "subtitle": "Хозяйка частного сыскного бюро",
+		"color": "#796476", "rel": ["Знакомы"],
+		"text": [
+			{"when": {"flag": "eirin_romance"}, "text": "У Эйрин он провёл вечер, ради которого у него дома перед зеркалом сменилось три жилета. Который из них она видела, он наутро и сам не смог бы сказать. Помнил, что пахло печёным яблоком и что она позвала его снова."},
+			{"when": {"flag": "eirin_companion"}, "text": "Теперь Флёр знает в доме Валентайн обе лестничные площадки. На нижней посетителя сперва выслушивает хозяйка. На верхней порядок старшинства у них с котами всякий раз меняется."},
+			{"when": {"flag": "eirin_market", "noFlag": "eirin_upstairs"}, "text": "Через пару дней можно снова заглянуть к Валентайн. Для разнообразия она предложила прийти вечером, после приёма."},
+			{"when": {"flag": "eirin_print", "noFlag": "eirin_market"}, "text": "Через приёмную Эйрин иной раз за утро проходит столько народу, что удивительно, как мало людей в городе помнят её вывеску. Саму Валентайн можно поискать в торговом ряду Пассажа."},
+			{"when": {"flag": "eirin_bureau", "noFlag": "eirin_print"}, "text": "Эйрин работает одна. Как будет свободное утро, стоит заглянуть в «Паровую птицу». Шарлотта и Валентайн давно друг друга знают, хотя история их знакомства звучит у каждой по-своему."},
+			{"when": {"noFlag": "eirin_bureau"}, "text": "У Эйрин своя маленькая контора. Флёр запомнил адрес на её карточке. Наведаться стоит утром или днём, когда у неё приёмные часы и дверь с улицы открыта."}
+		],
+		"schedule": [
+			{"when": {"flag": "eirin_market"}, "map": {"morning": "loc_valentine", "day": "loc_valentine", "evening": "loc_valentine"}},
+			{"when": {"flag": ["sillage_verdict", "eirin_print"]}, "map": {"morning": "loc_vasari", "day": "loc_vasari", "evening": "loc_valentine"}},
+			{"when": {"flag": ["build_end", "eirin_bureau"], "noFlag": "eirin_print"}, "map": {"morning": "loc_steambird", "day": "loc_steambird", "evening": "loc_valentine"}},
+			{"when": {"flag": "eirin_cane"}, "map": {"morning": "loc_valentine", "day": "loc_valentine"}}
+		],
+		"placeholder": {"hair": "d8d4de", "coat": "34333b", "trim": "754a60", "eyes": "b8a055", "long": true}
+	}
+}

@@ -395,6 +395,11 @@
 				"#22181c"
 			]
 		},
+		"valentine_office": {
+			"label": "Бюро «Валентайн»",
+			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dusk_room"},
+			"colors": ["#586153", "#303b38", "#aa875f"]
+		},
 		"gardinage": {
 			"lighting": {"day": "window_left_day", "evening": "dusk_room", "night": "dusk_room"},
 			"label": "Палата Жардинаж",

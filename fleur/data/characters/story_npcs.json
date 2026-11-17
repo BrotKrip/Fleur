@@ -285,6 +285,7 @@
 		"color": "#8a7a6a"
 	},
 	"npc_albine": {
+		"vn_scale": 0.88,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -301,6 +302,7 @@
 		"color": "#a07a6a"
 	},
 	"npc_bertin": {
+		"vn_scale": 0.96,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -325,6 +327,7 @@
 		"color": "#8a6a5a"
 	},
 	"npc_jeanne": {
+		"vn_scale": 1.06,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -355,5 +358,21 @@
 		"title": "Ткачиха",
 		"text": "Одна из ткачих Элоизы на старом винном складе. Просит, чтобы её имя нигде не писали: у дочери скоро смотрины.",
 		"color": "#8a8070"
+	},
+	"npc_clery": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Мадемуазель Клери",
+		"text": "Дочь покойного завсегдатая бильярдной. Играет при всех четырёх абажурах и вкладывает в книгу записи карточку шляпника.",
+		"color": "#8a7090"
+	},
+	"npc_ribbon_seller": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Продавщица лент",
+		"text": "Торгует лентами на крыльце напротив парикмахерской и всё видит.",
+		"color": "#b07a8a"
 	}
 }

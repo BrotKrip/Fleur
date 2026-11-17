@@ -374,5 +374,61 @@
 		"title": "Продавщица лент",
 		"text": "Торгует лентами на крыльце напротив парикмахерской и всё видит.",
 		"color": "#b07a8a"
+	},
+	"npc_ferret_merchant": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Купец с хорьком",
+		"text": "Партнёр Флёра по картам. Уверен, что его ручной хорёк необычайно умён.",
+		"color": "#8a7a5a"
+	},
+	"npc_tenant_boy": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Мальчишка с нижнего этажа",
+		"text": "Сын жильцов. Пишет объявления для пьесы и верит, что лавку можно описать по-настоящему.",
+		"color": "#9a8a6a"
+	},
+	"npc_delphin": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Дельфен",
+		"text": "Муж привратницы Аннеты. Видит сцену левым глазом и до сих пор помнит, как сделал предложение без табурета.",
+		"color": "#7a6a5a"
+	},
+	"npc_shooting_master": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Хозяин тира",
+		"text": "Держит тир на ярмарке. Гордится совами-призами и женой, которая их шьёт.",
+		"color": "#a07a4a"
+	},
+	"npc_cooper_widow": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Вдова бондаря",
+		"text": "Берёт жалованье до последней моры и зовёт на голубей.",
+		"color": "#8a7068"
+	},
+	"npc_poisson_granny": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Старуха из Пуассона",
+		"text": "Хочет лично убедиться, что скат настоящий, а ткань на манжете хорошая.",
+		"color": "#7a7a7a"
+	},
+	"npc_salon_customer": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Посетительница парикмахерской",
+		"text": "Высовывается из двери, чтобы задать самый неудобный вопрос.",
+		"color": "#a0808a"
 	}
 }

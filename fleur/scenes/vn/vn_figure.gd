@@ -96,8 +96,11 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if portrait:
 		var breath_offset := sin(_t * 1.4) * 1.3
+		# Смена эмоции: прежняя поза остаётся непрозрачной под новой, новая проявляется поверх.
+		# Если гасить обе одновременно, на середине фигура просвечивает и «моргает».
 		if _prev_portrait and _blend < 1.0:
-			draw_texture_rect(_prev_portrait, _portrait_rect(_prev_portrait, breath_offset + _prev_pose_y), false, Color(1, 1, 1, 1.0 - _blend))
+			var fade_out := clampf((1.0 - _blend) * 3.0, 0.0, 1.0)
+			draw_texture_rect(_prev_portrait, _portrait_rect(_prev_portrait, breath_offset + _prev_pose_y), false, Color(1, 1, 1, fade_out))
 		draw_texture_rect(portrait, _portrait_rect(portrait, breath_offset + _pose_y), false, Color(1, 1, 1, _blend if _prev_portrait else 1.0))
 		return
 	# Внешность для резервного рисунка: поле "placeholder" в данных персонажа, иначе встроенная таблица.

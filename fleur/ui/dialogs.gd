@@ -57,37 +57,43 @@ static func settings() -> void:
 	sh.add_title("Как удобнее")
 	sh.add_rule()
 
-	var speed_lbl := sh.add_text("")
+	# Все ползунки — строки одной высоты: подпись слева, ползунок справа, ручка по центру дорожки.
+	var slider_row := func(caption: String, slider: HSlider) -> Label:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 14)
+		var label := Label.new()
+		label.theme_type_variation = "Ink"
+		label.text = caption
+		label.custom_minimum_size = Vector2(200, 30)
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		row.add_child(label)
+		slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		slider.size_flags_vertical = Control.SIZE_FILL
+		slider.custom_minimum_size.y = 30
+		row.add_child(slider)
+		sh.body.add_child(row)
+		return label
+
 	var speed_name := func(v):
-		return "Скорость текста в сценах: " + ("мгновенно" if int(v) == 0 else str(int(v)) + " зн./с")
-	speed_lbl.text = speed_name.call(Game.settings["text_speed"])
+		return "Текст: " + ("мгновенно" if int(v) == 0 else str(int(v)) + " зн./с")
 	var sl := HSlider.new()
 	sl.min_value = 0
 	sl.max_value = 120
 	sl.step = 5
 	sl.value = float(Game.settings["text_speed"])
+	var speed_lbl: Label = slider_row.call(speed_name.call(Game.settings["text_speed"]), sl)
 	sl.value_changed.connect(func(v):
 		Game.set_setting("text_speed", int(v))
 		speed_lbl.text = speed_name.call(v))
-	sh.body.add_child(sl)
 
 	for pair in [["volume", "Общая громкость"], ["music_volume", "Музыка"], ["ambience_volume", "Атмосфера мест"], ["effects_volume", "Действия и интерфейс"]]:
-		var row := HBoxContainer.new()
-		var label := Label.new()
-		label.theme_type_variation = "Ink"
-		label.text = pair[1]
-		label.custom_minimum_size.x = 190
-		row.add_child(label)
 		var slider := HSlider.new()
-		slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		slider.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		slider.max_value = 1.0
 		slider.step = 0.05
 		var key: String = pair[0]
 		slider.value = float(Game.settings[key])
 		slider.value_changed.connect(func(v): Game.set_setting(key, v))
-		row.add_child(slider)
-		sh.body.add_child(row)
+		slider_row.call(pair[1], slider)
 
 	for pair in [["fullscreen", "Полноэкранный режим"], ["autosave", "Автосохранение"], ["hints", "Подсказки на столе"]]:
 		var cb := CheckBox.new()

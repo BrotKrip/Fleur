@@ -55,6 +55,8 @@ func _ready() -> void:
 			add_child(load("res://tools/smoke_test.gd").new())
 		elif a.begins_with("--mapshot") or a.begins_with("--tableshot") or a.begins_with("--vnline"):
 			add_child(load("res://tools/map_shot.gd").new())
+		elif a.begins_with("--uishots"):
+			add_child(load("res://tools/ui_shots.gd").new())
 		elif a.begins_with("--duelsim"):
 			add_child(load("res://tools/duel_sim.gd").new())
 		elif a.begins_with("--gallery"):

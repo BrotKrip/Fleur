@@ -9,6 +9,7 @@ var action: Dictionary
 var where := ""
 var slot_boxes: Array = []
 var reason_l: Label
+var who_l: Label
 var do_btn: Button
 
 
@@ -94,6 +95,12 @@ func _ready() -> void:
 		slot_boxes.append(sb)
 		row.add_child(sb)
 	v.add_child(row)
+	who_l = Label.new()
+	who_l.theme_type_variation = "Hand"
+	who_l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	who_l.custom_minimum_size.x = 500
+	who_l.add_theme_color_override("font_color", Color("2d3a5a"))
+	v.add_child(who_l)
 	var cost := Rules.cost_of(action, Game.state)
 	var cl := Label.new()
 	cl.theme_type_variation = "InkSoft"
@@ -161,6 +168,7 @@ func slot_of(card: TableCard) -> SlotBox:
 func refresh() -> void:
 	if reason_l == null:
 		return
+	_refresh_who()
 	var check := Rules.can_do(action, Game.state, ctx())
 	do_btn.disabled = not check["ok"]
 	reason_l.text = "" if check["ok"] else str(check["reason"])
@@ -175,3 +183,23 @@ func refresh() -> void:
 				any = true
 		if not any and not check["ok"]:
 			reason_l.text = str(check["reason"]) + " Подходящих карт на столе нет."
+
+
+## Для ячеек «кто рядом» подсказка: кого сюда можно положить прямо сейчас.
+func _refresh_who() -> void:
+	if who_l == null:
+		return
+	var lines := PackedStringArray()
+	for sb in slot_boxes:
+		if not sb.slot.get("present", false) or sb.card != null:
+			continue
+		var names := PackedStringArray()
+		for id in Rules.slot_candidates(sb.slot, Game.state, ctx()):
+			names.append(Rules.title_of(id, Game.state))
+		if names.is_empty():
+			lines.append("Здесь сейчас никого нет. Люди бывают в разных местах в разное время: смотрите на портреты на открытке места.")
+		else:
+			lines.append("%s: здесь сейчас %s. Щёлкните по портрету на столе или перетащите его сюда." % [str(sb.slot.get("label", "")), ", ".join(names)])
+	who_l.text = "
+".join(lines)
+	who_l.visible = lines.size() > 0

@@ -33,9 +33,9 @@ const ZOOM_MAX := 1.35
 ## Зоны стола: куда ложатся новые вещи и как раскладывает «Прибрать».
 const ZONES := {
 	"person": Rect2(40, 560, 1240, 600),
-	"approach": Rect2(40, 1190, 860, 190),
+	"approach": Rect2(360, 1190, 640, 190),   # правее латунных кнопок «Меню» и «Прибрать стол»
 	"rumor": Rect2(1330, 560, 1030, 520), "info": Rect2(1330, 560, 1030, 520), "clue": Rect2(1330, 560, 1030, 520),
-	"item": Rect2(930, 1190, 980, 190),
+	"item": Rect2(1030, 1190, 890, 190),
 	"invitation": Rect2(1940, 1100, 420, 280), "event": Rect2(1940, 1100, 420, 280),
 	"affair": Rect2(1400, 40, 600, 330), "storyline": Rect2(1400, 40, 600, 330),
 	"deadline": Rect2(1720, 400, 300, 160),
@@ -215,7 +215,7 @@ func _ready() -> void:
 	hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint_label.clip_text = true
-	hint_label.text = "Колесо — ближе и дальше, пустое место стола — сдвинуть вид, Home — вернуть. Булавка — отправиться туда; золотая точка — сюжетное намерение. Карту можно бросить на булавку, портрет, папку дела или в картотеку."
+	hint_label.text = "Колесо — масштаб, пустое место стола — сдвинуть вид, Home — вернуть. Карту можно бросить на булавку, портрет, папку дела или в картотеку."
 
 	map = CityMap.new()
 	map.pin_clicked.connect(_travel)
@@ -328,6 +328,16 @@ func _brass_button(caption: String, footprint: Vector2) -> Button:
 
 func on_shown() -> void:
 	sync_cards(true)
+	if not Game.state["flags"].get("_seals_moved", false):
+		# Печати подходов раньше лежали в левом нижнем углу, под кнопками. Перекладываем один раз.
+		Game.state["flags"]["_seals_moved"] = true
+		for id in nodes.keys():
+			if str(nodes[id].d.get("type", "")) in ["approach", "item"]:
+				var card: TableCard = nodes[id]
+				var target := _free_spot(card.size, _zone_for(card.d), id)
+				if target != NO_ROOM:
+					_save_layout_at(card, target)
+					create_tween().tween_property(card, "position", target, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if not Game.state["flags"].get("_desk_intro", false):
 		# Первый взгляд на стол: карта города, открытка места, люди и письмо — всё в кадре.
 		Game.state["flags"]["_desk_intro"] = true
@@ -855,6 +865,22 @@ func _on_dropped(card: TableCard) -> void:
 		if sb:
 			_put_in_slot(card, sb)
 			return
+		for other in sheet.slot_boxes:
+			if other.drop_rect().has_point(gp):
+				# Карту бросили на ячейку, которая её не принимает: объясняем почему.
+				var s := Game.state
+				if other.slot.get("present", false) and str(card.d.get("type", "")) == "person" and Rules.where_is(s, card.id) != s["here"]:
+					var w = Rules.where_is(s, card.id)
+					_toast("%s сейчас не здесь%s." % [card.title(), (": " + Rules.title_of(w, s)) if w != null else ""])
+				else:
+					_toast("В ячейку «%s» эта карта не подходит." % str(other.slot.get("label", "")))
+				var was = sheet.slot_of(card)
+				if was:
+					was.card = null
+					card.base_scale = 1.0
+				_return_card(card)
+				sheet.refresh()
+				return
 		var old = sheet.slot_of(card)
 		if old:
 			old.card = null
@@ -1036,6 +1062,12 @@ func _choose_action(a: Dictionary, where: String, preset := {}) -> void:
 			for sb in sheet.slot_boxes:
 				if sb.slot["id"] == slot_id:
 					_put_in_slot(nodes[cid], sb)
+	# Если собеседник может быть только один — кладём его сами.
+	for sb in sheet.slot_boxes:
+		if sb.card == null and sb.slot.get("present", false) and sb.slot.get("required", false):
+			var who := Rules.slot_candidates(sb.slot, s, sheet.ctx())
+			if who.size() == 1 and nodes.has(who[0]):
+				_put_in_slot(nodes[who[0]], sb)
 	_highlight_candidates()
 
 
@@ -1391,7 +1423,13 @@ func _talk_with(pid: String, card_id: String) -> void:
 		return
 	if Rules.where_is(s, pid) != s["here"]:
 		var where = Rules.where_is(s, pid)
-		_toast("%s сейчас не здесь%s." % [Rules.title_of(pid, s), (" — " + Rules.title_of(where, s)) if where != null else ""])
+		var here_now := PackedStringArray()
+		for other in Rules.people_at(s, str(s["here"])):
+			here_now.append(Rules.title_of(other, s))
+		var msg := "%s сейчас не здесь: %s." % [Rules.title_of(pid, s), Rules.title_of(where, s) if where != null else "где — неизвестно"]
+		if here_now.size() > 0:
+			msg += " Здесь: " + ", ".join(here_now) + "."
+		_toast(msg)
 		return
 	var preset := {"who": pid}
 	if card_id != "" and card_id != pid:

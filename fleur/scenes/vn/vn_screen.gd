@@ -46,6 +46,11 @@ var choices: VBoxContainer
 var choice_scroll: ScrollContainer
 
 var waiting := ""     # "click" | "choice"
+var tool_bar: HBoxContainer
+var skip_button: Button
+var skip_on := false      # кнопка «Пропуск»; Ctrl держит пропуск, пока зажат
+var _skip_t := 0.0
+var ui_hidden := false    # «Скрыть»: остаются фон и фигуры
 var typing := false
 var _shown_chars := 0.0
 var _finished := false
@@ -141,8 +146,8 @@ func _ready() -> void:
 	sb.set_border_width_all(1)
 	sb.border_width_top = 2
 	sb.set_corner_radius_all(3)
-	sb.content_margin_left = 42
-	sb.content_margin_right = 42
+	sb.content_margin_left = 34
+	sb.content_margin_right = 34
 	sb.content_margin_top = 32
 	sb.content_margin_bottom = 26
 	sb.shadow_color = Color(0, 0, 0, 0.5)
@@ -166,7 +171,14 @@ func _ready() -> void:
 	text_label.add_theme_constant_override("line_spacing", 6)
 	text_label.custom_minimum_size = Vector2(0, 110)
 	text_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-	dialog_scroll.add_child(text_label)
+	# Курсив выступает за левый край строки («Д», «У»): без поля прокрутка срезает его.
+	var text_margin := MarginContainer.new()
+	text_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	text_margin.add_theme_constant_override("margin_left", TEXT_INSET)
+	text_margin.add_theme_constant_override("margin_right", TEXT_INSET)
+	text_margin.add_child(text_label)
+	dialog_scroll.add_child(text_margin)
 
 	name_plate = PanelContainer.new()
 	var np := StyleBoxFlat.new()
@@ -193,7 +205,7 @@ func _ready() -> void:
 	cont_mark.add_theme_font_size_override("font_size", 24)
 	add_child(cont_mark)
 	input_hint = Label.new()
-	input_hint.text = "ПРОБЕЛ / ЩЕЛЧОК   ·   ПРОДОЛЖИТЬ"
+	input_hint.text = ""
 	input_hint.add_theme_font_override("font", Look.font("sans"))
 	input_hint.add_theme_font_size_override("font_size", 14)
 	input_hint.add_theme_color_override("font_color", Color("d4d9cd"))
@@ -233,10 +245,9 @@ func _ready() -> void:
 	choice_margin.add_child(choices)
 
 	var tools := HBoxContainer.new()
+	tool_bar = tools
 	tools.add_theme_constant_override("separation", 8)
-	tools.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	tools.position = Vector2(-280, 28)
-	for pair in [["История", _show_history], ["Настройки", Dialogs.settings]]:
+	for pair in [["Пропуск", _toggle_skip], ["Скрыть", _toggle_ui], ["История", _show_history], ["Настройки", Dialogs.settings]]:
 		var b := Button.new()
 		b.text = pair[0]
 		b.add_theme_font_size_override("font_size", 15)
@@ -258,6 +269,17 @@ func _ready() -> void:
 		b.add_theme_color_override("font_color", Color("f1dfb8"))
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		b.pressed.connect(pair[1])
+		b.focus_mode = Control.FOCUS_NONE
+		match pair[0]:
+			"Пропуск":
+				skip_button = b
+				b.toggle_mode = true
+				b.add_theme_stylebox_override("hover_pressed", tool_active)
+				b.tooltip_text = "Пропускать реплики до следующего выбора. Зажатый Ctrl делает то же самое, пока держишь."
+			"Скрыть":
+				b.tooltip_text = "Спрятать рамку и кнопки, чтобы рассмотреть сцену (V или правая кнопка мыши). Любой щелчок вернёт их."
+			"История":
+				b.tooltip_text = "Что было сказано (H, L или колесо вверх)."
 		tools.add_child(b)
 	add_child(tools)
 
@@ -278,10 +300,12 @@ func _layout() -> void:
 	name_plate.position = box.position + Vector2(30, -22)
 	cont_mark.position = box.position + Vector2(w - 50, 160)
 	input_hint.position = Vector2(box.position.x + 4, s.y - 32)
+	tool_bar.reset_size()
+	tool_bar.position = Vector2(s.x - tool_bar.size.x - 24, 28)
 	_fit_location()
 	# Ответы занимают отдельную половину сцены; размер задаётся экраном, а не
 	# ещё не рассчитанной высотой VBox. Длинный список прокручивается внутри неё.
-	choice_scroll.visible = waiting == "choice"
+	choice_scroll.visible = waiting == "choice" and not ui_hidden
 	var choice_width := minf(700.0, s.x * 0.48)
 	var choice_top := maxf(112.0, s.y * 0.21)
 	choice_scroll.position = Vector2(s.x - choice_width - 30.0 if _choices_on_right() else 30.0, choice_top)
@@ -292,6 +316,7 @@ func _layout() -> void:
 
 
 const TEXT_FS_MAX := 23
+const TEXT_INSET := 8
 const TEXT_FS_MIN := 14
 
 
@@ -310,7 +335,7 @@ func _fit_text() -> void:
 	var flags := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND | TextServer.BREAK_ADAPTIVE
 	var fs := TEXT_FS_MAX
 	while fs > TEXT_FS_MIN:
-		var lines := _wrapped_lines(font, text_label.text, avail.x - 4, fs, flags)
+		var lines := _wrapped_lines(font, text_label.text, avail.x - 4 - TEXT_INSET * 2, fs, flags)
 		var h := lines * font.get_height(fs) + maxi(0, lines - 1) * spacing
 		if h <= avail.y:
 			break
@@ -646,17 +671,53 @@ func _process(delta: float) -> void:
 		if _shown_chars >= text_label.text.length():
 			typing = false
 			text_label.visible_characters = -1
-	cont_mark.visible = waiting == "click" and not typing
+	cont_mark.visible = waiting == "click" and not typing and not ui_hidden
 	cont_mark.modulate.a = 0.5 + 0.5 * sin(_t * 4.0)
+	# Подсказка только там, где без неё легко потеряться: длинный список ответов.
+	input_hint.text = ""
 	if waiting == "choice":
 		var scroll_bar := choice_scroll.get_v_scroll_bar()
-		input_hint.text = "1–9   ·   ВЫБРАТЬ ОТВЕТ"
 		if scroll_bar.max_value > scroll_bar.page:
-			input_hint.text += "   ·   КОЛЕСО — ВСЕ ВАРИАНТЫ"
-	elif not typing and _more_text_below():
-		input_hint.text = "ПРОБЕЛ / ЩЕЛЧОК   ·   ТЕКСТ НИЖЕ"
+			input_hint.text = "КОЛЕСО — ОСТАЛЬНЫЕ ВАРИАНТЫ"
+	elif _skipping():
+		input_hint.text = "ПРОПУСК ▸▸"
+	input_hint.visible = not ui_hidden
+	# Пропуск: реплика дописывается сразу, следующая — через короткую паузу. Выбор его останавливает.
+	if _skipping() and waiting == "click":
+		_skip_t += delta
+		if _skip_t >= 0.07:
+			_skip_t = 0.0
+			typing = false
+			text_label.visible_characters = -1
+			waiting = ""
+			i += 1
+			_run()
 	else:
-		input_hint.text = "ПРОБЕЛ / ЩЕЛЧОК   ·   ПРОДОЛЖИТЬ"
+		_skip_t = 0.0
+
+
+func _skipping() -> bool:
+	if ui_hidden or Game.main.has_overlay():
+		return false
+	return skip_on or Input.is_key_pressed(KEY_CTRL)
+
+
+func _toggle_skip() -> void:
+	skip_on = skip_button.button_pressed
+	if skip_on and ui_hidden:
+		_toggle_ui()
+
+
+func _toggle_ui() -> void:
+	ui_hidden = not ui_hidden
+	for c in [box, name_plate, cont_mark, input_hint, tool_bar, location_plaque, place_label]:
+		c.visible = not ui_hidden
+	name_plate.visible = not ui_hidden and name_label.text != ""
+	choice_scroll.visible = not ui_hidden and waiting == "choice"
+	scene_label.visible = false
+	if ui_hidden:
+		skip_on = false
+		skip_button.button_pressed = false
 
 
 func _more_text_below() -> bool:
@@ -681,22 +742,50 @@ func _advance() -> void:
 
 
 func _gui_input(e: InputEvent) -> void:
-	if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-		_advance()
+	if not (e is InputEventMouseButton and e.pressed):
+		return
+	if ui_hidden:
+		# пока рамка спрятана, щелчок только возвращает её
+		_toggle_ui()
 		accept_event()
+		return
+	match e.button_index:
+		MOUSE_BUTTON_LEFT:
+			if skip_on:
+				skip_on = false
+				skip_button.button_pressed = false
+			_advance()
+			accept_event()
+		MOUSE_BUTTON_RIGHT:
+			_toggle_ui()
+			accept_event()
+		MOUSE_BUTTON_WHEEL_UP:
+			if dialog_scroll.scroll_vertical == 0:
+				_show_history()
+				accept_event()
 
 
 func _unhandled_input(e: InputEvent) -> void:
 	if Game.main.has_overlay():
 		return
 	if e is InputEventKey and e.pressed and not e.echo:
-		if e.keycode in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
+		# Горячие клавиши по физическому положению: работают и в русской раскладке.
+		var key: Key = e.physical_keycode
+		if ui_hidden:
+			_toggle_ui()
+			get_viewport().set_input_as_handled()
+			return
+		if key in [KEY_SPACE, KEY_ENTER, KEY_KP_ENTER]:
 			_advance()
 			get_viewport().set_input_as_handled()
-		elif e.keycode == KEY_H:
+		elif key in [KEY_H, KEY_L]:
 			_show_history()
-		elif waiting == "choice" and e.keycode >= KEY_1 and e.keycode <= KEY_9:
-			var idx: int = e.keycode - KEY_1
+			get_viewport().set_input_as_handled()
+		elif key == KEY_V:
+			_toggle_ui()
+			get_viewport().set_input_as_handled()
+		elif waiting == "choice" and key >= KEY_1 and key <= KEY_9:
+			var idx: int = key - KEY_1
 			if idx < choices.get_child_count():
 				(choices.get_child(idx) as Button).emit_signal("pressed")
 
@@ -704,6 +793,10 @@ func _unhandled_input(e: InputEvent) -> void:
 func _show_choice(opts: Array) -> void:
 	var s := Game.state
 	waiting = "choice"
+	if skip_on:
+		# пропуск всегда останавливается на выборе
+		skip_on = false
+		skip_button.button_pressed = false
 	choice_scroll.scroll_vertical = 0
 	for c in choices.get_children():
 		c.queue_free()

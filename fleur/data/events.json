@@ -776,5 +776,39 @@
 	"ev_sillage_hearing": {
 		"when": {"flag": "sillage_summons", "noFlag": "sillage_verdict", "daysSince": ["sillage_summons", 4], "phase": "morning"},
 		"effects": [{"scene": "sillage_verdict"}]
+	},
+	"ev_adele_hint": {
+		"when": {
+			"all": [
+				{
+					"dayGte": 6
+				},
+				{
+					"phase": "morning"
+				},
+				{
+					"noFlag": "adele_met"
+				},
+				{
+					"flag": "homecoming_done"
+				}
+			]
+		},
+		"title": "Мондштадтский рейс",
+		"text": "Мальчишка-газетчик под окном кричит, что к нижним причалам пришёл рейс из Мондштадта и у багажной конторы опять что-то уронили. Судя по грохоту, что-то деревянное и в большом количестве."
+	},
+	"ev_jakob_notice": {
+		"when": {"flag": "maison_refused", "noFlag": "jakob_notice", "daysSince": ["maison_refused", 1], "phase": "morning"},
+		"title": "Карточка от Гастона",
+		"text": "Мальчик из «Дебора» принёс карточку постояльца и приписку Гастона: «Месье, этот господин платит вперёд. Вы говорили, что ищете работу. Я не говорил, что вы её ищете».",
+		"effects": [{"flag": "jakob_notice"}, {"add": ["note_jakob_ad", "sl_expedition"]}]
+	},
+	"ev_jakob_bones": {
+		"when": {"flag": "jakob_road_done", "noFlag": "jakob_bones_done", "phase": "morning"},
+		"effects": [{"scene": "jakob_bones"}]
+	},
+	"ev_jakob_return": {
+		"when": {"flag": "jakob_bones_done", "noFlag": "jakob_paid", "phase": "evening"},
+		"effects": [{"scene": "jakob_return"}]
 	}
 }

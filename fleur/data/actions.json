@@ -3038,7 +3038,7 @@
 		"at": "loc_poisson",
 		"title": "Поужинать с Навией у неё дома",
 		"desc": "Навия просила прийти без парадного жилета. На кухне будут знать, куда его проводить.",
-		"visible": {"flag": "maison_lumine_departed", "noFlag": "faubourg_navia_done"},
+		"visible": {"flag": ["maison_lumine_departed", "navia_anger_done"], "noFlag": "faubourg_navia_done"},
 		"once": true,
 		"cost": 0,
 		"intent": "side",
@@ -3159,5 +3159,49 @@
 		"intent": "main",
 		"phases": ["morning", "day"],
 		"outcomes": [{"effects": [{"scene": "faubourg_poste"}]}]
-	}
+	},
+	"jakob_hire": {
+		"at": "loc_debor",
+		"title": "Найти нанимателя в читальне «Дебора»",
+		"desc": "Гастон говорит, что постоялец неделю платит вперёд и ни разу не заказал ужина.",
+		"visible": {"has": "note_jakob_ad", "noFlag": "jakob_hired"},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["morning", "day"],
+		"outcomes": [{"effects": [{"scene": "jakob_hire"}]}]
+	},
+	"jakob_packing": {
+		"at": "loc_apartment",
+		"title": "Собраться в дорогу с Жози",
+		"desc": "Сестра заявила, что без неё он возьмёт в пещеры двадцать две шляпы.",
+		"visible": {"flag": "jakob_hired", "noFlag": ["jakob_packed", "jakob_road_done"]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["evening", "night"],
+		"outcomes": [{"effects": [{"scene": "jakob_packing"}]}]
+	},
+	"jakob_depart": {
+		"at": "loc_manor",
+		"title": "Выступить с отрядом Ингольда",
+		"desc": "Отряд собирается у задней калитки поместья. Четыре дня в костях Берилла.",
+		"visible": {"flag": "jakob_hired", "noFlag": "jakob_road_done", "daysSince": ["jakob_hired", 1]},
+		"once": true,
+		"cost": 0,
+		"intent": "side",
+		"phases": ["morning"],
+		"outcomes": [{"effects": [{"scene": "jakob_road"}]}]
+	},
+	"navia_wake_list": {"at": "loc_poisson", "title": "Подняться к Навии", "desc": "Мелус надписывает приглашения на поминки Калласа. Навия наверху и никого не звала.", "visible": {"flag": "maison_sentenced", "noFlag": "navia_anger_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["evening", "night"], "outcomes": [{"effects": [{"scene": "navia_wake_list"}]}]},
+	"josie_office": {"at": "loc_manor", "title": "Заглянуть в контору к Жози", "desc": "Контора теперь в отцовском кабинете. У стола с утра ждёт мастер цеха.", "visible": {"flag": ["maison_delegated", "maison_lumine_departed"], "noFlag": "josie_office_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["morning", "day"], "outcomes": [{"effects": [{"scene": "josie_office"}]}]},
+	"josie_left_first": {"at": "loc_apartment", "title": "Дождаться Жози в дождь", "desc": "Сестра обещала зайти вечером. Над Пассажем собираются тучи.", "visible": {"flag": "josie_office_done", "noFlag": "josie_left_first_done", "daysSince": ["josie_office_done", 1]}, "once": true, "cost": 0, "intent": "side", "phases": ["evening", "night"], "outcomes": [{"effects": [{"scene": "josie_left_first"}]}]},
+	"tiori_fitting": {"at": "loc_mermonia", "title": "Прийти на примерку очков в Мермонию", "desc": "Фурина прислала записку «автору жеста». Тиори тоже будет.", "visible": {"flag": ["furina_sketch_delivered", "sillage_verdict"], "noFlag": "tiori_fitting_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day"], "outcomes": [{"effects": [{"scene": "tiori_fitting"}]}]},
+	"tiori_failure": {"at": "loc_tiori", "title": "Заглянуть в «Дом Тиори»", "desc": "Витрина пуста. Внутри горит одна лампа.", "visible": {"flag": "tiori_fitting_done", "noFlag": "tiori_failure_done", "daysSince": ["tiori_fitting_done", 2]}, "once": true, "cost": 0, "intent": "side", "phases": ["evening", "night"], "outcomes": [{"effects": [{"scene": "tiori_failure"}]}]},
+	"tiori_draw": {"at": "loc_lutes", "title": "Получить у Аруэ конверт от Тиори", "desc": "Аруэ говорит, что вручить велено лично.", "visible": {"flag": "tiori_failure_done", "noFlag": "tiori_draw_done", "daysSince": ["tiori_failure_done", 2]}, "once": true, "cost": 0, "intent": "side", "phases": ["morning", "day"], "outcomes": [{"effects": [{"scene": "tiori_draw"}]}]},
+	"clorinde_case": {"at": "loc_lutes", "title": "Подсесть к Клоринде на террасе", "desc": "Сегодня в «Эпиклезе» был поединок. Клоринда сидит одна над остывшим кофе.", "visible": {"flag": "sillage_verdict", "noFlag": "clorinde_told_duel"}, "once": true, "cost": 0, "intent": "side", "phases": ["evening"], "outcomes": [{"effects": [{"scene": "clorinde_case"}]}]},
+	"charlotte_mistake": {"at": "loc_steambird", "title": "Зайти к Шарлотте после выпуска", "desc": "Вечерний номер ушёл в печать. Шарлотта сидит за столом в пальто.", "visible": {"flag": ["faubourg_column_done", "maison_lumine_departed"], "noFlag": "charlotte_mistake_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day", "evening"], "outcomes": [{"effects": [{"scene": "charlotte_mistake"}]}]},
+	"adele_letter": {"at": "loc_docks", "title": "Позвать Адель под окном", "desc": "Колокольчик в окне не звенит уже второй день.", "visible": {"flag": ["adele_window_done", "maison_audience"], "noFlag": "adele_letter_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day", "evening"], "outcomes": [{"effects": [{"scene": "adele_letter"}]}]},
+	"lynette_hearth": {"at": "loc_debor", "title": "Сесть к Линетт за колонну", "desc": "Линетт заказала чай на двоих. Возле блюдца лежит серый конверт.", "visible": {"flag": ["entracte_lynette_done", "maison_sentenced"], "noFlag": "lynette_hearth_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day", "evening"], "outcomes": [{"effects": [{"scene": "lynette_hearth"}]}]},
+	"chevreuse_home": {"at": "loc_gardinage", "title": "Дождаться Шеврёз у Палаты", "desc": "Вчера за картами Монтрё хвастался, что патрулю к нему не попасть.", "visible": {"flag": ["chevreuse_office_shared", "sillage_verdict"], "noFlag": "chevreuse_home_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["evening"], "outcomes": [{"effects": [{"scene": "chevreuse_home"}]}]}
 }

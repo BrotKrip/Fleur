@@ -10,6 +10,9 @@ const BACKGROUNDS := {
 	"docks": "coast", "docks_night": "coast",
 	"debor": "manor", "debor_hall": "manor", "debor_bar": "bar",
 	"steambird": "city",
+	"berill_ridge": "vineyard", "expedition_camp": "vineyard",
+	"elynas_cave": "submerged_store", "elynas_heart": "submerged_store",
+	"chevreuse_home": "apartment",
 }
 
 static var _textures: Dictionary = {}

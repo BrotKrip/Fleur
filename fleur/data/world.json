@@ -10,6 +10,10 @@
 			"char_josie",
 			"char_clorinde",
 			"char_tiori",
+			"npc_estelle",
+			"npc_sabine",
+			"npc_oriana",
+			"char_halsey",
 			"char_adrian",
 			"char_louis",
 			"char_marcel",
@@ -266,7 +270,7 @@
 		},
 		"apartment_washroom": {
 			"lighting": "dark_room",
-			"label": "Ванная Шевалье",
+			"label": "Ванная Флёра",
 			"colors": ["#101823", "#384358", "#705036"]
 		},
 		"apartment_night": {

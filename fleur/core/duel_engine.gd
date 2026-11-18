@@ -36,6 +36,8 @@ var result: Dictionary = {}
 var events: Array = []               # [{kind, text, target, amount}] — для интерфейса
 var rng := RandomNumberGenerator.new()
 var _uid := 0
+var status_draw := 0                  # от состояний: лишние карты в первой руке
+var status_energy := 0                # от состояний: силы в первые два хода
 
 
 func setup(duel_id: String, data: Dictionary, s: Dictionary) -> void:
@@ -44,8 +46,16 @@ func setup(duel_id: String, data: Dictionary, s: Dictionary) -> void:
 	context = str(def.get("context", "training"))
 	cards = data["cards"]
 	var bal := int(data.get("fleur", {}).get("balance", 14))
-	if s["cards"].has("st_hangover"):
-		bal -= 2
+	# состояния на столе: "mods": {"duel": {"balance": ±n, "draw": ±n, "energy": ±n}} — на весь поединок
+	var mod_draw := 0
+	var mod_energy := 0
+	for cid in s["cards"]:
+		var dm: Dictionary = Content.def(cid).get("mods", {}).get("duel", {})
+		bal += int(dm.get("balance", 0))
+		mod_draw += int(dm.get("draw", 0))
+		mod_energy += int(dm.get("energy", 0))
+	status_draw = mod_draw
+	status_energy = mod_energy
 	fleur = {"balance": bal, "max": bal, "guard": 0, "panache": 0, "prepared": 0, "feint": false,
 		"counter": 0, "open": false, "wounds": 0, "regen": int(data.get("fleur", {}).get("regen", 1))}
 	for eid in def["enemies"]:
@@ -69,9 +79,7 @@ func setup(duel_id: String, data: Dictionary, s: Dictionary) -> void:
 	_shuffle(deck)
 	for e in enemies:
 		_pick_intent(e)
-	var extra_draw := 1 if s["cards"].has("st_sharp") else 0
-	var energy_mod := -1 if s["cards"].has("st_tired") else 0
-	_start_turn(extra_draw, energy_mod)
+	_start_turn()
 
 
 # ---------------------------------------------------------------- ход Флёра
@@ -82,10 +90,10 @@ func _start_turn(extra_draw := 0, energy_mod := 0) -> void:
 	fleur["counter"] = 0
 	if not fleur["open"]:
 		fleur["balance"] = mini(fleur["max"], fleur["balance"] + fleur["regen"])
-	energy = ENERGY + energy_mod
+	energy = maxi(1, ENERGY + energy_mod + (status_energy if turn <= 2 else 0))
 	last_turn_attacks = attacks_this_turn
 	attacks_this_turn = 0
-	_draw(HAND + extra_draw)
+	_draw(maxi(1, HAND + extra_draw + (status_draw if turn == 1 else 0)))
 	if turn > int(def.get("max_rounds", 10)):
 		_finish(str(def.get("timeout_outcome", "time")))
 

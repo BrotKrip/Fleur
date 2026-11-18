@@ -54,6 +54,8 @@
 		"desc": "Пуговицы и ленты на знакомом манекене.",
 		"cost": 1,
 		"outcomes": [
+			{"when": {"has": "st_wounded"}, "text": "Перевязанная рука не дала даже снять рапиру со стены. Флёр полчаса чистил клинок левой и решил, что это тоже упражнение."},
+			{"when": {"has": "st_sharp", "lacks": "st_tired"}, "text": "Рука ещё помнила вчерашнее. Он прибавил манекену два ряда пуговиц и срезал все, кроме одной, которую пожалел. Лёгкость не прошла, а будто бы улеглась поглубже.", "effects": [{"add": {"id": "st_sharp", "lifetime": 6}}, {"remove": "st_hangover"}]},
 			{
 				"when": {
 					"has": "st_tired"
@@ -84,6 +86,9 @@
 		"daily": true,
 		"cost": 1,
 		"outcomes": [
+			{"when": {"has": "st_tired"}, "text": "Он перечёл вчерашние четыре строки и не понял, что в них нашёл. Перо легло на стол, и, судя по всему, легло надолго. Не выспавшись, сонеты не пишут; их только портят."},
+			{"when": {"has": "st_inspired"}, "text": "Строки шли одна за другой, и Флёр едва успевал их записывать. К обеду у него был целый катрен, который не стыдно прочесть вслух. Он прочёл его вслух. Соседская кошка ушла с подоконника.", "effects": [{"add": {"id": "st_inspired", "lifetime": 4}}]},
+			{"when": {"lacks": "st_hangover", "chance": 0.5}, "text": "Рифма к «ненароком» нашлась сама, а за ней потянулась и вся строфа. Флёр отложил перо, чтобы не спугнуть удачу, и до вечера ходил по квартире, бормоча строчки себе под нос.", "effects": [{"add": "st_inspired"}]},
 			{
 				"when": {
 					"flag": "first_arc_done"
@@ -203,16 +208,7 @@
 				]
 			}
 		],
-		"visible": {
-			"all": [
-				{
-					"noFlag": "clorinde_met"
-				},
-				{
-					"flag": "city_night_finished"
-				}
-			]
-		},
+		"visible": {"all": [{"noFlag": "clorinde_met"}, {"flag": ["city_night_finished", "clorinde_button_night"]}]},
 		"phases": [
 			"morning"
 		]
@@ -246,6 +242,7 @@
 		],
 		"cost": 1,
 		"outcomes": [
+			{"when": {"has": "st_tired"}, "text": "Он сел на террасе и проснулся оттого, что Аруэ осторожно забирал у него из пальцев пустой стакан. Вечер прошёл. Хорошо хоть, шляпа осталась на голове."},
 			{
 				"when": {"flag": "sillage_verdict", "noFlag": "city_after_coffee"},
 				"text": "Мужчина за соседним столом встал ему навстречу и уже шелестел жилетом, доставая карточку, когда жена шепнула ему фамилию. Визитная карточка вернулась под жилет. Пока тот искал предлог побеседовать о погоде, Аруэ успел принести Флёру кофе и усадить на свободное место девушку с полным подолом слив. С нею они просидели до закрытия.",
@@ -323,6 +320,9 @@
 		"title": "Перекинуться парой слов со знакомыми",
 		"cost": 1,
 		"outcomes": [
+			{"when": {"has": "st_tired"}, "text": "Он трижды начинал комплимент и трижды терял его на середине. Дама дослушала из вежливости, посоветовала ему выспаться и ушла. Совет был, в сущности, неплохой."},
+			{"when": {"has": "st_soaked"}, "text": "С мокрых манжет капало на мостовую, и знакомые предпочитали здороваться издали. Одна дама всё-таки остановилась — спросить, не упал ли он в канал. Он упал в озеро. Разница её не заинтересовала."},
+			{"when": {"has": "st_inspired"}, "text": "Слова сегодня находились сами. Он прочёл даме четыре строки, выдав их за чужие, и она попросила переписать ей на память. Почерк его выдал, но она сделала вид, что не узнала.", "effects": [{"counter": ["flirt_wins", 1]}]},
 			{
 				"when": {"flag": "maison_sentenced", "noFlag": "city_after_flirt"},
 				"text": "Дама согласилась прокатиться с ним в открытой коляске, только попросила заехать за ней с парадного входа. После суда её родня уж слишком часто объясняла ей, с кем можно появляться на людях. Шевалье обещал подать такую шляпу, что родне впору будет спасать уже его от знакомства с нею. До конца прогулки она так и не поинтересовалась, что он сказал на суде.",
@@ -403,6 +403,7 @@
 		],
 		"cost": 2,
 		"outcomes": [
+			{"when": {"has": "st_tired", "lacks": "rum_skate"}, "text": "Глаза слипались ещё у причала. Лодочник посмотрел на него, хмыкнул и обещал не отходить далеко: на долгую охоту у такого охотника сегодня не хватит сил.", "effects": [{"activity": {"id": "harpoon", "params": {"big": false}, "onResult": "hunt"}}]},
 			{
 				"when": {
 					"has": "rum_skate"
@@ -2721,7 +2722,7 @@
 		"at": "loc_debor",
 		"title": "Зайти к Марселю в «Дебор»",
 		"desc": "У дяди лежит вещица, с которой он очень хочет управиться до встречи с Элоизой.",
-		"visible": {"flag": "build_end", "noFlag": ["sillage_sunday_done", "sillage_verdict"]},
+		"visible": {"flag": "build_end", "noFlag": ["sillage_sunday_done", "sillage_verdict", "sillage_sunday_missed"]},
 		"once": true,
 		"cost": 0,
 		"intent": "main",
@@ -2831,7 +2832,7 @@
 		"at": "loc_poisson",
 		"title": "Заглянуть на пристань к Мелусу",
 		"desc": "Навия просила зайти: после ужина у неё разболтался каблук, а у Мелуса появились вопросы о старой пристани.",
-		"visible": {"flag": "build_end", "noFlag": ["sillage_lead", "sillage_verdict"], "daysSince": ["sillage_open", 2]},
+		"visible": {"flag": "build_end", "has": "char_navia", "noFlag": ["sillage_lead", "sillage_verdict"], "daysSince": ["sillage_open", 2]},
 		"once": true,
 		"cost": 0,
 		"intent": "main",
@@ -2841,7 +2842,7 @@
 		"at": "loc_poisson",
 		"title": "Остаться к пирогу с сюрпризом",
 		"desc": "Для бумажных корон на кухне Спины ещё есть свободный стул.",
-		"visible": {"flag": "build_end", "noFlag": ["sillage_supper_done", "faubourg_navia_done"]},
+		"visible": {"flag": "build_end", "has": "char_navia", "noFlag": ["sillage_supper_done", "faubourg_navia_done"]},
 		"once": true,
 		"cost": 0,
 		"intent": "side",
@@ -3203,5 +3204,8 @@
 	"charlotte_mistake": {"at": "loc_steambird", "title": "Зайти к Шарлотте после выпуска", "desc": "Вечерний номер ушёл в печать. Шарлотта сидит за столом в пальто.", "visible": {"flag": ["faubourg_column_done", "maison_lumine_departed"], "noFlag": "charlotte_mistake_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day", "evening"], "outcomes": [{"effects": [{"scene": "charlotte_mistake"}]}]},
 	"adele_letter": {"at": "loc_docks", "title": "Позвать Адель под окном", "desc": "Колокольчик в окне не звенит уже второй день.", "visible": {"flag": ["adele_window_done", "maison_audience"], "noFlag": "adele_letter_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day", "evening"], "outcomes": [{"effects": [{"scene": "adele_letter"}]}]},
 	"lynette_hearth": {"at": "loc_debor", "title": "Сесть к Линетт за колонну", "desc": "Линетт заказала чай на двоих. Возле блюдца лежит серый конверт.", "visible": {"flag": ["entracte_lynette_done", "maison_sentenced"], "noFlag": "lynette_hearth_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["day", "evening"], "outcomes": [{"effects": [{"scene": "lynette_hearth"}]}]},
-	"chevreuse_home": {"at": "loc_gardinage", "title": "Дождаться Шеврёз у Палаты", "desc": "Вчера за картами Монтрё хвастался, что патрулю к нему не попасть.", "visible": {"flag": ["chevreuse_office_shared", "sillage_verdict"], "noFlag": "chevreuse_home_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["evening"], "outcomes": [{"effects": [{"scene": "chevreuse_home"}]}]}
+	"chevreuse_home": {"at": "loc_gardinage", "title": "Дождаться Шеврёз у Палаты", "desc": "Вчера за картами Монтрё хвастался, что патрулю к нему не попасть.", "visible": {"flag": ["chevreuse_office_shared", "sillage_verdict"], "noFlag": "chevreuse_home_done"}, "once": true, "cost": 0, "intent": "side", "phases": ["evening"], "outcomes": [{"effects": [{"scene": "chevreuse_home"}]}]},
+	"meet_charlotte_late": {"at": "loc_lutes", "title": "Застать Шарлотту у окна", "desc": "Журналистка из «Паровой птицы» обещала зайти ещё раз. Может быть, не врала.", "cost": 0, "once": true, "intent": "main", "visible": {"flag": "charlotte_waited_out", "noFlag": "met_charlotte", "not": {"dayGte": 6}}, "outcomes": [{"effects": [{"scene": {"id": "charlotte_first", "ctx": {"variant": "ambush"}}}]}]},
+	"premiere_eve_docks": {"at": "loc_docks", "title": "Спуститься к барже на Берилл", "desc": "У нижних причалов грузят вечернюю баржу. Говорят, сегодня пришло и судно с востока.", "cost": 0, "once": true, "intent": "main", "phases": ["day", "evening"], "visible": {"day": 19, "noFlag": "premiere_eve_seen"}, "outcomes": [{"effects": [{"remove": "inv_halsey_barge"}, {"scene": "premiere_eve"}]}]},
+	"attend_premiere": {"at": "loc_epiclese", "title": "Пойти на премьеру Лини и Линетт", "desc": "Третий ряд, восьмое кресло, по билету Хэлси. До третьего звонка ещё есть время.", "cost": 0, "once": true, "intent": "main", "phases": ["day", "evening"], "visible": {"day": 20, "has": "it_halsey_ticket", "noFlag": "opera_arrived"}, "outcomes": [{"effects": [{"scene": "opera_arrival"}]}]}
 }

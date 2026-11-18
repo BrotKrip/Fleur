@@ -206,6 +206,13 @@ func test(c, s: Dictionary, ctx: Dictionary = {}) -> bool:
 			"phase":
 				if not _list(v).has(phase_key(s)):
 					return false
+			"at":
+				# где сейчас сам Флёр: мир не зовёт его туда, где его нет
+				if not _list(v).has(str(s.get("here", ""))):
+					return false
+			"notAt":
+				if _list(v).has(str(s.get("here", ""))):
+					return false
 			"day":
 				if int(s["day"]) != int(v):
 					return false
@@ -534,6 +541,12 @@ func can_do(a: Dictionary, s: Dictionary, ctx: Dictionary) -> Dictionary:
 	for sl in a.get("slots", []):
 		if sl.get("required", false) and ctx.get("slots", {}).get(sl["id"]) == null:
 			return {"ok": false, "reason": "Нужно: " + str(sl["label"]).to_lower() + ".", "needs_slot": true}
+	for key in ctx.get("slots", {}):
+		var put = ctx["slots"][key]
+		if put is String and Content.def(put).get("type") == "approach":
+			var by := blocked_by(s, put)
+			if by != "":
+				return {"ok": false, "reason": "«%s» сейчас не выйдет: %s." % [title_of(put, s), title_of(by, s).to_lower()]}
 	return {"ok": true}
 
 
@@ -577,13 +590,30 @@ func mark_seen(s: Dictionary) -> void:
 func spend_approach(s: Dictionary, id: String, api: Dictionary) -> void:
 	if not s["cards"].has(id):
 		return
-	s["cards"][id]["rest"] = int(Content.def(id).get("recharge", 3))
+	s["cards"][id]["rest"] = recharge_of(s, id)
 	s["counters"]["used:" + id] = int(s["counters"].get("used:" + id, 0)) + 1
 	api["changes"].append({"kind": "spent", "id": id})
 
 
 func is_resting(s: Dictionary, id: String) -> bool:
 	return s["cards"].has(id) and int(s["cards"][id].get("rest", 0)) > 0
+
+
+## Состояния на столе меняют подходы: "mods": {"recharge": {"ap_x" | "*": ±n}, "blocks": [ap_x]}.
+func recharge_of(s: Dictionary, id: String) -> int:
+	var r := int(Content.def(id).get("recharge", 3))
+	for cid in s["cards"]:
+		var m: Dictionary = Content.def(cid).get("mods", {}).get("recharge", {})
+		r += int(m.get(id, 0)) + int(m.get("*", 0))
+	return maxi(r, 1)
+
+
+## Какое состояние сейчас не даёт пустить подход в ход (пустая строка — ничто).
+func blocked_by(s: Dictionary, id: String) -> String:
+	for cid in s["cards"]:
+		if Content.def(cid).get("mods", {}).get("blocks", []).has(id):
+			return cid
+	return ""
 
 
 # ---------------------------------------------------------------- разговоры

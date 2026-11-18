@@ -39,6 +39,7 @@ var q := {}
 var big := false
 var t := 0.0
 var time_limit := 150.0
+var dash_recharge := DASH_RECHARGE
 
 var boat := {}
 var harpoon := {}
@@ -66,6 +67,12 @@ func setup(p: Dictionary, queue_item: Dictionary) -> void:
 	params = p
 	q = queue_item
 	big = bool(p.get("big", false))
+	# состояния на столе: "mods": {"hunt": {"time": ±секунды, "dash": множитель перезарядки рывка}}
+	for cid in Game.state.get("cards", {}):
+		var hm: Dictionary = Content.def(cid).get("mods", {}).get("hunt", {})
+		time_limit += float(hm.get("time", 0))
+		dash_recharge *= float(hm.get("dash", 1.0))
+	time_limit = maxf(time_limit, 60.0)
 
 
 func get_title() -> String:
@@ -375,7 +382,7 @@ func _update_boat(dt: float) -> void:
 	boat["invuln"] = maxf(0.0, boat["invuln"] - dt)
 	if int(boat["dash"]) < 3:
 		boat["dash_t"] += dt
-		if boat["dash_t"] >= DASH_RECHARGE:
+		if boat["dash_t"] >= dash_recharge:
 			boat["dash_t"] = 0.0
 			boat["dash"] = int(boat["dash"]) + 1
 	# касание твари

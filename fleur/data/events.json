@@ -1,17 +1,7 @@
 {
-	"ev_arlecchino_vasari": {
-		"when": {"flag": "prologue_done", "dayGte": 6, "not": {"dayGte": 19}, "phase": "evening", "noFlag": "arlecchino_met"},
-		"chance": 0.2,
-		"effects": [{"scene": "arlecchino_vasari"}]
-	},
-	"ev_first_evening": {
-		"when": {"day": 1, "phase": "evening", "flag": "prologue_done", "noFlag": "met_charlotte"},
-		"effects": [{"scene": "first_evening"}]
-	},
-	"ev_second_day_coffee": {
-		"when": {"day": 2, "phase": "day", "flag": "prologue_done", "noFlag": ["first_coffee_started", "met_charlotte"]},
-		"effects": [{"flag": "first_coffee_started"}, {"scene": "charlotte_first"}]
-	},
+	"ev_arlecchino_vasari": {"when": {"flag": "prologue_done", "dayGte": 6, "not": {"dayGte": 19}, "phase": "evening", "at": "loc_vasari", "noFlag": "arlecchino_met"}, "chance": 0.35, "effects": [{"scene": "arlecchino_vasari"}]},
+	"ev_first_evening": {"when": {"day": 1, "phase": ["evening", "night"], "at": "loc_apartment", "flag": "prologue_done", "noFlag": "met_charlotte"}, "effects": [{"scene": "first_evening"}]},
+	"ev_second_day_coffee": {"when": {"day": 2, "phase": "day", "at": "loc_lutes", "flag": "prologue_done", "noFlag": ["first_coffee_started", "met_charlotte"]}, "effects": [{"flag": "first_coffee_started"}, {"scene": "charlotte_first"}]},
 	"ev_skate_rumor": {
 		"when": {
 			"all": [
@@ -148,17 +138,7 @@
 		"when": {"noFlag": "sillage_verdict"}
 	},
 	"ev_story_epilogue": {
-		"when": {
-			"all": [
-				{
-					"flag": "first_arc_done"
-				},
-				{
-					"phase": "morning"
-				}
-			],
-			"noFlag": "sillage_verdict"
-		},
+		"when": {"all": [{"flag": "first_arc_done"}, {"phase": "morning"}], "noFlag": ["sillage_verdict", "charlotte_alone"]},
 		"effects": [
 			{
 				"add": "note_epilogue"
@@ -217,26 +197,7 @@
 			}
 		]
 	},
-	"ev_article_deadline_start": {
-		"when": {
-			"all": [
-				{
-					"flag": "samples_left"
-				},
-				{
-					"noFlag": "first_arc_done"
-				}
-			],
-			"noFlag": "sillage_verdict"
-		},
-		"title": "Записка из «Паровой птицы»",
-		"text": "«Редактор ставит материал о „Нектаре“ в номер через шесть дней. Я напечатаю то, что смогу подтвердить к этому сроку. Лучше — с тобой. Ш.»",
-		"effects": [
-			{
-				"add": "dl_article"
-			}
-		]
-	},
+	"ev_article_deadline_start": {"when": {"all": [{"flag": "samples_left"}, {"noFlag": "first_arc_done"}], "noFlag": "sillage_verdict"}, "title": "Записка из «Паровой птицы»", "text": "«Редактор ставит материал о „Нектаре“ в номер через шесть дней. Я напечатаю то, что смогу подтвердить к этому сроку. Лучше — с тобой. Ш.»", "effects": [{"remove": "dl_charlotte_patience"}, {"add": "dl_article"}]},
 	"ev_article_deadline": {
 		"manual": true,
 		"when": {
@@ -417,38 +378,8 @@
 			}
 		]
 	},
-	"ev_premiere_eve": {
-		"when": {
-			"dayGte": 19
-		},
-		"effects": [
-			{
-				"scene": "premiere_eve"
-			}
-		]
-	},
-	"ev_premiere_incident": {
-		"when": {
-			"any": [
-				{
-					"day": 20,
-					"phase": [
-						"day",
-						"evening",
-						"night"
-					]
-				},
-				{
-					"dayGte": 21
-				}
-			]
-		},
-		"effects": [
-			{
-				"scene": "opera_arrival"
-			}
-		]
-	},
+	"ev_premiere_eve": {"when": {"day": 19, "phase": "morning"}, "effects": [{"if": {"flag": "halsey_docks_done"}, "then": [{"add": "inv_halsey_barge"}], "else": [{"log": "У нижних причалов грузят баржу на Берилл. Говорят, сегодня же пришло судно с востока — с путешественницей и чем-то летучим."}]}]},
+	"ev_premiere_incident": {"when": {"day": 20, "phase": ["evening", "night"], "at": "loc_epiclese", "has": "it_halsey_ticket", "noFlag": "opera_arrived"}, "effects": [{"scene": "opera_arrival"}]},
 	"ev_premiere_reply": {
 		"when": {"all": [{"daysSince": ["premiere_witness", 1]}, {"noFlag": "trial_started"}]},
 		"effects": [
@@ -483,22 +414,7 @@
 			}
 		]
 	},
-	"ev_premiere_read_poster": {
-		"when": {
-			"dayGte": 15,
-			"not": {
-				"dayGte": 19
-			}
-		},
-		"effects": [
-			{
-				"add": "rum_magicians_premiere"
-			},
-			{
-				"scene": "premiere_poster"
-			}
-		]
-	},
+	"ev_premiere_read_poster": {"when": {"dayGte": 15, "not": {"dayGte": 19}, "at": "loc_vasari"}, "effects": [{"add": "rum_magicians_premiere"}, {"scene": "premiere_poster"}]},
 	"ev_world_traveler_road": {
 		"when": {
 			"all": [
@@ -641,69 +557,8 @@
 			}
 		]
 	},
-	"ev_rain_walk_fallback": {
-		"when": {
-			"all": [
-				{
-					"flag": "met_charlotte"
-				},
-				{
-					"noFlag": "done:walk_charlotte_home"
-				},
-				{
-					"noFlag": "eye:char_charlotte"
-				},
-				{
-					"any": [
-						{
-							"phase": [
-								"evening",
-								"night"
-							]
-						},
-						{
-							"dayGte": 3
-						}
-					]
-				}
-			]
-		},
-		"effects": [
-			{
-				"flag": "done:walk_charlotte_home"
-			},
-			{
-				"scene": "rain_guest_walk"
-			}
-		]
-	},
-	"ev_city_walk_fallback": {
-		"when": {
-			"all": [
-				{
-					"flag": "city_cafe_done"
-				},
-				{
-					"noFlag": "done:city_walk_josie"
-				},
-				{
-					"noFlag": "clorinde_button_night"
-				},
-				{
-					"phase": "morning"
-				}
-			],
-			"noFlag": "sillage_verdict"
-		},
-		"effects": [
-			{
-				"flag": "done:city_walk_josie"
-			},
-			{
-				"scene": "city_navia_walk"
-			}
-		]
-	},
+	"ev_rain_walk_fallback": {"when": {"all": [{"flag": "met_charlotte"}, {"noFlag": "done:walk_charlotte_home"}, {"noFlag": "eye:char_charlotte"}, {"dayGte": 3}, {"phase": "morning"}]}, "title": "Записка из «Паровой птицы»", "text": "Шарлотта ушла из «Лютеса» под дождём одна. Утром мальчишка из редакции принёс записку: «Месье, я всё-таки хочу поговорить с вашей семьёй. Если вы согласны устроить поездку в Берилл, напишите. Если нет — поеду сама, по общему расписанию, и спрошу у ворот. Ш.»", "effects": [{"flag": ["done:walk_charlotte_home", "charlotte_walked_alone", "opening_done"]}, {"stamp": "opening_done"}, {"relAdd": ["char_charlotte", "Ушла под дождём одна"]}, {"add": ["plan_manor", "loc_gardinage", "char_chevreuse"]}]},
+	"ev_city_walk_fallback": {"when": {"all": [{"flag": "city_cafe_done"}, {"noFlag": "done:city_walk_josie"}, {"noFlag": "clorinde_button_night"}, {"daysSince": ["city_cafe_done", 2]}, {"phase": "morning"}], "noFlag": "sillage_verdict"}, "title": "Жози гуляла без него", "text": "Жози вернулась за полночь и с порога рассказала, что встретила на набережной Навию Каспар, посмотрела урок Клоринды через ограду, а под фонарём к ним подошла сама Фурина. Её превосходительство хотела совета, в чём выйти к публике, и велела передать брату, что ждёт его мнения. Утром отцовский курьер оставил под дверью пакет с книгами.", "effects": [{"flag": ["done:city_walk_josie", "city_walk_missed", "city_night_finished", "furina_spectacles_promised"]}, {"add": ["note_estate_books", "it_furina_glasses", "rum_josie_walk"]}, {"relAdd": ["char_josie", "Гуляла без него"]}]},
 	"ev_sillage_open": {
 		"manual": true,
 		"when": {"flag": "build_end"},
@@ -749,17 +604,8 @@
 			}
 		]
 	},
-	"ev_maison_departure": {
-		"when": {"flag": "sillage_verdict", "noFlag": "maison_lumine_departed", "daysSince": ["sillage_verdict", 5], "phase": "morning"},
-		"effects": [{"scene": "maison_depart"}]
-	},
-	"ev_sillage_marcel_table": {
-		"when": {
-			"flag": "build_end", "daysSince": ["sillage_open", 2], "phase": "day",
-			"noFlag": ["sillage_sunday_done", "sillage_old_directions", "sillage_wine_route_done", "sillage_store", "sillage_verdict"]
-		},
-		"effects": [{"scene": "sillage_marcel_sunday"}]
-	},
+	"ev_maison_departure": {"when": {"flag": "sillage_verdict", "noFlag": "maison_lumine_departed", "daysSince": ["sillage_verdict", 5], "phase": "morning"}, "effects": [{"flag": ["maison_lumine_departed", "maison_depart_missed"]}, {"stamp": "maison_lumine_departed"}, {"add": "loc_meropide"}, {"if": {"has": "char_lumine"}, "then": [{"relAdd": ["char_lumine", "Не попрощались"]}, {"notice": {"title": "Записка у Аруэ", "text": "Аруэ передал сложенный вчетверо лист. Люмин уехала утренним рейсом. Вашер умер у фонтана Люсин, пока его вели на свидание с Виньер; Чайльд исчез из крепости. «Хотела сказать сама. Не застала. Пиши в Меропид, на моё имя. Л.»"}}], "else": [{"log": "Говорят, путешественница, что помогала Навии Каспар, уехала в крепость Меропид. Вашер, по слухам, умер у фонтана Люсин."}]}]},
+	"ev_sillage_marcel_table": {"when": {"flag": "build_end", "daysSince": ["sillage_open", 2], "phase": "morning", "noFlag": ["sillage_sunday_done", "sillage_old_directions", "sillage_wine_route_done", "sillage_store", "sillage_verdict"]}, "effects": [{"add": "inv_marcel_sunday"}]},
 	"ev_eirin_gardinage_address": {
 		"when": {"flag": "build_end", "lacks": "loc_gardinage"},
 		"effects": [{"add": "loc_gardinage"}]
@@ -810,5 +656,15 @@
 	"ev_jakob_return": {
 		"when": {"flag": "jakob_bones_done", "noFlag": "jakob_paid", "phase": "evening"},
 		"effects": [{"scene": "jakob_return"}]
-	}
+	},
+	"ev_first_evening_missed": {"when": {"dayGte": 2, "phase": "morning", "not": {"fired": "ev_first_evening"}}, "title": "Вишнёвые косточки", "text": "На ступеньке у двери лежала его визитная карточка, а на ней аккуратная горка вишнёвых косточек. Консьержка сказала, что барышня ждала до темноты, а потом попросила передать: подвязку она купит новую.", "effects": [{"flag": "first_evening_missed"}]},
+	"ev_charlotte_alone": {"when": {"dayGte": 6, "phase": "morning", "noFlag": ["met_charlotte", "first_arc_done"]}, "title": "«Паровая птица», третья полоса", "text": "Шарлотта напечатала одиннадцать писем о «Нектаре» и «Экстазе» с примечанием: семья де ла Флёр на вопросы редакции не ответила. Флёру никто ничего не прислал. Номер ему отдал булочник вместе с хлебом.", "effects": [{"flag": ["first_arc_done", "slice_done", "article_without_fleur", "charlotte_alone", "homecoming_done"]}, {"add": ["rum_nectar_article", "loc_steambird", "loc_gardinage", "char_chevreuse"]}, {"relAdd": ["char_adrian", "Узнал из газеты"]}]},
+	"ev_charlotte_publishes_alone": {"when": {"flag": "met_charlotte", "noFlag": ["first_arc_done", "samples_left", "charlotte_alone"]}, "title": "Номер вышел без него", "text": "Шарлотта не стала ждать. В утреннем номере вышли одиннадцать писем о «Нектаре», без ответа семьи и без ссылки на младшего сына барона. На полях своего экземпляра, присланного с мальчиком, она написала одно слово: «Жаль».", "effects": [{"flag": ["first_arc_done", "slice_done", "article_without_fleur", "homecoming_done"]}, {"remove": "dl_article"}, {"relAdd": [["char_charlotte", "Не дождалась"], ["char_adrian", "Узнал из газеты"]]}], "manual": true},
+	"ev_premiere_eve_missed": {"when": {"dayGte": 20, "phase": "morning", "noFlag": "premiere_eve_seen"}, "logText": "Баржа на Берилл ушла вчера вечером. Кому Хэлси отдала лишний билет на премьеру, теперь уже не узнать.", "effects": [{"flag": "premiere_eve_missed"}, {"remove": "inv_halsey_barge"}]},
+	"ev_premiere_missed": {"when": {"dayGte": 21, "phase": "morning", "noFlag": "opera_arrived"}, "title": "Экстренный выпуск", "text": "На премьере Лини и Линетт под сценой погиб ассистент, зрительница из седьмого ряда исчезла из ящика прямо на глазах у зала. Госпожа Фурина обвинила иллюзиониста в похищениях девушек. Труппу заперли в «Эпиклезе», суд назначен через два дня. Флёр прочитал всё это за завтраком, как любой другой подписчик.", "effects": [{"flag": "premiere_missed"}, {"stamp": "premiere_missed"}, {"add": "rum_premiere_tragedy"}, {"remove": "it_halsey_ticket"}]},
+	"ev_trial_offstage": {"when": {"flag": "premiere_missed", "noFlag": "trial_done", "daysSince": ["premiere_missed", 2], "phase": "morning"}, "title": "Лини оправдан", "text": "Пропавшая зрительница нашлась живой: мондштадтская карманница пряталась в костюмерной. Ассистента погубила его собственная ловушка с водой Первозданного моря, а жандарм Вонн при всех признался, что действовал по приказу какого-то «босса». Навия Каспар, говорят, вытащила девушку из сундука за воротник. Шарлотта пишет, что настоящий похититель по-прежнему на свободе.", "effects": [{"flag": ["trial_done", "liliane_revealed", "vonn_exposed", "trial_offstage", "build_end"]}, {"add": "rum_primordial_water"}, {"event": "ev_sillage_open"}]},
+	"ev_sillage_offstage": {"when": {"flag": "build_end", "noFlag": ["sillage_filed", "sillage_verdict"], "daysSince": ["sillage_open", 16], "phase": "morning"}, "title": "Дело Вашера", "text": "Навия Каспар и путешественница принесли в «Эпиклез» дневник из подводной лаборатории. Человека, которого двадцать лет звали дядей Марселем, признали виновным в похищениях девушек и в смерти Калласа. В деле упомянута сухая камера, которую сдавал барон Адриан де ла Флёр. Ни одной фамилии из Берилла среди свидетелей не было.", "effects": [{"flag": ["sillage_verdict", "sillage_offstage"]}, {"stamp": "sillage_verdict"}, {"add": "rum_vacher_verdict"}]},
+	"ev_maison_assises_missed": {"when": {"flag": "sillage_verdict", "noFlag": "maison_sentenced", "daysSince": ["sillage_verdict", 6], "phase": "morning"}, "title": "Приговор дому де ла Флёр", "text": "Барону Адриану — девять месяцев в Меропиде, Луи-Марку — шесть недель, лицензия на вино отозвана. Матушка сидела в первом ряду одна, с пирогом в жестянке, который так никто и не съел. Ключ от конторы она передала через Жози, без записки.", "effects": [{"flag": ["maison_sentenced", "maison_assises_missed"]}, {"stamp": "maison_sentenced"}, {"relAdd": [["char_adrian", "Отбывает срок в Меропиде"], ["char_louis", "Шесть недель в Меропиде"], ["eloise", "Сидела в суде одна"], ["char_adrian", "Сын не пришёл на суд"]]}]},
+	"ev_maison_paie_missed": {"when": {"flag": "maison_sentenced", "noFlag": "maison_payroll", "daysSince": ["maison_sentenced", 4], "phase": "morning"}, "title": "Пятница в Берилле", "text": "В пятницу у отцовского кабинета стояла очередь, а за столом сидела Жози. Денег хватило не всем: бондарям она отдала свои серьги в залог у ростовщика в Берилле. Об этом Флёру написала не она, а вдова сторожа, крупными буквами и без подписи.", "effects": [{"flag": ["maison_payroll", "maison_payroll_missed"]}, {"relAdd": [["char_josie", "Расплатилась за него серьгами"]]}]},
+	"ev_charlotte_patience": {"when": {"dayGte": 14, "phase": "morning", "flag": "met_charlotte", "noFlag": ["first_arc_done", "samples_left"], "lacks": "dl_article"}, "title": "Шарлотта торопит", "text": "Мальчик из редакции принёс записку: «Редактор спрашивает, где материал о „Нектаре“. Я могу держать полосу ещё четыре дня. Потом печатаю письма как есть. Ш.»", "effects": [{"add": "dl_charlotte_patience"}]}
 }

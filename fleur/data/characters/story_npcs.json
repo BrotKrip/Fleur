@@ -384,6 +384,7 @@
 		"color": "#8a7a5a"
 	},
 	"npc_tenant_boy": {
+		"vn_scale": 0.75,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",
@@ -416,6 +417,7 @@
 		"color": "#8a7068"
 	},
 	"npc_poisson_granny": {
+		"vn_scale": 0.9,
 		"type": "person",
 		"look": "portrait",
 		"role": "episodic",

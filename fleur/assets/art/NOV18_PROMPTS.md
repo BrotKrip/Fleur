@@ -112,3 +112,7 @@ Edit target: the attached apartment. Make it a cramped modest two-room rented ho
 
 ### berill_ridge
 Edit target: the attached landscape. Move the viewpoint UP beyond the very last vineyard boundary onto a high dry exposed limestone hillside. Remove the foreground vineyard rows, cultivated stone lane and garden decoration. Foreground is windblown dry grass and pale exposed chalk rock. The essential feature is a series of enormous long regular curving white limestone ridges like gigantic fossil RIB BONES of a creature half buried under rolling hills. Make the curved ribs visually unmistakable but naturally embedded in earth, not a living skeleton. Far BELOW in the valley very small vineyard rows and manor roofs establish scale. Clear windy daytime. Retain the painterly hand-painted illustration style, warm ochre grass and cool sky, no buildings nearby, no figures, 16:9.
+
+## Дополнение
+
+Клери: взрослая брюнетка, сливовое платье, траурная лента, кий и мел. Сдержанная улыбка. Продавщица лент: взрослая рыжеволосая ремесленница, кирпичный лиф и бежевый фартук, лоток с катушками цветных лент. Обе — по технике characters/ref/seamstress.png, прозрачный фон, от головы до середины бедра.

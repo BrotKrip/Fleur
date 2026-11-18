@@ -62,13 +62,12 @@ func _go() -> void:
 		if vn.waiting == "choice":
 			(vn.choices.get_child(0) as Button).emit_signal("pressed")
 		else:
+			var figure: VNFigure = vn.figures.values()[0] if not vn.figures.is_empty() else null
+			var previous: Texture2D = figure.portrait if figure else null
 			vn._advance()
-			if not mood_shot and vn.figures.size() > 0:
-				var f = vn.figures.values()[0]
-				if f._blend < 1.0 and f._prev_portrait != null:
-					mood_shot = true
-					await wait(0.08)
-					await shot("4_mood_midblend")
+			if not mood_shot and is_instance_valid(figure) and previous != null and figure.portrait != previous:
+				mood_shot = true
+				await shot("4_mood_change")
 		await get_tree().process_frame
 	await wait(0.4)
 	await shot("5_italic_line")

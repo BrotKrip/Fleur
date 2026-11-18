@@ -50,18 +50,20 @@ func set_mood(m: String) -> void:
 
 func set_look(value: String) -> void:
 	look = value
-	_update_portrait()
+	_update_portrait(true)
 
 
-func _update_portrait() -> void:
+func _update_portrait(blend_look := false) -> void:
 	var tex := Art.portrait(pid, mood, look)
 	if tex == portrait:
 		return
-	_prev_portrait = portrait
+	# При смене эмоции сразу рисуем одно лицо: у двух выражений веки могут не совпасть.
+	_prev_portrait = portrait if blend_look and tex != null else null
 	_prev_pose_y = _pose_y
 	portrait = tex
 	_pose_y = _portrait_offset()
-	_blend = 0.0
+	_blend = 0.0 if _prev_portrait else 1.0
+	queue_redraw()
 
 
 func _portrait_offset() -> float:
@@ -96,7 +98,7 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if portrait:
 		var breath_offset := sin(_t * 1.4) * 1.3
-		# Смена эмоции: прежняя поза остаётся непрозрачной под новой, новая проявляется поверх.
+		# Смена образа: прежняя поза остаётся непрозрачной под новой, новая проявляется поверх.
 		# Если гасить обе одновременно, на середине фигура просвечивает и «моргает».
 		if _prev_portrait and _blend < 1.0:
 			var fade_out := clampf((1.0 - _blend) * 3.0, 0.0, 1.0)

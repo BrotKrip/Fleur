@@ -432,5 +432,61 @@
 		"title": "Посетительница парикмахерской",
 		"text": "Высовывается из двери, чтобы задать самый неудобный вопрос.",
 		"color": "#a0808a"
+	},
+	"npc_neighbor": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Сосед с бельэтажа",
+		"text": "Щурится на мелкие буквы и покупает вино к именинам.",
+		"color": "#8a7a6a"
+	},
+	"npc_neighbor_wife": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Соседка с бельэтажа",
+		"text": "Первым делом хочет знать, кому уже отдала бутылку.",
+		"color": "#8a7a6a"
+	},
+	"npc_aurelie_uncle": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Дядя Орели",
+		"text": "Молчаливый стекольщик. За день говорит одну фразу, и та про лягушек.",
+		"color": "#8a7a6a"
+	},
+	"npc_widower": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Вдовец",
+		"text": "Тот самый человек, который говорил в лавке, что его послала жена. Ставит чайник раньше, чем прощает.",
+		"color": "#8a7a6a"
+	},
+	"npc_clorinde_pupil": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Бледный ученик",
+		"text": "Новичок у Клоринды. Смотрит на улыбку соперника, а надо на кисть.",
+		"color": "#8a7a6a"
+	},
+	"npc_clorinde_pupil2": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Ученик в веснушках",
+		"text": "Новичок у Клоринды. Говорит «в конце» и сразу понимает, что моет пол.",
+		"color": "#8a7a6a"
+	},
+	"npc_bourdieu_wife": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Госпожа Бурдье",
+		"text": "Шьёт флажки сама и считает стулья так, будто платит за каждый.",
+		"color": "#8a7a6a"
 	}
 }

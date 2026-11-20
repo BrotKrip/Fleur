@@ -1,5 +1,7 @@
 {
 	"backgrounds": {
+		"meropide_office": "stage_tunnel",
+		"meropide_infirmary": "cellar",
 		"menu": "night_quay",
 		"magic_poster": {"day": "passage", "evening": "passage_night", "night": "passage_night"},
 		"cafe_notebook": "cafe",
@@ -49,6 +51,7 @@
 		"mermonia": "palace"
 	},
 	"locations": {
+		"loc_meropide": "stage_tunnel",
 		"loc_apartment": {"day": "apartment_day", "evening": "apartment_night", "night": "apartment_night"},
 		"loc_vasari": {"day": "passage", "evening": "passage_night", "night": "passage_night"},
 		"loc_lutes": "cafe",
@@ -95,6 +98,32 @@
 		"poisson": "il_nome_della_rosula",
 		"mermonia_exterior": "le_spectacle",
 		"mermonia": "le_spectacle",
-		"morte": "ballad_of_many_waters"
+		"morte": "ballad_of_many_waters",
+		"steambird": "city_of_mellifluous_glory",
+		"tiori": "city_of_mellifluous_glory",
+		"apartment": "leisurely_days",
+		"valentine_office": "leisurely_days",
+		"practice": "roses_and_muskets",
+		"apartment_night": "quand_la_lumiere",
+		"apartment_evening": "que_le_vent_soit_doux",
+		"gardinage": "harmonia_of_polysynodie",
+		"epiclese_court": "harmonia_of_polysynodie",
+		"perfume_shop": "langage_des_fleurs",
+		"opera_backstage": "surging_reminiscence",
+		"opera_tunnel": "surging_reminiscence",
+		"apartment_rain": "surging_reminiscence",
+		"vasari_rain": "lumidouces_repose",
+		"docks_night": "lumidouces_repose",
+		"warehouse": "rotating_realm",
+		"meropide_office": "rotating_realm",
+		"meropide_infirmary": "rotating_realm",
+		"h_navia_bed_foreplay": "quand_la_lumiere",
+		"h_navia_bed_sex": "quand_la_lumiere",
+		"h_clorinde_bed_foreplay": "quand_la_lumiere",
+		"h_clorinde_bed_sex": "quand_la_lumiere",
+		"h_chevreuse_office_desk": "que_le_vent_soit_doux",
+		"h_chevreuse_office_oral": "que_le_vent_soit_doux",
+		"h_adele_attic_foreplay": "que_le_vent_soit_doux",
+		"h_adele_attic_sex": "que_le_vent_soit_doux"
 	}
 }

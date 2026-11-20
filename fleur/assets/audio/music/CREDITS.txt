@@ -67,3 +67,45 @@ https://support.hoyoverse.com/hc/en-us/articles/50333834244633-Can-I-use-in-game
 Девять звуков созданы специально для игры с помощью синтеза резонансов, шума и коротких отражений. В записях представлены театральный звонок (opera_call), обрушение резервуара (tank_collapse), пробирка на полу (vial_roll), аплодисменты на галерее (gallery_applause), стук по подводной решётке (dive_knock), чайная струя (tea_pour), чашка на блюдце (cup_saucer), вязальные спицы за дверью (knitting_needles) и витражное стекло в раме (stained_glass).
 
 Звуки катушки, обрыва троса, удара в борт и всплеска сделаны для лодки в акватории Морт. В их основе синтез резонанса дерева, трения волокон и движения воды. Атмосферы суда, закулисья, тоннеля под сценой, бара «Дебора» и семейного подводного склада также созданы для игры. Это стереопетли длиной от 53 до 63 секунд.
+
+Ещё девять записей с официальных фонтейнских веб-страниц Genshin Impact (HOYO-MiX, HoYoverse, 2023–2024)
+
+Фоновая музыка страниц веб-событий. Названия треков и альбомы сверены с вики игры. В игре они звучат в стерео, в Ogg Vorbis, с громкостью, выровненной под остальные записи (−17,5 LUFS). Rotating Realm и Lumidouce's Repose — короткие петли без затухания, они повторяются без паузы.
+
+City of Mellifluous Glory — Fountain of Belleau. Редакция «Пароптицы», ателье Тиори.
+city_of_mellifluous_glory.ogg
+https://act.hoyoverse.com/ys/event/e20231003ost/sounds/6.mp3
+
+Leisurely Days in Fontaine — Fountain of Belleau. Квартира днём, кабинет Валентайна.
+leisurely_days.ogg
+https://act.hoyoverse.com/ys/event/e20240531clorinde-5k96dd/medias/bgm.2a856d02..mp3
+
+Quand la lumière resplendira — Fountain of Belleau. Квартира ночью, сцены близости в спальне.
+quand_la_lumiere.ogg
+https://act.hoyoverse.com/ys/event/e20231103furina/medias/bgm.44d3e533..mp3
+
+Harmonia of Polysynodie — Fountain of Belleau. Гардинаж, зал суда вне заседаний.
+harmonia_of_polysynodie.ogg
+https://act.hoyoverse.com/ys/event/e20230922neuvillette/medias/bgm.14384cd8..mp3
+
+Que le vent soit doux — Fountain of Belleau. Квартира вечером, сцены близости в кабинете и на чердаке.
+que_le_vent_soit_doux.ogg
+https://act.hoyoverse.com/ys/event/e20240429business-ad4okq/medias/bg.0f11640a..mp3
+
+Langage des fleurs — Fountain of Belleau. Парфюмерная лавка.
+langage_des_fleurs.ogg
+https://act.hoyoverse.com/ys/event/e20240118brush-u4b6my/medias/bg_6.2dd2ff65..mp3
+
+Surging Reminiscence — Fountain of Belleau. Закулисье оперы, тоннель под сценой, дождь за окном квартиры.
+surging_reminiscence.ogg
+https://act.hoyoverse.com/ys/event/e20240118brush-u4b6my/medias/bg_3.b2207d80..mp3
+
+Lumidouce's Repose — Pelagic Primaevality. Вазари под дождём, ночные причалы.
+lumidouces_repose.ogg
+https://act.hoyoverse.com/ys/event/e20240710perfume-f65h6y/medias/bg.abefb73c..mp3
+
+The Rotating Realm — Pelagic Primaevality. Склад, Меропид, схватка на причалах.
+rotating_realm.ogg
+https://act.hoyoverse.com/ys/event/e20240118brush-u4b6my/medias/bg_4.c17147fe..mp3
+
+Остальные дуэли идут под Roses and Muskets.

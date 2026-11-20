@@ -75,11 +75,41 @@ func _ready() -> void:
 	add_child(music)
 	ambience.setup(&"Ambience", -3.5, 0.9, false)
 	music.setup(&"Music", -12.0, 1.6, true)
+	# Записи короткие (1,5–3 минуты), а сцена идёт дольше: после конца — пауза и повтор.
+	for player in music.players:
+		player.finished.connect(_music_finished.bind(player))
 	for i in VOICES:
 		var player := AudioStreamPlayer.new()
 		player.bus = &"Effects"
 		add_child(player)
 		effects.append(player)
+
+
+## Трек доиграл: немного тишины, затем он же снова, с мягким нарастанием.
+## Если за паузу сцена сменила музыку или выключила её, повтора не будет.
+## Пауза пропорциональна длине: у тридцатисекундной петли — пара секунд, у трёхминутной — до 16.
+const MUSIC_GAP := Vector2(0.08, 0.12)
+const MUSIC_GAP_MAX := 16.0
+const MUSIC_RETURN := 3.0
+## Короткие петли веб-страниц без затухания в конце: повторяются без шва и без паузы.
+const SEAMLESS := ["rotating_realm", "lumidouces_repose"]
+
+func _music_finished(player: AudioStreamPlayer) -> void:
+	if closing or player != music.selected:
+		return
+	var id := music.id
+	var length := player.stream.get_length() if player.stream else 120.0
+	var gap := minf(length * variation.randf_range(MUSIC_GAP.x, MUSIC_GAP.y), MUSIC_GAP_MAX)
+	await get_tree().create_timer(maxf(gap, 2.0)).timeout
+	if closing or music.id != id or music.selected != player or player.playing:
+		return
+	music.bookmarks.erase(id)
+	player.volume_linear = 0.0
+	player.play()
+	if music.fade:
+		music.fade.kill()
+	music.fade = create_tween()
+	music.fade.tween_property(player, "volume_linear", music.gain, MUSIC_RETURN)
 
 
 func stop_all() -> void:
@@ -115,7 +145,7 @@ func _stream(folder: String, id: String, extension: String) -> AudioStream:
 	if not streams.has(path):
 		var stream: AudioStream = load(path)
 		if stream is AudioStreamOggVorbis:
-			stream.loop = folder == "ambience"
+			stream.loop = folder == "ambience" or (folder == "music" and id in SEAMLESS)
 		streams[path] = stream
 	return streams[path]
 

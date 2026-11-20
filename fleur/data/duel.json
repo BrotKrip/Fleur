@@ -804,6 +804,7 @@
 			}
 		},
 		"docks_street": {
+			"music": "rotating_realm",
 			"title": "Схватка на причалах",
 			"context": "street",
 			"bg": "docks",

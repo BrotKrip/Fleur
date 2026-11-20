@@ -1934,7 +1934,7 @@ func _process(delta: float) -> void:
 
 
 func _over_hud(sp: Vector2) -> bool:
-	if Game.main.has_overlay():
+	if Game.main and Game.main.has_overlay():
 		return true
 	for layer in [sheet_layer, note_layer]:
 		for c in layer.get_children():

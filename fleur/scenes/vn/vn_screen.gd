@@ -709,7 +709,7 @@ func _process(delta: float) -> void:
 
 
 func _skipping() -> bool:
-	if ui_hidden or Game.main.has_overlay():
+	if ui_hidden or (Game.main and Game.main.has_overlay()):
 		return false
 	return skip_on or Input.is_key_pressed(KEY_CTRL)
 

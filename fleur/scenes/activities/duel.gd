@@ -499,7 +499,8 @@ func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	var background := str(eng.def.get("bg", "practice"))
 	var phase := Rules.phase_key(Game.state)
-	Sound.environment("backgrounds", background, phase, "", "off")
+	# У дуэли своя музыка: поле "music" в duel.json, иначе фехтовальная тема Клоринды.
+	Sound.environment("backgrounds", background, phase, "", str(eng.def.get("music", "roses_and_muskets")))
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	bg_rect = TextureRect.new()

@@ -1,0 +1,25 @@
+Built-in image_gen через Codex CLI (2026-11-20). Источники: data/characters/story_npcs.json и сцены aurelie_window, hat_trick_evening, city_clorinde_lesson, article_deadline, charlotte_mistake. Образцы стиля: npc_laurent.png, npc_odette.png.
+
+Общая часть каждого запроса:
+Use case: illustration-story. A single cutout dialogue sprite in an illustrated visual novel set in the Belle Époque fantasy city of Fontaine. Match the attached reference sprites exactly in rendering style: refined anime game art, fine ink contours, clear cel shadows, natural anatomy, controlled highlights, attention to fabric and an expressive individual face. Eye-level three-quarter conversational portrait framed from head to mid-thigh. Center the figure on a portrait 2:3 canvas with room around hair and elbows. Genuinely transparent PNG background. No floor, scenery, cast shadow, text, labels, watermarks or framing. Neutral, calm conversational expression (other emotions are made later as face edits).
+
+npc_aurelie_uncle
+A silent, broad-shouldered stained-glass craftsman in his mid fifties, uncle of a young glass restorer. Big calm hands, a heavy build, close-cropped graying chestnut hair, thick brows, a short neat grey-brown beard, patient deep-set gray eyes. Rolled-up linen shirt sleeves, a worn dark leather work apron over a faded brown waistcoat, a pencil behind one ear, a small soft cloth hanging from the apron pocket. Holds a small diamond-shaped piece of violet glass between two fingers at chest height, studying it. Quiet, unhurried, kind; says almost nothing.
+
+npc_bourdieu_wife
+Madame Bourdieu, about forty-five, wife of a cloth merchant who organises a small open-air evening. A practical, sharp-eyed bourgeoise who counts every chair as if she paid for it. Plump-cheeked, dark auburn hair pinned up firmly under a small modest bonnet, shrewd brown eyes, thin pursed lips. A dark plum day dress of good but sensible wool with a white lace collar, a small brooch, sleeves pushed slightly up from work. Holds a short string of hand-sewn triangular bunting flags folded over one arm. Brisk, capable, unimpressed.
+
+npc_clorinde_pupil
+A pale, thin youth of about seventeen, a beginner fencing student. Fair straight hair falling over the forehead, light gray-blue eyes, a long nervous neck, serious earnest face. White padded fencing jacket buttoned to the side, slightly too big for him, dark breeches, a practice foil held point-down at his side in a careful, correct grip. Attentive and a little anxious, eager to answer well.
+
+npc_clorinde_pupil2
+A sturdy, cheerful youth of about sixteen, a beginner fencing student. Messy copper-red curly hair, a round face covered in freckles, bright green eyes, a quick grin he is trying to suppress. White padded fencing jacket with a smudge on the sleeve, dark breeches, a practice mask tucked under one arm. Talks before he thinks.
+
+npc_neighbor
+An elderly neighbour from the first floor of a Fontaine apartment house, about seventy. Short, round-shouldered, kind, wispy white hair around a bald crown, a bushy white moustache, small gold reading glasses pushed down his nose that he squints over. A brown cardigan over a striped shirt with sleeve garters, slippers implied by the homely look. Holds a folded newspaper at arm's length, peering at its small print.
+
+npc_neighbor_wife
+His wife, about sixty-eight, the practical one of the couple. Neat silver-gray hair in a low bun, warm hazel eyes, a lined, lively, curious face. A dark green house dress with a cream crocheted shawl, a simple apron, a small wooden pencil tucked into the apron string. Holds a dark green wine bottle against her waist. Curious, talkative, generous.
+
+npc_widower
+A widower of about sixty from a quiet Fontaine street, gentle and worn down by grief but not broken. Tall and slightly stooped, thinning gray hair combed back carefully, a clean-shaven tired face, kind pale blue eyes with heavy lids, deep lines around the mouth. A neat but old dark gray waistcoat over a white shirt buttoned to the collar without a tie, a black mourning band on the left sleeve. Holds a small enamel kettle by its handle at his side. Reserved, polite, quietly hospitable.

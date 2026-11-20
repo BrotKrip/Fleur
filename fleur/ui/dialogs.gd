@@ -64,7 +64,7 @@ static func settings() -> void:
 		var label := Label.new()
 		label.theme_type_variation = "Ink"
 		label.text = caption
-		label.custom_minimum_size = Vector2(200, 30)
+		label.custom_minimum_size = Vector2(236, 30)   # по самой длинной подписи: ползунки встают в один столбец
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		row.add_child(label)
 		slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL

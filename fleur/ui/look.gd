@@ -22,11 +22,39 @@ static var _fonts := {}
 static var _theme: Theme
 
 
+## Шрифты игры лежат в assets/fonts (SIL OFL), подробности в assets/fonts/README.md.
+## Literata — весь читаемый текст (её делали для долгого чтения с экрана);
+## EB Garamond («display») — только заголовки, имена и названия мест;
+## Fleur Hand (Marck Script) — короткие рукописные пометки. Системные шрифты — запас для редких знаков.
+const FONT_FILES := {
+	"serif": ["Literata.ttf", 0], "serif_bold": ["Literata.ttf", 640],
+	"serif_italic": ["Literata-Italic.ttf", 0], "hand": ["FleurHand.ttf", 0],
+	"display": ["EBGaramond.ttf", 0], "display_bold": ["EBGaramond.ttf", 640],
+	"display_italic": ["EBGaramond-Italic.ttf", 0],
+}
+
+
 static func font(kind: String) -> Font:
 	if _fonts.has(kind):
 		return _fonts[kind]
+	if FONT_FILES.has(kind):
+		var path := "res://assets/fonts/" + str(FONT_FILES[kind][0])
+		if ResourceLoader.exists(path):
+			var v := FontVariation.new()
+			v.base_font = load(path)
+			var weight := int(FONT_FILES[kind][1])
+			if weight > 0:
+				v.variation_opentype = {TextServerManager.get_primary_interface().name_to_tag("wght"): weight}
+			v.fallbacks = [_system(kind)]
+			_fonts[kind] = v
+			return v
+	_fonts[kind] = _system(kind)
+	return _fonts[kind]
+
+
+static func _system(kind: String) -> Font:
 	var f := SystemFont.new()
-	match kind:
+	match kind.replace("display", "serif"):
 		"serif":
 			f.font_names = PackedStringArray(["Georgia", "Palatino Linotype", "Book Antiqua", "Times New Roman"])
 		"serif_bold":
@@ -42,7 +70,6 @@ static func font(kind: String) -> Font:
 		_:
 			f.font_names = PackedStringArray(["Segoe UI", "Arial"])
 	f.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
-	_fonts[kind] = f
 	return f
 
 
@@ -77,11 +104,13 @@ static func theme() -> Theme:
 	t.set_font_size("font_size", "InkSoft", 16)
 	t.set_type_variation("Hand", "Label")
 	t.set_color("font_color", "Hand", Color("2d3a5a"))
-	t.set_font("font", "Hand", font("hand"))
-	t.set_font_size("font_size", "Hand", 17)
+	# Пометки чернилами в листах — это целые фразы, их читают: прямой книжный шрифт,
+	# а «рукописность» передаёт синий цвет чернил. Рукописный шрифт — для коротких надписей.
+	t.set_font("font", "Hand", font("serif"))
+	t.set_font_size("font_size", "Hand", 16)
 	t.set_type_variation("InkTitle", "Label")
 	t.set_color("font_color", "InkTitle", INK)
-	t.set_font("font", "InkTitle", font("serif_bold"))
+	t.set_font("font", "InkTitle", font("display_bold"))
 	t.set_font_size("font_size", "InkTitle", 26)
 	t.set_type_variation("Kicker", "Label")
 	t.set_color("font_color", "Kicker", Color(0.45, 0.36, 0.27))
@@ -149,6 +178,7 @@ static func theme() -> Theme:
 		m.set_content_margin_all(6)
 		t.set_stylebox(st, "MenuItem", m)
 	t.set_font_size("font_size", "MenuItem", 30)
+	t.set_font("font", "MenuItem", font("display"))
 	t.set_color("font_color", "MenuItem", Color("d8ccb4"))
 	t.set_color("font_hover_color", "MenuItem", Color("f3d98c"))
 	t.set_color("font_pressed_color", "MenuItem", GOLD)

@@ -101,15 +101,38 @@ static func nameplate(c: Control) -> void:
 	c.draw_line(Vector2(6, c.size.y - 4), Vector2(c.size.x - 6, c.size.y - 4), Color(BRASS, 0.36), 1.0)
 
 
+static var _haze: GradientTexture2D
+
+
+## Мягкое тёмное пятно с растушёванными краями — подложка под надписью поверх фона.
+static func haze() -> GradientTexture2D:
+	if _haze == null:
+		var g := Gradient.new()
+		g.set_color(0, Color(0.02, 0.07, 0.09, 0.78))
+		g.set_color(1, Color(0.02, 0.07, 0.09, 0.0))
+		g.add_point(0.55, Color(0.02, 0.07, 0.09, 0.42))
+		_haze = GradientTexture2D.new()
+		_haze.gradient = g
+		_haze.fill = GradientTexture2D.FILL_RADIAL
+		_haze.fill_from = Vector2(0.5, 0.5)
+		_haze.fill_to = Vector2(1.0, 0.5)
+		_haze.width = 256
+		_haze.height = 64
+	return _haze
+
+
+## Название места: надпись на растушёванной тени и латунная линейка, гаснущая вправо.
 static func location(c: Control) -> void:
-	var r := Rect2(Vector2.ZERO, c.size)
 	if c.size.x < 30:
 		return
-	var points := PackedVector2Array([r.position, Vector2(r.end.x, 0), r.end, Vector2(0, r.end.y)])
-	c.draw_polygon(points, PackedColorArray([Color("0b202bea"), Color("0b202b5c"), Color("0b202b5c"), Color("0b202bea")]))
-	c.draw_line(Vector2(0, 1), Vector2(0, c.size.y - 1), BRASS, 2.0)
-	c.draw_line(Vector2(1, c.size.y - 1), Vector2(minf(64, c.size.x), c.size.y - 1), Color(BRASS, 0.6), 1.0, true)
-	_diamond(c, Vector2(10, c.size.y * 0.5), Vector2(2.4, 4.0), Color(PALE_BRASS, 0.85))
+	var w := c.size.x
+	var h := c.size.y
+	c.draw_texture_rect(haze(), Rect2(-70, -24, w + 150, h + 40), false)
+	var y := h - 3.0
+	c.draw_polyline_colors(PackedVector2Array([Vector2(24, y), Vector2(24 + (w - 24) * 0.55, y), Vector2(w + 30, y)]),
+			PackedColorArray([Color(BRASS, 0.9), Color(BRASS, 0.55), Color(BRASS, 0.0)]), 1.2, true)
+	_diamond(c, Vector2(13, y), Vector2(5.5, 3.2), PALE_BRASS)
+	_diamond(c, Vector2(13, y), Vector2(2.4, 1.4), Color("173238"))
 
 
 static func choice_badge(c: Button, index: int, paper: Texture2D) -> void:

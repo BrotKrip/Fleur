@@ -38,6 +38,45 @@ func _go() -> void:
 	await wait(1.5)
 	await shot("1_table_day1")
 	var ts = Game.main.screen
+	if "--deskonly" in OS.get_cmdline_user_args():
+		# Только стол: обычный вид и общий план всего стола.
+		ts.focus_rect(Rect2(Vector2.ZERO, ts.WORLD), 1.0, true)
+		await wait(2.0)
+		await shot("1b_table_overview")
+		# Камера как у игрока: отдаление до упора, приближение и сдвиги к краям стола.
+		var views := [["2a_zoom_min", ts.zoom_min(), ts.WORLD / 2.0], ["2b_zoom_max", ts.ZOOM_MAX, ts.WORLD / 2.0],
+			["2c_pan_tl", 1.0, Vector2.ZERO], ["2d_pan_tr", 1.0, Vector2(ts.WORLD.x, 0)],
+			["2e_pan_bl", 1.0, Vector2(0, ts.WORLD.y)], ["2f_pan_br", 1.0, ts.WORLD],
+			["2g_max_tl", ts.ZOOM_MAX, Vector2.ZERO], ["2h_min_br", ts.zoom_min(), ts.WORLD]]
+		for v in views:
+			ts._user_cam_time = ts._clock
+			ts.zoom_target = v[1]
+			ts.cam_target = v[2]
+			ts._anchored = false
+			ts._clamp_camera()
+			await wait(1.6)
+			await shot(v[0])
+		# Переезд из левого верхнего угла в правый нижний с отдалением: кадры на ходу.
+		ts.zoom_target = ts.ZOOM_MAX
+		ts.cam_target = Vector2.ZERO
+		ts._clamp_camera()
+		await wait(1.6)
+		ts.zoom_target = ts.zoom_min()
+		ts.cam_target = ts.WORLD
+		ts._smooth = 0.55
+		ts._clamp_camera()
+		for k in 3:
+			await wait(0.18)
+			await shot("3_motion_%d" % k)
+		ts._home_camera(true)
+		# Вечер.
+		Game.state["phase"] = 2
+		ts._apply_light(true)
+		ts.focus_rect(Rect2(0, 760, 900, 520), 1.0, true)
+		await wait(2.0)
+		await shot("1c_table_evening")
+		get_tree().quit()
+		return
 	# Разговор в «Лютесе»: собеседник рядом один — ложится в ячейку сам.
 	ts._travel("loc_lutes")
 	await wait(0.4)
@@ -79,5 +118,27 @@ func _go() -> void:
 	vn._toggle_skip()
 	await wait(0.5)
 	await shot("7_skipping")
+	# Поединок: рука приёмов после вступления (длинные названия в шапке карты).
+	if is_instance_valid(vn):
+		vn.skip_button.button_pressed = false
+		vn._toggle_skip()
+	Game.main.close_all_overlays()
+	await wait(0.6)
+	while Game.main._busy:
+		await wait(0.1)
+	Game.enter_activity({"id": "duel", "params": {"duel": "lamotte_honor"}})
+	for k in 60:
+		await wait(0.1)
+		if "duel_id" in Game.main.screen:
+			break
+	await wait(2.6)   # заголовок на затемнении успевает погаснуть
+	var duel = Game.main.screen
+	await shot("8_duel_intro")
+	if duel.overlay:
+		duel.overlay.queue_free()
+		duel.overlay = null
+	duel._begin()
+	await wait(2.5)
+	await shot("9_duel_hand")
 	print("UISHOT done")
 	get_tree().quit()

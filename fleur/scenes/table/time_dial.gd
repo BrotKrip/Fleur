@@ -7,7 +7,7 @@ signal wait_requested
 
 const PHASE_ANGLES := [-PI * 0.75, -PI * 0.25, PI * 0.25, PI * 0.75]
 const CLOCK_CENTER := Vector2(100, 105)
-const CALENDAR := Rect2(194, 32, 94, 121)
+const CALENDAR := Rect2(218, 38, 94, 121)
 const WEEKDAYS := ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
 
 var hand_angle := 0.0
@@ -20,7 +20,7 @@ var _calendar: Texture2D
 func _ready() -> void:
 	_clock = Art.prop("desk_chronometer")
 	_calendar = Art.prop("desk_calendar")
-	size = Vector2(290, 210)
+	size = Vector2(316, 210)
 	texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND

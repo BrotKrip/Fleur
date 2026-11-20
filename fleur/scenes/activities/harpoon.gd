@@ -6,9 +6,36 @@ extends Control
 ## У твари есть фазы: кружение, таран с замахом, удар хвостом, уход на глубину (срывает гарпун), бегство.
 ## Интерфейс активности: setup(params, queue_item), get_title(); по окончании — Game.finish_activity().
 
+const Regalia = preload("res://ui/regalia.gd")
+
 const W := 1280.0
 const H := 720.0
 const WALL := 70.0                # у верхнего края — южная стена города
+const ACTIVITY_ART := "res://assets/art/activities/"
+const INSTRUMENT := Color("091a22")
+const BRASS_LIGHT := Color("cfb481")
+const HUD_INK := Color("e5e0d2")
+const SEA_GLASS := Color("95bbb9")
+const RAY_RECT := Rect2(-164, -122, 270, 244)
+const PART_LABELS := {"plate": "Щиток", "wing_l": "Л. крыло", "wing_r": "П. крыло", "tail": "Хвост"}
+const HARPOON_LABELS := {
+	"ready": "Готов", "charging": "Заряжается", "flying": "Летит",
+	"attached": "Держит", "returning": "Возвращается", "cooldown": "Перезарядка",
+}
+
+# Границы на спрайте идут по сочленениям. Каждая часть может мигать и отделяться.
+const RAY_REGIONS := {
+	"body": [Vector2(-52, -12), Vector2(-62, -20), Vector2(-35, -32), Vector2(15, -36),
+		Vector2(58, -27), Vector2(50, 0), Vector2(58, 27), Vector2(15, 36),
+		Vector2(-35, 32), Vector2(-62, 20), Vector2(-52, 12)],
+	"plate": [Vector2(58, -27), Vector2(106, -27), Vector2(106, 27), Vector2(58, 27), Vector2(50, 0)],
+	"tail": [Vector2(-164, -24), Vector2(-62, -20), Vector2(-52, -12), Vector2(-52, 12),
+		Vector2(-62, 20), Vector2(-164, 24)],
+	"wing_l": [Vector2(-164, -122), Vector2(106, -122), Vector2(106, -27), Vector2(58, -27),
+		Vector2(15, -36), Vector2(-35, -32), Vector2(-62, -20), Vector2(-164, -24)],
+	"wing_r": [Vector2(-164, 24), Vector2(-62, 20), Vector2(-35, 32), Vector2(15, 36),
+		Vector2(58, 27), Vector2(106, 27), Vector2(106, 122), Vector2(-164, 122)],
+}
 
 # Лодка
 const BOAT_ACCEL := 900.0
@@ -58,9 +85,14 @@ var spear_cd := 0.0
 var _shake_off := Vector2.ZERO
 
 var stage: Control
+var heading: Label
 var hint: Label
 var end_panel: PanelContainer
 var retreat_btn: Button
+var water_texture: Texture2D
+var boat_texture: Texture2D
+var ray_texture: Texture2D
+var ray_uvs := {}
 
 
 func setup(p: Dictionary, queue_item: Dictionary) -> void:
@@ -83,6 +115,7 @@ func get_title() -> String:
 
 func _ready() -> void:
 	Sound.environment("backgrounds", "morte", Rules.phase_key(Game.state))
+	_prepare_art()
 	boat = {"pos": Vector2(W / 2, H - 140), "vel": Vector2.ZERO, "rot": -PI / 2, "hp": 3, "invuln": 0.0, "dash": 3, "dash_t": 0.0}
 	harpoon = {"state": "ready", "pos": Vector2.ZERO, "vel": Vector2.ZERO, "charge": 0.0, "part": "", "local": Vector2.ZERO, "dist": 0.0, "cd": 0.0}
 	var sc := 1.3 if big else 1.0
@@ -101,18 +134,27 @@ func _ready() -> void:
 	}
 
 	var bgc := ColorRect.new()
-	bgc.color = Color("061018")
+	bgc.color = Color("07151f")
 	bgc.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bgc)
+	heading = Label.new()
+	heading.text = get_title()
+	heading.add_theme_font_override("font", Look.font("display_bold"))
+	heading.add_theme_font_size_override("font_size", 36)
+	heading.add_theme_color_override("font_color", HUD_INK)
+	heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(heading)
 	hint = Label.new()
-	hint.text = "WASD — лодка · Пробел — рывок · ЛКМ — пики · ПКМ: зажать и отпустить — гарпун, нажать ещё раз — рвануть трос · Временный режим"
-	hint.position = Vector2(30, 16)
-	hint.add_theme_font_size_override("font_size", 16)
-	hint.add_theme_color_override("font_color", Color("cdbf9f"))
+	hint.text = "WASD — лодка    Пробел — рывок    ЛКМ — пики    ПКМ — зарядить и бросить гарпун · повторно — дёрнуть трос"
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.add_theme_font_size_override("font_size", 15)
+	hint.add_theme_color_override("font_color", SEA_GLASS)
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(hint)
 	stage = Control.new()
 	stage.mouse_filter = Control.MOUSE_FILTER_STOP
 	stage.clip_contents = true
+	stage.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	stage.draw.connect(_draw_stage)
 	stage.gui_input.connect(_stage_input)
 	add_child(stage)
@@ -130,6 +172,22 @@ func _ready() -> void:
 	_layout()
 
 
+func _prepare_art() -> void:
+	water_texture = _activity_texture("harpoon_water.webp")
+	boat_texture = _activity_texture("harpoon_boat.png")
+	ray_texture = _activity_texture("harpoon_ray.png")
+	for key in RAY_REGIONS:
+		var uvs := PackedVector2Array()
+		for point: Vector2 in RAY_REGIONS[key]:
+			uvs.append((point - RAY_RECT.position) / RAY_RECT.size)
+		ray_uvs[key] = uvs
+
+
+func _activity_texture(file: String) -> Texture2D:
+	var path := ACTIVITY_ART + file
+	return load(path) as Texture2D if ResourceLoader.exists(path) else null
+
+
 func _part(name: String, off: Vector2, r: float, hp: float, armored: bool, loot: String) -> Dictionary:
 	return {"name": name, "off": off, "r": r, "hp": hp, "max": hp, "armored": armored, "loot": loot,
 		"broken": false, "ripped": false, "hit": 0.0}
@@ -137,11 +195,18 @@ func _part(name: String, off: Vector2, r: float, hp: float, armored: bool, loot:
 
 func _layout() -> void:
 	var s := size if size.x > 10 else get_viewport_rect().size
-	var k := minf((s.x - 60) / W, (s.y - 110) / H)
+	var k := maxf(0.05, minf((s.x - 60) / W, (s.y - 128) / H))
 	stage.size = Vector2(W, H)
 	stage.scale = Vector2(k, k)
-	stage.position = Vector2((s.x - W * k) / 2, 48)
-	retreat_btn.position = Vector2(stage.position.x + W * k - 130, stage.position.y + H * k + 8)
+	stage.position = Vector2((s.x - W * k) / 2, 62)
+	heading.position = Vector2(stage.position.x, 7)
+	var footer_y := stage.position.y + H * k + 10
+	retreat_btn.reset_size()
+	retreat_btn.position = Vector2(stage.position.x + W * k - retreat_btn.size.x, footer_y)
+	hint.position = Vector2(stage.position.x, footer_y + 9)
+	hint.size.x = maxf(1.0, retreat_btn.position.x - hint.position.x - 20)
+	if end_panel.visible:
+		end_panel.position = (s - end_panel.size) / 2
 
 
 func on_escape() -> void:
@@ -702,6 +767,8 @@ func _end(outcome: String) -> void:
 		sl.custom_minimum_size.x = 440
 		sl.text = ended["summary"]
 		v.add_child(sl)
+	if not loot.is_empty():
+		v.add_child(_loot_grid(loot))
 	var b := Button.new()
 	b.text = "Вернуться на причал"
 	b.pressed.connect(func():
@@ -713,49 +780,120 @@ func _end(outcome: String) -> void:
 	end_panel.position = (size - end_panel.size) / 2
 
 
+func _loot_grid(loot: Array) -> Control:
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 5)
+	var counts := {}
+	for id in loot:
+		counts[id] = int(counts.get(id, 0)) + 1
+	for id in counts:
+		var row := HBoxContainer.new()
+		row.custom_minimum_size.x = 215
+		row.add_theme_constant_override("separation", 7)
+		var icon := TextureRect.new()
+		icon.texture = Art.prop(id)
+		icon.custom_minimum_size = Vector2(42, 38)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(icon)
+		var label := Label.new()
+		label.theme_type_variation = "InkSoft"
+		label.add_theme_font_size_override("font_size", 13)
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.text = str(Content.def(id).get("title", id))
+		if counts[id] > 1:
+			label.text += " ×%d" % counts[id]
+		row.add_child(label)
+		grid.add_child(row)
+	return grid
+
+
 # ---------------------------------------------------------------- рисование
 
 func _draw_stage() -> void:
 	var g := stage
-	_shake_off = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * shake * 8.0
+	_shake_off = Vector2(sin(t * 121), cos(t * 163)) * shake * 8.0
 	g.draw_set_transform(_shake_off, 0, Vector2.ONE)
-	# вода
-	g.draw_rect(Rect2(0, 0, W, H), Color("0f3b52"))
-	for i in 18:
-		var y := WALL + i * 38.0
-		var a := sin(t * 0.6 + i * 1.7) * 18.0
-		g.draw_line(Vector2(0, y + a), Vector2(W, y - a), Color(0.6, 0.85, 0.95, 0.05), 2.0)
-	for i in 26:
-		var cx := fposmod(i * 211.0 + t * 12.0, W)
-		var cy := WALL + fposmod(i * 97.0 + t * 7.0, H - WALL)
-		g.draw_arc(Vector2(cx, cy), 18 + (i % 4) * 6, 0.3, 2.2, 8, Color(0.75, 0.95, 1.0, 0.05), 2.0)
-	# южная стена города
-	g.draw_rect(Rect2(0, 0, W, WALL), Color("9c9a90"))
-	g.draw_rect(Rect2(0, WALL - 10, W, 10), Color("6e6c64"))
-	for x in range(30, int(W), 170):
-		g.draw_rect(Rect2(x, 6, 60, WALL - 22), Color("b5b3a8"))
-		g.draw_circle(Vector2(x + 30, 14), 12, Color("2f8c86"))
-		g.draw_circle(Vector2(x + 30, 30), 4, Color(0.5, 0.85, 1.0, 0.8))
-
+	_draw_water(g)
+	if prey["state"] != "dive":
+		_draw_wake(g, prey["pos"], prey["vel"], prey["scale"] * 2.1, 0.33)
+	_draw_wake(g, boat["pos"], boat["vel"], 1.0, 0.7)
 	_draw_prey(g)
 	for d in debris:
-		_draw_part_shape(g, d["key"], d["pos"], d["rot"], prey["scale"], Color("5b7f8c"), 1.0, true)
+		if ray_texture:
+			_draw_ray_region(g, d["key"], d["pos"], d["rot"], prey["scale"], Color("c9d9d3"), true)
+		else:
+			_draw_part_shape(g, d["key"], d["pos"], d["rot"], prey["scale"], Color("5b7f8c"), 1.0, true)
 	for p in particles:
 		var c: Color = p["col"]
 		c.a *= clampf(p["ttl"] * 1.5, 0, 1)
-		g.draw_circle(p["pos"], p["r"], c)
+		g.draw_circle(p["pos"], p["r"], c, true, -1.0, true)
 	_draw_rope(g)
 	for s in spears:
 		var dir: Vector2 = (s["vel"] as Vector2).normalized()
-		g.draw_line(s["pos"] - dir * 14, s["pos"], Color("e8e2d0"), 2.0)
+		g.draw_line(s["pos"] - dir * 49, s["pos"] - dir * 15, Color(0.8, 0.95, 1.0, 0.24), 1.5, true)
+		g.draw_line(s["pos"] - dir * 16, s["pos"], BRASS_LIGHT, 2.0, true)
+		_draw_hook(g, s["pos"], dir, 0.55)
 	_draw_boat(g)
 	_draw_aim(g)
+	var popup_font := Look.font("serif_bold")
 	for u in popups:
 		var c2: Color = u["col"]
 		c2.a = clampf(u["ttl"], 0, 1)
-		g.draw_string(Look.font("serif_bold"), u["pos"] - Vector2(150, 0), u["text"], HORIZONTAL_ALIGNMENT_CENTER, 300, 18, c2)
+		var start: Vector2 = u["pos"] - Vector2(220, 0)
+		g.draw_string_outline(popup_font, start, u["text"], HORIZONTAL_ALIGNMENT_CENTER, 440, 17, 5, Color(INSTRUMENT, 0.88 * c2.a))
+		g.draw_string(popup_font, start, u["text"], HORIZONTAL_ALIGNMENT_CENTER, 440, 17, c2)
 	g.draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
+	g.draw_rect(Rect2(0.5, 0.5, W - 1.0, H - 1.0), Color(BRASS_LIGHT, 0.67), false, 1.0)
 	_draw_hud(g)
+
+
+func _draw_water(g: Control) -> void:
+	var field := Rect2(0, 0, W, H)
+	if water_texture:
+		g.draw_texture_rect(water_texture, field.grow(8), false)
+	else:
+		var water := PackedVector2Array([Vector2(-8, WALL), Vector2(W + 8, WALL), Vector2(W + 8, H + 8), Vector2(-8, H + 8)])
+		g.draw_polygon(water, PackedColorArray([Color("234650"), Color("143844"), Color("0a2636"), Color("112b3b")]))
+		g.draw_rect(Rect2(-8, -8, W + 16, WALL + 8), Color("53594f"))
+		g.draw_rect(Rect2(-8, WALL - 14, W + 16, 14), Color("303f3e"))
+		g.draw_line(Vector2(-8, WALL), Vector2(W + 8, WALL), Color("798579"), 2.0)
+		for x in range(0, int(W), 112):
+			g.draw_line(Vector2(x, 2), Vector2(x + 14, WALL - 3), Color("343d36"), 2.0, true)
+	for idx in 52:
+		var length := 15.0 + fposmod(idx * 13.3, 43.0)
+		var x := fposmod(idx * 217.43 + t * (13.0 + idx % 5), W)
+		var y := WALL + 8 + fposmod(idx * 71.3 + t * 2.4, H - WALL - 12)
+		var drift := Vector2(x, y)
+		var alpha := (0.5 + 0.5 * sin(t * 1.4 + idx * 1.9)) * 0.16
+		g.draw_polyline(PackedVector2Array([drift, drift + Vector2(length * 0.43, -1.5),
+			drift + Vector2(length * 0.7, -1.1), drift + Vector2(length, 1.0)]), Color(SEA_GLASS, alpha), 1.2, true)
+
+
+func _draw_wake(g: Control, pos: Vector2, velocity: Vector2, scale_factor: float, opacity: float) -> void:
+	var strength := clampf(velocity.length() / BOAT_MAX, 0.0, 1.0)
+	if strength < 0.08:
+		return
+	g.draw_set_transform(_shake_off + pos, velocity.angle(), Vector2.ONE * scale_factor)
+	for i in 5:
+		var phase := fposmod(t * 2.4 + i * 0.2, 1.0)
+		var span := 8.0 + phase * 18.0
+		var aft := 5.0 + phase * (34.0 + strength * 45.0)
+		var alpha := sin(phase * PI) * opacity * strength
+		for side: float in [-1.0, 1.0]:
+			g.draw_polyline(PackedVector2Array([Vector2(-aft - 14, span * side), Vector2(-aft - 5, (span - 5) * side),
+				Vector2(-aft + 5, (span - 8) * side)]), Color(Color("b8d9d6"), alpha), 1.7, true)
+	g.draw_set_transform(_shake_off, 0, Vector2.ONE)
+
+
+func _draw_ray_region(g: Control, key: String, pos: Vector2, rot: float, sc: float, tint: Color, loose := false) -> void:
+	var origin := (prey["parts"][key]["off"] as Vector2) if loose else Vector2.ZERO
+	g.draw_set_transform(_shake_off + pos - (origin * sc).rotated(rot), rot, Vector2.ONE * sc)
+	g.draw_polygon(PackedVector2Array(RAY_REGIONS[key]), PackedColorArray([tint]), ray_uvs[key], ray_texture)
+	g.draw_set_transform(_shake_off, 0, Vector2.ONE)
 
 
 func _draw_part_shape(g: Control, key: String, pos: Vector2, rot: float, sc: float, col: Color, alpha: float, loose := false) -> void:
@@ -808,11 +946,31 @@ func _draw_prey(g: Control) -> void:
 	var sc: float = p["scale"]
 	var body_col := Color("2f5f6e") if not p["dead"] else Color("4d5a60")
 	# тень/глубина
-	g.draw_set_transform(_shake_off + pos + Vector2(8, 12), rot, Vector2(sc, sc))
-	g.draw_colored_polygon(Look.ellipse(Vector2.ZERO, Vector2(80, 70), 24), Color(0, 0, 0, 0.25 * a))
+	g.draw_set_transform(_shake_off + pos + Vector2(9, 13), rot, Vector2(sc, sc))
+	for i in 3:
+		var shadow_size := Vector2(77, 50) + Vector2(6, 6) * i
+		g.draw_colored_polygon(Look.ellipse(Vector2.ZERO, shadow_size, 28), Color(0.01, 0.08, 0.11, 0.12 * a))
 	g.draw_set_transform(_shake_off, 0, Vector2.ONE)
 	if p["telegraph"] > 0:
-		g.draw_arc(pos, 110 * sc, 0, TAU, 40, Color(1, 0.6, 0.2, 0.6 * a), 3.0)
+		var pulse := 0.55 + 0.45 * sin(t * 20.0)
+		var warning := Color(1.0, 0.65, 0.28, (0.58 + 0.34 * pulse) * a)
+		if p["state"] == "lash":
+			g.draw_arc(_part_world("tail"), 120 * sc, 0, TAU, 56, warning, 2, true)
+		else:
+			var front := pos + Vector2.from_angle(rot) * 100.0 * sc
+			var dir := Vector2.from_angle(rot)
+			g.draw_dashed_line(front, front + dir * 165.0 * sc, warning, 2.0, 11.0, true, true)
+			g.draw_arc(pos, 106 * sc, rot - 0.55, rot + 0.55, 24, warning, 2.5, true)
+	if ray_texture:
+		for key in ["wing_l", "wing_r", "tail", "body", "plate"]:
+			if not p["parts"][key]["ripped"]:
+				var base := Color("799193") if p["dead"] or p["state"] == "dive" else Color.WHITE
+				var tint := _part_color(key, base)
+				if p["parts"][key]["hit"] > 0:
+					tint = Color(1.35, 1.35, 1.35)
+				tint.a = a
+				_draw_ray_region(g, key, pos, rot, sc, tint)
+		return
 	for key in ["wing_l", "wing_r", "tail"]:
 		if not p["parts"][key]["ripped"]:
 			_draw_part_shape(g, key, pos, rot, sc, _part_color(key, body_col.lightened(0.08)), a)
@@ -851,23 +1009,42 @@ func _draw_rope(g: Control) -> void:
 	for i in 17:
 		var u := i / 16.0
 		pts.append(a.lerp(b, u) + nrm * sin(u * PI) * sag)
+	g.draw_polyline(Look.offset(pts, Vector2(1, 2)), Color(INSTRUMENT, 0.8), 3.5, true)
 	g.draw_polyline(pts, col, 2.0, true)
-	var dir := (b - a).normalized()
-	g.draw_colored_polygon(PackedVector2Array([b + dir * 10, b + dir.orthogonal() * 5 - dir * 4, b - dir.orthogonal() * 5 - dir * 4]), Color("d8d0b8"))
+	_draw_hook(g, b, (b - a).normalized(), 1.0)
+
+
+func _draw_hook(g: Control, tip: Vector2, dir: Vector2, k: float) -> void:
+	var side := dir.orthogonal() * k
+	var back := tip - dir * 14.0 * k
+	var barb := tip + dir * 3.0 * k
+	var shape := PackedVector2Array([barb, back + side * 5.0, tip - dir * 9.0 * k, back - side * 5.0])
+	g.draw_colored_polygon(shape, Color("d8d6c5"))
+	g.draw_line(back, barb, Color("fdf1cb"), 1.0, true)
 
 
 func _draw_boat(g: Control) -> void:
 	var pos: Vector2 = boat["pos"]
 	var flicker: bool = boat["invuln"] > 0 and int(t * 12) % 2 == 0
 	g.draw_set_transform(_shake_off + pos, boat["rot"], Vector2.ONE)
-	g.draw_colored_polygon(Look.ellipse(Vector2(4, 6), Vector2(30, 14), 20), Color(0, 0, 0, 0.3))
-	var hull := PackedVector2Array([Vector2(30, 0), Vector2(14, -12), Vector2(-26, -11), Vector2(-30, 0), Vector2(-26, 11), Vector2(14, 12)])
-	g.draw_colored_polygon(hull, Color("6b4428") if not flicker else Color("c09070"))
-	g.draw_polyline(hull + PackedVector2Array([hull[0]]), Color("3a2414"), 2.0, true)
-	g.draw_line(Vector2(-20, 0), Vector2(18, 0), Color("4a2e1a"), 2.0)
+	g.draw_colored_polygon(Look.ellipse(Vector2(3, 5), Vector2(36, 17), 26), Color(INSTRUMENT, 0.55))
+	if boat_texture:
+		var boat_size := boat_texture.get_size()
+		boat_size *= minf(77.0 / boat_size.x, 41.0 / boat_size.y)
+		var color := Color(1, 0.55, 0.44) if flicker else Color.WHITE
+		g.draw_texture_rect(boat_texture, Rect2(-boat_size * 0.5, boat_size), false, color)
+	else:
+		var hull := PackedVector2Array([Vector2(35, 0), Vector2(16, -15), Vector2(-26, -15), Vector2(-34, -7),
+			Vector2(-34, 7), Vector2(-26, 15), Vector2(16, 15)])
+		g.draw_colored_polygon(hull, Color("704934") if not flicker else Color("c09070"))
+		for y: float in [-8.0, -4.0, 0.0, 4.0, 8.0]:
+			g.draw_line(Vector2(-27, y), Vector2(27 - absf(y), y), Color("a06d44"), 1.1, true)
+		Look.outline(g, hull, BRASS_LIGHT, 2.0)
+		for x: float in [-21.0, 9.0]:
+			g.draw_rect(Rect2(x - 3, -11, 6, 22), Color("352922"))
+		g.draw_circle(Vector2(17, 0), 5, BRASS_LIGHT, false, 2.0, true)
+		g.draw_line(Vector2(-1, 0), Vector2(25, 0), Color("dbd1b6"), 2.0, true)
 	g.draw_set_transform(_shake_off, 0, Vector2.ONE)
-	g.draw_circle(pos, 9, Color("1e2c4f"))
-	g.draw_arc(pos, 9, 0, TAU, 16, Look.GOLD, 2.0)
 
 
 func _draw_aim(g: Control) -> void:
@@ -875,41 +1052,89 @@ func _draw_aim(g: Control) -> void:
 		return
 	var m := _mouse()
 	var bp: Vector2 = boat["pos"]
+	if not Rect2(0, 0, W, H).has_point(m):
+		return
+	var key := _part_at(m)
+	var reticle_color := Color(BRASS_LIGHT, 0.9) if key.is_empty() else Color("f4d593")
 	if harpoon["state"] == "charging":
 		var k := clampf(harpoon["charge"] / HARPOON_MIN_CHARGE, 0, 1)
 		var ready: bool = harpoon["charge"] >= HARPOON_MIN_CHARGE
 		var dir := (m - bp).normalized()
-		g.draw_line(bp, bp + dir * HARPOON_RANGE * 0.85, Color(1, 0.85, 0.4, 0.25 + 0.35 * k), 2.0)
-		g.draw_arc(bp, 26, -PI / 2, -PI / 2 + TAU * k, 24, Color(1, 0.85, 0.4, 0.9) if ready else Color(0.9, 0.9, 0.9, 0.7), 3.0)
-	g.draw_arc(m, 11, 0, TAU, 20, Color(1, 0.95, 0.8, 0.85), 1.5)
-	g.draw_line(m - Vector2(16, 0), m - Vector2(6, 0), Color(1, 0.95, 0.8, 0.7), 1.0)
-	g.draw_line(m + Vector2(6, 0), m + Vector2(16, 0), Color(1, 0.95, 0.8, 0.7), 1.0)
+		g.draw_dashed_line(bp + dir * 37.0, bp + dir * HARPOON_RANGE * 0.85, Color(BRASS_LIGHT, 0.35 + 0.35 * k), 1.7, 7.0, true, true)
+		g.draw_arc(bp, 29, 0, TAU, 32, Color(INSTRUMENT, 0.86), 4.0, true)
+		g.draw_arc(bp, 29, -PI / 2, -PI / 2 + TAU * k, 32, Color("f7d187") if ready else HUD_INK, 3.0, true)
+	g.draw_arc(m, 11, 0, TAU, 26, Color(INSTRUMENT, 0.72), 3.0, true)
+	g.draw_arc(m, 11, 0, TAU, 26, reticle_color, 1.0, true)
+	for dir in [Vector2.LEFT, Vector2.RIGHT, Vector2.UP, Vector2.DOWN]:
+		g.draw_line(m + dir * 9, m + dir * 16, reticle_color, 1.5, true)
+	g.draw_circle(m, 2, reticle_color, true, -1.0, true)
+	if not key.is_empty() and key != "body":
+		var label := str(PART_LABELS[key])
+		var f := Look.font("serif_bold")
+		var origin := Vector2(clampf(m.x - 52.0, 5.0, W - 109.0), m.y + 30.0)
+		g.draw_string_outline(f, origin, label, HORIZONTAL_ALIGNMENT_CENTER, 104, 13, 5, INSTRUMENT)
+		g.draw_string(f, origin, label, HORIZONTAL_ALIGNMENT_CENTER, 104, 13, reticle_color)
 
 
 func _draw_hud(g: Control) -> void:
-	var f := Look.font("serif")
-	var y := H - 16.0
-	var txt := "Лодка: %s    Рывки: %s    Гарпун: %s    %d с" % [
-		"♥".repeat(maxi(0, int(boat["hp"]))), "●".repeat(int(boat["dash"])) + "○".repeat(3 - int(boat["dash"])),
-		{"ready": "готов", "charging": "заряд", "flying": "летит", "attached": "держит", "returning": "возвращается", "cooldown": "перезарядка"}.get(harpoon["state"], ""),
-		maxi(0, int(ceil(time_limit - t)))]
-	g.draw_rect(Rect2(0, H - 40, W, 40), Color(0, 0, 0, 0.45))
-	g.draw_string(f, Vector2(16, y), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("e8dcc0"))
-	# здоровье твари и её части
-	var bw := 280.0
-	var bx := W - bw - 16
-	g.draw_rect(Rect2(bx, H - 30, bw, 12), Color(0.15, 0.1, 0.1, 0.8))
-	g.draw_rect(Rect2(bx, H - 30, bw * clampf(prey["hp"] / prey["max"], 0, 1), 12), Color(0.75, 0.25, 0.2))
-	var px := bx - 10
-	for key in ["tail", "wing_r", "wing_l", "plate"]:
+	var display := Look.font("display_bold")
+	var label := Look.font("sans")
+	var brass := Color("dfab6b")
+	var teal := Color("7ad7d1")
+	var navy := Color("193744")
+	Regalia.panel(g, Rect2(12, 7, 252, 81), navy, 22)
+	Look.text_c(g, label, 73, 30, "Корпус", 16, HUD_INK, 95)
+	Look.text_c(g, label, 197, 30, "Рывки", 16, HUD_INK, 95)
+	for i in 3:
+		var hull := Vector2(42 + i * 32, 56)
+		var intact := i < int(boat["hp"])
+		Regalia.gem(g, hull, 12, Color("d87d66"), intact)
+		if intact:
+			var rim := PackedVector2Array([hull + Vector2(-5, -3), hull + Vector2(5, -3), hull + Vector2(3, 3), hull + Vector2(-3, 3), hull + Vector2(-5, -3)])
+			g.draw_polyline(rim, Regalia.IVORY, 1.15, true)
+		var dash := Vector2(165 + i * 32, 56)
+		var charged := i < int(boat["dash"])
+		Regalia.gem(g, dash, 12, teal, charged)
+		if charged:
+			g.draw_polyline(PackedVector2Array([dash + Vector2(-4, -4), dash + Vector2(2, 0), dash + Vector2(-4, 4)]), Regalia.IVORY, 1.25, true)
+		elif i == int(boat["dash"]):
+			var charge := clampf(boat["dash_t"] / dash_recharge, 0.0, 1.0)
+			if charge > 0.0:
+				g.draw_arc(dash, 14.5, -PI / 2, -PI / 2 + TAU * charge, 24, teal, 2, true)
+
+	Regalia.panel(g, Rect2(W * 0.5 - 292, 7, 584, 81), navy, 23)
+	var prey_name := "Крупный панцирный скат" if big else "Панцирный скат"
+	var health := clampf(prey["hp"] / prey["max"], 0.0, 1.0)
+	Regalia.dial(g, Vector2(392, 46), 33, health, Color("ed957e"), str(ceili(maxf(0.0, prey["hp"]))))
+	var name_y := 31 if big else 44
+	g.draw_multiline_string(display, Vector2(438, name_y), prey_name, HORIZONTAL_ALIGNMENT_LEFT, 227, 20, 2, HUD_INK, TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND)
+	g.draw_string(label, Vector2(439, 73 if big else 65), "Здоровье из %d" % int(prey["max"]), HORIZONTAL_ALIGNMENT_LEFT, 226, 13, SEA_GLASS)
+	var x := 694.0
+	for key in PART_LABELS:
 		var part: Dictionary = prey["parts"][key]
-		var col := Color(0.5, 0.75, 0.8)
+		var pct := clampf(float(part["hp"]) / float(part["max"]), 0.0, 1.0)
+		var tint := teal
+		var mark := ""
 		if part["ripped"]:
-			col = Color(0.35, 0.35, 0.35)
+			pct = 0.0
+			mark = "×"
 		elif part["broken"]:
-			col = Color(1, 0.3, 0.2) if int(t * 6) % 2 == 0 else Color(1, 0.7, 0.3)
-		var label: String = {"tail": "хв", "wing_r": "пк", "wing_l": "лк", "plate": "щт"}[key]
-		var w := 34.0
-		px -= w + 4
-		g.draw_rect(Rect2(px, H - 34, w, 20), Color(col, 0.35))
-		g.draw_string(f, Vector2(px, H - 18), label, HORIZONTAL_ALIGNMENT_CENTER, w, 14, col)
+			pct = 1.0
+			tint = brass.lerp(Color("fff0b6"), 0.5 + 0.5 * sin(t * 7.0))
+			mark = "!"
+		Regalia.dial(g, Vector2(x, 40), 21, pct, tint, mark)
+		Look.text_c(g, label, x, 75, PART_LABELS[key], 12, SEA_GLASS, 57)
+		x += 63.0
+
+	Regalia.panel(g, Rect2(W - 265, 7, 253, 81), navy, 23)
+	var hook := Vector2(W - 228, 46)
+	var state_name := str(harpoon["state"])
+	var hook_color := teal if state_name == "ready" or state_name == "attached" else brass
+	Regalia.gem(g, hook, 24, hook_color.darkened(0.45))
+	_draw_hook(g, hook + Vector2(9, -9), Vector2(1, -1).normalized(), 1.15)
+	g.draw_string(label, Vector2(W - 195, 38), "Гарпун", HORIZONTAL_ALIGNMENT_LEFT, 90, 14, SEA_GLASS)
+	g.draw_string(display, Vector2(W - 195, 61), HARPOON_LABELS[state_name], HORIZONTAL_ALIGNMENT_LEFT, 103, 16, HUD_INK)
+	var seconds := maxi(0, int(ceil(time_limit - t)))
+	var time_text := "%d:%02d" % [floori(seconds / 60.0), seconds % 60]
+	var time_color := brass if seconds > 15 else Color("ed7d64")
+	Regalia.dial(g, Vector2(W - 48, 46), 32, float(seconds) / maxf(1.0, time_limit), time_color, time_text)

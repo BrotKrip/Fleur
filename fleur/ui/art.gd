@@ -32,6 +32,10 @@ static func prop(id: String) -> Texture2D:
 	return _texture(ROOT + "props/" + id + ".png")
 
 
+static func duel_card(id: String) -> Texture2D:
+	return _texture(ROOT + "duel_cards/" + id + ".webp")
+
+
 static func background(id: String) -> Texture2D:
 	var exact := _texture(ROOT + "backgrounds/" + id + ".png")
 	if exact:

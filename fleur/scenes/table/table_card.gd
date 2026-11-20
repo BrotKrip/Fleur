@@ -8,6 +8,10 @@ signal picked(card: TableCard)
 signal dropped(card: TableCard)
 signal clicked(card: TableCard)
 
+const Regalia = preload("res://ui/regalia.gd")
+const PORTRAIT_SHOULDER := Vector2(0.82, 0.028)
+const PORTRAIT_RIGHT_EDGE := Vector2(1, 0.14)
+
 const SIZES := {
 	"portrait": Vector2(140, 212), "envelope": Vector2(190, 128), "calendar": Vector2(124, 150),
 	"clipping": Vector2(168, 124), "note": Vector2(156, 176), "photo": Vector2(144, 172),
@@ -22,7 +26,7 @@ const OBJECT_SIZES := {
 }
 ## Толщина предметов: [глубина, цвет у лицевой стороны, цвет у стола]. Книги рисуются отдельно.
 const EDGES := {
-	"portrait": [3.0, Color("d8c79f"), Color("8c7853")],
+	"portrait": [5.0, Color("6f5239"), Color("251c26")],
 	"folder": [3.5, Color("bf9d62"), Color("765b33")],
 	"calendar": [3.0, Color("ddd0b0"), Color("8f7f60")],
 	"photo": [2.5, Color("e4dccb"), Color("8d8574")],
@@ -34,6 +38,15 @@ const PAPER_EDGE := [2.0, Color("dccfae"), Color("968665")]
 const BOOK_COLORS := {"sl_eye": Color("26385a"), "sl_family": Color("5a2224")}
 const PHASE_UNTIL := ["до утра", "до полудня", "до вечера", "до ночи"]
 const OBJECT_ART := {"bottle": "nectar_bottle", "crate": "nectar_crate", "hairpin": "pearl_pin", "coat": "tailored_coat"}
+const TICKET_STYLE := {
+	"inv_debor": [Color("51413a"), "glass"],
+	"inv_clorinde_practice": [Color("345465"), "blade"],
+	"inv_fair": [Color("824835"), "awning"],
+	"inv_theatre": [Color("663848"), "music"],
+	"inv_louis_talk": [Color("38594e"), "quill"],
+	"it_halsey_ticket": [Color("663848"), ""],
+	"it_tiori_zero_bill": [Color("4b4b65"), ""],
+}
 
 var id := ""
 var d: Dictionary = {}
@@ -180,7 +193,9 @@ func silhouette() -> PackedVector2Array:
 			return Look.ellipse(Vector2(size.x / 2, 48), Vector2(42, 42), 36)
 		"trait":
 			return Look.ellipse(Vector2(size.x / 2, 50), Vector2(46, 46), 40)
-		"portrait", "book":
+		"portrait":
+			return _portrait_frame(r)
+		"book":
 			return Look.rrect(r, 7)
 		"label":
 			return Look.rrect(r, 3)
@@ -195,6 +210,7 @@ func _draw() -> void:
 	var sh_spread := 5.0 + 14.0 * lift
 	var sh_alpha := 0.6 - 0.2 * lift
 	var sil := silhouette()
+	var fresh_pos := Vector2(size.x - 12, 12)
 	if highlight:
 		var glow := 0.55 + 0.35 * sin(_t * 5.0)
 		var gp := Geometry2D.offset_polygon(sil if sil.size() > 0 else Look.rrect(Rect2(Vector2.ZERO, size), 10), 7.0)
@@ -203,7 +219,8 @@ func _draw() -> void:
 			Look.outline(self, p, Color(1.0, 0.85, 0.4, glow), 2.0)
 	if item_art:
 		_draw_object_art(item_art, "", sh_off, Color(0.02, 0.01, 0.0, sh_alpha * 0.6))
-		_draw_object_art(item_art, "", Vector2.ZERO, Color.TRANSPARENT)
+		var art_rect := _draw_object_art(item_art, "", Vector2.ZERO, Color.TRANSPARENT)
+		fresh_pos = Vector2(art_rect.end.x - 9, art_rect.position.y + 9)
 	elif look == "object":
 		_draw_object(sh_off, Color(0.02, 0.01, 0.0, sh_alpha * 0.6))
 		_draw_object(Vector2.ZERO, Color(0, 0, 0, 0))
@@ -211,10 +228,15 @@ func _draw() -> void:
 		Look.soft_shadow(self, sil, sh_off, sh_spread, sh_alpha)
 		_draw_edge(sil)
 		call("_draw_" + look)
+		if look == "portrait":
+			var shoulder := PORTRAIT_SHOULDER * size
+			var edge := PORTRAIT_RIGHT_EDGE * size
+			var inset := (edge - shoulder).normalized().rotated(PI / 2) * 5.0
+			fresh_pos = shoulder.lerp(edge, 0.5) + inset
 	if hovered and not dragging and (item_art or look in ["object", "label", "photo", "token", "trait"]):
 		_draw_name_tag()
 	if bool(inst().get("fresh", false)) and not dragging:
-		_draw_fresh_mark()
+		_draw_fresh_mark(fresh_pos)
 
 
 ## Толщина карты у ближнего края. Направление «вниз» берётся экранное: карта может лежать повёрнутой.
@@ -236,8 +258,7 @@ func _f(kind: String) -> Font:
 	return Look.font(kind)
 
 
-func _draw_fresh_mark() -> void:
-	var c := Vector2(size.x - 12, 12)
+func _draw_fresh_mark(c: Vector2) -> void:
 	draw_circle(c + Vector2(1.5, 2), 7.0, Color(0, 0, 0, 0.25))
 	draw_circle(c, 7.0, Look.WAX)
 	draw_circle(c, 3.2, Look.WAX.lightened(0.18))
@@ -267,45 +288,161 @@ func _draw_name_tag() -> void:
 
 
 # ---- портрет (люди)
+func _portrait_frame(r: Rect2) -> PackedVector2Array:
+	var crest := PackedVector2Array([Vector2(0.18, 0.028), Vector2(0.34, 0.028), Vector2(0.41, 0),
+		Vector2(0.59, 0), Vector2(0.66, 0.028), PORTRAIT_SHOULDER, PORTRAIT_RIGHT_EDGE,
+		Vector2(1, 0.87), Vector2(0.88, 0.96), Vector2(0.74, 1), Vector2(0.26, 1),
+		Vector2(0.12, 0.96), Vector2(0, 0.87), Vector2(0, 0.14)])
+	for i in crest.size():
+		crest[i] = r.position + crest[i] * r.size
+	return crest
+
+
 func _draw_portrait() -> void:
 	var r := Rect2(Vector2.ZERO, size)
-	var card := Look.rrect(r, 7)
-	Look.fill_v(self, card, Color("f4ecd9"), Color("ddcdab"))
-	_paper_grain(card, 0.15)
-	Look.outline(self, card, Color(0.35, 0.26, 0.16, 0.7), 1.0)
-	Look.outline(self, Look.rrect(r.grow(-7), 4), Color(Look.GOLD, 0.8), 1.5)
 	var accent := Color(str(d.get("color", "#8899aa")))
-	var c := Vector2(size.x / 2, 80)
-	var oval := Look.ellipse(c, Vector2(50, 60), 48)
-	Look.fill_v(self, oval, accent.lightened(0.45), accent.darkened(0.35))
-	var dark := accent.darkened(0.7)
-	dark.a = 0.85
+	var frame := Color("263d4f").lerp(accent.darkened(0.28), 0.58)
+	var metal := Regalia.BRASS.lerp(accent.lightened(0.38), 0.25)
+	var shape := silhouette()
+	Look.fill_v(self, shape, frame.lightened(0.28), frame.darkened(0.58))
+	Regalia.bevel(self, shape, _portrait_frame(r.grow(-7)), metal)
+
+	var window := Rect2(10, 10, size.x - 20, 146)
+	var aperture := Regalia.cut(window, 22)
+	Look.fill_v(self, aperture, accent.lightened(0.47), frame.darkened(0.5))
+	var c := window.get_center()
+	var rays := Color(1.0, 0.93, 0.72, 0.28)
+	for i in 3:
+		draw_arc(c - Vector2(0, 20), 27 + i * 8, PI * 1.08, PI * 1.92, 28, rays, 1.0, true)
 	var portrait := Art.portrait(id)
 	if portrait:
-		Look.draw_portrait(self, portrait, c, Vector2(50, 60))
+		var ts := portrait.get_size()
+		var crop := Art.cover_region(portrait, window.size)
+		crop.size *= 0.92
+		crop.position = Vector2((ts.x - crop.size.x) * 0.5, ts.y * 0.015)
+		var uv := PackedVector2Array()
+		for point in aperture:
+			uv.append((crop.position + (point - window.position) / window.size * crop.size) / ts)
+		draw_polygon(aperture, PackedColorArray([Color.WHITE]), uv, portrait)
 	else:
-		# Резервный силуэт для ещё не нарисованных персонажей.
-		var sh := Look.ellipse(c + Vector2(0, 52), Vector2(40, 26), 32)
-		var clipped := Geometry2D.intersect_polygons(sh, oval)
-		for p in clipped:
-			draw_colored_polygon(p, dark)
-		draw_circle(c + Vector2(0, 2), 19, dark)
-	Look.outline(self, oval, Look.GOLD, 2.0)
-	Look.outline(self, Look.ellipse(c, Vector2(54, 64), 48), Color(Look.BRASS_DARK, 0.6), 1.0)
-	Look.text_c(self, _f("serif_bold"), size.x / 2, 167, title(), 17, Look.INK, size.x - 12)
-	Look.text_c(self, _f("serif_italic"), size.x / 2, 184, str(d.get("subtitle", "")), 11, Look.INK_SOFT, size.x - 14)
+		for part in Geometry2D.intersect_polygons(_profile(c, seed_v % 2 == 0), aperture):
+			draw_colored_polygon(part, frame.darkened(0.46))
+	Look.fill_v(self, aperture, Color(frame, 0.0), Color(frame.darkened(0.53), 0.45))
+	Regalia.metal(self, window.grow(2), 23, 3, metal.darkened(0.07))
+
+	# Накладка с именем крепится поверх нижней части портрета.
+	var plate := Rect2(4, 136, size.x - 8, 68)
+	var plaque := Regalia.cut(plate, 12)
+	Look.fill_v(self, plaque, frame.lightened(0.12), frame.darkened(0.66))
+	Regalia.metal(self, plate, 12, 3, metal)
+	for x in [10.0, size.x - 10]:
+		Regalia.gem(self, Vector2(x, 143), 5.0, accent.lightened(0.3))
+		Regalia.gem(self, Vector2(x, 196), 3.6, accent.lightened(0.1))
+	_draw_portrait_caption()
+	var present: bool = Rules.where_is(state(), id) == state().get("here")
+	var crown := Vector2(size.x * 0.5, 10)
+	Regalia.gem(self, crown, 10, Color("59c6ab") if present else accent, present)
+	Regalia.iris(self, crown + Vector2(0, 1), 0.87, Regalia.IVORY if present else Color("e0caa8"))
+
+
+## Имя, должность и отношение складываются столбиком и не налезают друг на друга:
+## длинное имя или подпись в две строки сдвигают остальное, а не ложатся поверх.
+func _draw_portrait_caption() -> void:
+	var w := size.x - 18
+	var name_font := _f("display_bold")
+	var sub_font := _f("serif_italic")
+	var name_fs := _fit_size(name_font, title(), w, 17, 13)
+	var name_lines := _wrap(name_font, title(), w, name_fs, 2)
+	var sub := str(d.get("subtitle", ""))
+	var sub_fs := _fit_size(sub_font, sub, w, 11, 10)
+	var sub_lines := _wrap(sub_font, sub, w, sub_fs, 2 if name_lines.size() == 1 else 1)
+	if sub_lines.size() > 1 and name_fs > 15:
+		# двухстрочной должности нужно место: имя чуть мельче
+		name_fs = 15
 	var rels: Array = state()["rel"].get(id, [])
+	var rel_line := ""
+	var rel_color := Regalia.IVORY
 	if rels.size() > 0:
 		var shown := rels.slice(maxi(0, rels.size() - 2))
-		var line := " · ".join(PackedStringArray(shown))
+		rel_line = " · ".join(PackedStringArray(shown))
 		# две длинные пометки не влезают в одну строку внизу карточки — тогда только последняя
-		if shown.size() > 1 and _f("hand").get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, 10).x > size.x - 10:
+		if shown.size() > 1 and _f("hand").get_string_size(rel_line, HORIZONTAL_ALIGNMENT_LEFT, -1, 11).x > w:
 			shown = shown.slice(shown.size() - 1)
-			line = str(shown[0])
-		Look.text_c(self, _f("hand"), size.x / 2, 203, line, 12, _rel_color(shown[shown.size() - 1]), size.x - 10)
-	if Rules.where_is(state(), id) == state().get("here"):
-		draw_circle(Vector2(size.x - 18, 18), 8, Look.WAX)
-		draw_circle(Vector2(size.x - 18, 18), 5, Look.WAX.lightened(0.15))
+			rel_line = str(shown[0])
+		rel_color = _rel_color(shown[shown.size() - 1]).lightened(0.54)
+	var name_h := name_fs * 1.12
+	var sub_h := sub_fs * 1.18
+	var block := name_lines.size() * name_h + sub_lines.size() * sub_h
+	var top := 138.0
+	var bottom := 181.0 if rel_line != "" else 199.0
+	var y := top + maxf(0.0, (bottom - top - block) * 0.5)
+	for line in name_lines:
+		y += name_h
+		draw_string(name_font, Vector2(9, y - name_fs * 0.22), line, HORIZONTAL_ALIGNMENT_CENTER, w, name_fs, Regalia.IVORY)
+	y += 2
+	for line in sub_lines:
+		y += sub_h
+		draw_string(sub_font, Vector2(9, y - sub_fs * 0.3), line, HORIZONTAL_ALIGNMENT_CENTER, w, sub_fs, Color("e4d5bd"))
+	if rel_line != "":
+		var rel_shape := Regalia.cut(Rect2(16, 182, size.x - 32, 18), 6)
+		Look.fill_v(self, rel_shape, Color("291f2b"), Color("181821"))
+		Look.outline(self, rel_shape, Color(rel_color, 0.62), 0.9)
+		Look.text_c(self, _f("serif_italic"), size.x * 0.5, 195, rel_line, 11, rel_color, size.x - 39)
+
+
+func _fit_size(font: Font, s: String, w: float, fs: int, min_fs: int) -> int:
+	while fs > min_fs and font.get_string_size(s, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > w:
+		fs -= 1
+	return fs
+
+
+## Перенос по словам; последняя разрешённая строка забирает остаток с многоточием.
+func _wrap(font: Font, s: String, w: float, fs: int, max_lines: int) -> PackedStringArray:
+	var out := PackedStringArray()
+	if s.strip_edges() == "":
+		return out
+	var line := ""
+	for word in s.split(" ", false):
+		var probe := word if line == "" else line + " " + word
+		if line != "" and font.get_string_size(probe, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > w:
+			out.append(line)
+			line = word
+		else:
+			line = probe
+	out.append(line)
+	if out.size() > max_lines:
+		var rest := " ".join(out.slice(max_lines - 1))
+		while rest.length() > 1 and font.get_string_size(rest + "…", HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > w:
+			rest = rest.left(rest.length() - 1)
+		out = out.slice(0, max_lines - 1)
+		out.append(rest.strip_edges() + "…")
+	return out
+
+
+## Профиль головы и плеч вправо; у половины персонажей — с узлом волос на затылке.
+func _profile(c: Vector2, bun: bool) -> PackedVector2Array:
+	var pts := [
+		Vector2(-60, 70), Vector2(-46, 40), Vector2(-24, 28), Vector2(-15, 16), Vector2(-21, 6),
+		Vector2(-27, -10), Vector2(-25, -28), Vector2(-15, -41), Vector2(0, -45), Vector2(12, -40),
+		Vector2(18, -30), Vector2(19, -21), Vector2(22, -14), Vector2(27, -6), Vector2(21, -3),
+		Vector2(22, 2), Vector2(19, 5), Vector2(21, 9), Vector2(17, 13), Vector2(18, 18),
+		Vector2(10, 22), Vector2(6, 25), Vector2(8, 33), Vector2(22, 39), Vector2(46, 48), Vector2(60, 70),
+	]
+	if bun:
+		pts = pts.slice(0, 6) + [Vector2(-31, -14), Vector2(-40, -18), Vector2(-40, -31), Vector2(-30, -36), Vector2(-24, -33)] + pts.slice(7)
+	var poly := PackedVector2Array()
+	for p in pts:
+		poly.append(c + p * Vector2(1.0, 1.05) + Vector2(-2, 6))
+	# Сглаживание Чайкина: из ломаной — мягкий силуэт ножниц.
+	for _k in 2:
+		var smooth := PackedVector2Array()
+		for i in poly.size():
+			var a := poly[i]
+			var b := poly[(i + 1) % poly.size()]
+			smooth.append(a.lerp(b, 0.25))
+			smooth.append(a.lerp(b, 0.75))
+		poly = smooth
+	return poly
 
 
 static func _rel_color(tag: String) -> Color:
@@ -325,18 +462,27 @@ func _draw_envelope() -> void:
 	var body := Look.rrect(Rect2(Vector2.ZERO, size), 3)
 	Look.fill_v(self, body, Color("f3e9d1"), Color("e1d0ad"))
 	_paper_grain(body)
-	draw_colored_polygon(PackedVector2Array([Vector2(0, h), Vector2(w * 0.5, h * 0.48), Vector2(w, h)]), Color(0.8, 0.7, 0.52, 0.35))
+	var seam := PackedVector2Array([Vector2(3, h - 6), Vector2(w * 0.5, h * 0.48), Vector2(w - 3, h - 6)])
+	draw_colored_polygon(seam, Color(0.8, 0.7, 0.52, 0.22))
+	draw_polyline(seam, Color(0.49, 0.35, 0.21, 0.3), 1.0, true)
 	var flap := PackedVector2Array([Vector2(1, 1), Vector2(w * 0.5, h * 0.56), Vector2(w - 1, 1)])
 	Look.fill_v(self, flap, Color("eadbbb"), Color("dac7a0"))
 	_paper_grain(flap, 0.16)
-	draw_polyline(PackedVector2Array([Vector2(1, 1), Vector2(w * 0.5, h * 0.56), Vector2(w - 1, 1)]), Color(0.45, 0.35, 0.22, 0.6), 1.2, true)
+	draw_polyline(flap, Color(0.45, 0.35, 0.22, 0.6), 1.2, true)
+	draw_polyline(PackedVector2Array([Vector2(12, 4), Vector2(w * 0.5, h * 0.51), Vector2(w - 12, 4)]), Color("bda476"), 1.0, true)
 	Look.outline(self, body, Color(0.45, 0.35, 0.22, 0.6))
 	var sc := Vector2(w * 0.5, h * 0.56)
 	draw_circle(sc + Vector2(1, 2), 18, Color(0, 0, 0, 0.25))
-	draw_circle(sc, 18, Look.WAX)
-	draw_circle(sc, 13, Look.WAX.darkened(0.25))
-	draw_arc(sc, 15.5, 0, TAU, 32, Look.WAX.lightened(0.2), 1.5, true)
-	Look.text_c(self, _f("serif_bold"), sc.x, sc.y + 6, str(d.get("seal", "")), 16, Color("f0c9b0"))
+	var wax := Look.ellipse(sc, Vector2(18, 17), 40)
+	Look.fill_v(self, wax, Color("a63e3f"), Color("62141d"))
+	draw_circle(sc, 12.5, Look.WAX.darkened(0.3))
+	draw_arc(sc, 15.1, -PI, -0.1, 24, Color("bf6e5d"), 1.2, true)
+	draw_arc(sc, 11.8, 0, TAU, 32, Color("c37a6a"), 0.8, true)
+	var initial := str(d.get("seal", ""))
+	if initial.is_empty():
+		_draw_diamond(sc, Vector2(4, 6), Color("efb28f"))
+	else:
+		Look.text_c(self, _f("display_bold"), sc.x, sc.y + 5.5, initial, 18, Color("f0c9b0"), 26)
 	Look.text_c(self, _f("hand"), w / 2, h - 12, title(), 13, Color("2d3a5a"), w - 16)
 	_lifetime_note(Vector2(w - 8 - 120, 16))
 
@@ -370,7 +516,7 @@ func _draw_clipping() -> void:
 		age = clampf(1.0 - int(lt) / 16.0, 0.0, 0.6)
 	Look.fill_v(self, sil, Look.NEWSPRINT.lerp(Color("d8c79a"), age), Color("d0c5ad").lerp(Color("c7b27c"), age))
 	_paper_grain(sil, 0.23)
-	var f := _f("serif_bold")
+	var f := _f("display_bold")
 	if paper_art:
 		Look.text_c(self, f, size.x / 2 - 4, 31, title(), 15, Look.INK, size.x - 33)
 	else:
@@ -382,9 +528,12 @@ func _draw_clipping() -> void:
 		var mark := strip.position + strip.size * Vector2(0.60, 0.64)
 		Look.text_c(self, _f("type"), mark.x, mark.y, "Д-18", 15, Look.INK, strip.size.x * 0.34)
 	elif paper_art:
-		var plate := Rect2(8, 57, 75, 57)
-		draw_texture_rect_region(paper_art, plate, Art.cover_region(paper_art, plate.size))
-		draw_multiline_string(_f("serif_italic"), Vector2(89, 72), str(d.get("caption", "")), HORIZONTAL_ALIGNMENT_LEFT, size.x - 96, 11, 3, Look.INK)
+		var caption := str(d.get("caption", ""))
+		var plate := Rect2(10, 57, size.x - 20, 47) if caption.is_empty() else Rect2(8, 57, 75, 57)
+		Look.draw_cover(self, paper_art, plate)
+		draw_rect(plate, Color(0.23, 0.17, 0.10, 0.5), false, 1.0)
+		if not caption.is_empty():
+			draw_multiline_string(_f("serif_italic"), Vector2(89, 72), caption, HORIZONTAL_ALIGNMENT_LEFT, size.x - 96, 11, 3, Look.INK)
 	else:
 		var col_w := (size.x - 26) / 2.0
 		Look.fake_lines(self, Rect2(10, 66, col_w, 44), Color(0.25, 0.22, 0.2, 0.35), 6.0, seed_v)
@@ -424,7 +573,7 @@ func _draw_photo() -> void:
 	var card := Look.rrect(r, 2)
 	Look.fill_v(self, card, Color("f7f3e8"), Color("e6dfcc"))
 	_paper_grain(card, 0.14)
-	var img := Rect2(10, 10, size.x - 20, 116)
+	var img := Rect2(11, 11, size.x - 22, 112)
 	if paper_art:
 		draw_texture_rect_region(paper_art, img, Art.cover_region(paper_art, img.size))
 		if id == "info_warehouse":
@@ -432,10 +581,11 @@ func _draw_photo() -> void:
 			draw_string(_f("type"), Vector2(16, 62), "Нектар", HORIZONTAL_ALIGNMENT_LEFT, 70, 11, Color("464252"))
 		elif id == "info_father_order":
 			draw_string(_f("type"), Vector2(19, 43), "КОПИЯ", HORIZONTAL_ALIGNMENT_LEFT, 68, 11, Color("685649"))
-		Look.outline(self, Look.rrect(img, 1), Color("ac9776"))
 	else:
 		_draw_photo_placeholder(img)
-	draw_multiline_string(_f("hand"), Vector2(10, 146), title(), HORIZONTAL_ALIGNMENT_CENTER, size.x - 20, 13, 2, Color("2d3a5a"))
+	Look.outline(self, Look.rrect(img, 1), Color("7d694f"))
+	Look.engraved_corners(self, img.grow(3), Color("ab8f62"), 9)
+	draw_multiline_string(_f("hand"), Vector2(10, 142), title(), HORIZONTAL_ALIGNMENT_CENTER, size.x - 20, 13, 2, Color("2d3a5a"))
 	Look.outline(self, card, Color(0.4, 0.33, 0.25, 0.5))
 
 
@@ -625,6 +775,17 @@ func _draw_glyph(g: String, c: Vector2, col: Color) -> void:
 			var pts := PackedVector2Array([c + Vector2(-12, 16), c + Vector2(-2, 0), c + Vector2(12, -16), c + Vector2(4, 2)])
 			draw_colored_polygon(pts, col)
 			draw_line(c + Vector2(-14, 18), c + Vector2(10, -12), inner_dark(col), 1.0)
+		"music":
+			draw_colored_polygon(Look.ellipse(c + Vector2(-9, 10), Vector2(5, 3), 16), col)
+			draw_colored_polygon(Look.ellipse(c + Vector2(7, 6), Vector2(5, 3), 16), col)
+			draw_polyline(PackedVector2Array([c + Vector2(-5, 10), c + Vector2(-5, -9), c + Vector2(11, -13), c + Vector2(11, 6)]), col, 2.4, true)
+			draw_line(c + Vector2(-5, -6), c + Vector2(11, -10), col, 2.3, true)
+		"awning":
+			var roof := PackedVector2Array([c + Vector2(-16, 1), c + Vector2(0, -13), c + Vector2(16, 1)])
+			draw_colored_polygon(roof, col)
+			draw_line(c + Vector2(-11, 2), c + Vector2(-11, 11), col, 2.0, true)
+			draw_line(c + Vector2(11, 2), c + Vector2(11, 11), col, 2.0, true)
+			draw_line(c + Vector2(-14, 11), c + Vector2(14, 11), col, 2.0, true)
 		"moon":
 			draw_circle(c, 15, col)
 			draw_circle(c + Vector2(7, -5), 13, Color("6e3a33"))
@@ -658,17 +819,69 @@ func _draw_telegram() -> void:
 	Look.outline(self, sil, Color(0.45, 0.38, 0.2, 0.6))
 
 
-# ---- визитная карточка
+# ---- печатные карточки и билеты
 func _draw_card() -> void:
 	var r := Rect2(Vector2.ZERO, size)
-	var c := Look.rrect(r, 2)
-	Look.fill_v(self, c, Color("fbf8f0"), Color("ece6d8"))
-	_paper_grain(c, 0.16)
-	Look.outline(self, c, Color(0.4, 0.35, 0.3, 0.5))
-	Look.text_c(self, _f("serif_bold"), size.x / 2, 38, str(d.get("card_name", title())), 17, Look.INK, size.x - 16)
-	Look.text_c(self, _f("serif_italic"), size.x / 2, 56, str(d.get("card_sub", "")), 11, Look.INK_SOFT, size.x - 16)
-	draw_polyline(PackedVector2Array([Vector2(size.x - 34, size.y - 12), Vector2(size.x - 20, size.y - 30), Vector2(size.x - 10, size.y - 44)]), Color("b3262c"), 2.0, true)
-	draw_string(_f("hand"), Vector2(12, size.y - 12), str(d.get("card_note", "")), HORIZONTAL_ALIGNMENT_LEFT, size.x - 50, 12, Color("2d3a5a"))
+	var card := Look.rrect(r, 3)
+	var ticket_style: Array = TICKET_STYLE.get(id, [Color("3a5956"), ""])
+	var ink: Color = ticket_style[0]
+	var glyph: String = ticket_style[1]
+	var gilt := Color("ae8b50")
+	Look.fill_v(self, card, Color("f9eed7"), Color("e3cc9f"))
+	_paper_grain(card, 0.23)
+	Look.outline(self, card, Color("8b7655"))
+	var edge := r.grow(-5)
+	Look.outline(self, Look.rrect(edge, 2), Color(ink, 0.7), 1.0)
+	var stub_x := size.x - 46.0
+	Look.fill_v(self, Look.rrect(Rect2(stub_x, 5, 41, size.y - 10), 2), ink.lightened(0.13), ink.darkened(0.21))
+	Look.engraved_corners(self, Rect2(9, 9, stub_x - 14, size.y - 18), Color(gilt, 0.85), 10)
+	for y in range(10, int(size.y) - 5, 6):
+		draw_line(Vector2(stub_x, y), Vector2(stub_x, y + 3), Color(0.97, 0.89, 0.67, 0.7), 1)
+	var stub_center := Vector2(stub_x + 20, size.y * 0.5)
+	if id == "it_halsey_ticket":
+		var stub_font := _f("serif")
+		for i in 3:
+			var label: String = ["20-е", "Ряд 3", "Место 8"][i]
+			Look.text_c(self, stub_font, stub_center.x, 33 + i * 17, label, 10, Color("f7e6c1"), 36)
+	elif id == "it_tiori_zero_bill":
+		Look.text_c(self, _f("display_bold"), stub_center.x, 54, "0", 27, Color("f7e6c1"), 36)
+		Look.text_c(self, _f("serif"), stub_center.x, 68, "мор", 10, Color("f7e6c1"), 36)
+	else:
+		draw_arc(stub_center, 15, 0, TAU, 40, Color("bf9c6f"), 1.0, true)
+		if glyph.is_empty():
+			_draw_diamond(stub_center, Vector2(6, 9), Color("f3d9a2"))
+			_draw_diamond(stub_center, Vector2(2.2, 3.7), ink)
+		else:
+			draw_set_transform(stub_center, 0.0, Vector2.ONE * 0.68)
+			_draw_glyph(glyph, Vector2.ZERO, Color("f3d9a2"))
+			draw_set_transform(Vector2.ZERO)
+	var title_center := stub_x * 0.5
+	var font := _f("display_bold")
+	var heading := str(d.get("card_name", title()))
+	var heading_w := stub_x - 18
+	var fs := _fit_size(font, heading, heading_w, 18, 15)
+	var lines := _wrap(font, heading, heading_w, fs, 2)
+	var y := 45.0 if lines.size() > 1 else 53.0
+	for line in lines:
+		draw_string(font, Vector2(9, y), line, HORIZONTAL_ALIGNMENT_CENTER, heading_w, fs, ink.darkened(0.25))
+		y += 17.0
+	draw_line(Vector2(title_center - 21, 24), Vector2(title_center + 21, 24), gilt, 1.0, true)
+	_draw_diamond(Vector2(title_center, 24), Vector2(4, 2.7), ink)
+	var footer := str(d.get("card_note", d.get("card_sub", "")))
+	if footer.is_empty():
+		footer = lifetime_phrase()
+		if id == "it_halsey_ticket":
+			footer = "Опера «Эпиклез»"
+		elif id == "it_tiori_zero_bill":
+			footer = "Дом Тиори"
+	Look.text_c(self, _f("serif_italic"), title_center, 80, footer, 12, Look.BAD if urgent() else ink, heading_w)
+
+
+func _draw_diamond(c: Vector2, radii: Vector2, color: Color) -> void:
+	draw_colored_polygon(PackedVector2Array([
+		c - Vector2(radii.x, 0), c - Vector2(0, radii.y),
+		c + Vector2(radii.x, 0), c + Vector2(0, radii.y),
+	]), color)
 
 
 # ---- предметы: рисуются как вещи, без рамки карты
@@ -804,13 +1017,13 @@ func _draw_object(off: Vector2, shadow: Color) -> void:
 		draw_string(_f("hand"), Vector2(w - 34, h - 2), "×" + str(int(inst()["count"])), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("f0e2c0"))
 
 
-func _draw_object_art(texture: Texture2D, shape: String, off: Vector2, shadow: Color) -> void:
+func _draw_object_art(texture: Texture2D, shape: String, off: Vector2, shadow: Color) -> Rect2:
 	var area := Rect2(Vector2(3, 3), size - Vector2(6, 6))
 	if shadow.a > 0.0:
 		# Несколько слабых копий сглаживают край тени при подъёме предмета.
 		for drift in [Vector2(-1.2, 0), Vector2(1.2, 0), Vector2(0, 1.2)]:
 			DeskProp.draw_sprite(self, texture, Rect2(area.position + off + drift * (1.0 + lift), area.size), Color(shadow, shadow.a * 0.35))
-		return
+		return Rect2()
 	var r := DeskProp.draw_sprite(self, texture, area)
 	match shape:
 		"bottle":
@@ -829,3 +1042,4 @@ func _draw_object_art(texture: Texture2D, shape: String, off: Vector2, shadow: C
 			draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 	if int(inst().get("count", 1)) > 1:
 		draw_string(_f("hand"), Vector2(size.x - 34, size.y - 2), "×" + str(int(inst()["count"])), HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("f0e2c0"))
+	return r

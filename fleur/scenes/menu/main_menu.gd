@@ -66,7 +66,7 @@ func _ready() -> void:
 	var title := Label.new()
 	_title = title
 	title.text = "Послевкусие"
-	title.add_theme_font_override("font", Look.font("serif"))
+	title.add_theme_font_override("font", Look.font("display"))
 	title.add_theme_font_size_override("font_size", 68)
 	title.add_theme_color_override("font_color", Color("f4e8ca"))
 	title.add_theme_constant_override("line_spacing", -6)
@@ -76,7 +76,7 @@ func _ready() -> void:
 	var sub := Label.new()
 	_sub = sub
 	sub.text = "коллекционер прекрасных мгновений"
-	sub.add_theme_font_override("font", Look.font("serif_italic"))
+	sub.add_theme_font_override("font", Look.font("display_italic"))
 	sub.add_theme_font_size_override("font_size", 20)
 	sub.add_theme_color_override("font_color", Color("c3b8a5"))
 	box.add_child(sub)

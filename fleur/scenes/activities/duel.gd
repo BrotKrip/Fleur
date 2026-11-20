@@ -4,11 +4,13 @@ extends Control
 ## Интерфейс активности: setup(params, queue_item), get_title(); по окончании — Game.finish_activity().
 
 const KIND_COLOR := {"attack": Color("8c2a22"), "guard": Color("24486a"), "skill": Color("3c5a2a")}
+const KIND_TITLE := {"attack": "УДАР", "guard": "ЗАЩИТА", "skill": "МАНЁВР"}
 const CONTEXT_TITLE := {"training": "Тренировка", "honor": "Дело чести", "street": "Схватка", "friendly": "Дружеский поединок"}
 const END_TITLE := {"win": "Победа", "clean": "Чистая победа", "disarm": "Обезоружен", "throat": "Клинок у горла",
 	"humiliate": "Пуговицы на песке", "loss": "Поражение", "wound": "Ранен", "time": "Ничья", "yield": "Клинок опущен",
 	"childe_mark": "След на рукаве"}
-const CARD_SIZE := Vector2(158, 214)
+const CARD_SIZE := Vector2(172, 250)
+const Regalia = preload("res://ui/regalia.gd")
 const STEEL := Color("dfe8f0")
 const BLOOD := Color("e0482e")
 const GOLD := Color("f5d98b")
@@ -20,6 +22,7 @@ var duel_id := ""
 var target_uid := -1
 
 var bg_rect: TextureRect
+var stage_shade: Control
 var stage: Control
 var fx: FxLayer
 var enemy_row: HBoxContainer
@@ -135,7 +138,6 @@ class FxLayer:
 		draw_polygon(PackedVector2Array([Vector2(s.x, 0), s, Vector2(s.x - e, s.y - e), Vector2(s.x - e, e)]), PackedColorArray([c1, c1, c0, c0]))
 
 	func _draw() -> void:
-		_vignette(Color.BLACK, 0.55)
 		for d in dust:
 			draw_circle(d["p"], d["r"], Color(1.0, 0.93, 0.75, d["a"]))
 		if red > 0.0:
@@ -192,6 +194,7 @@ class EnemyView:
 	var stamp := 0.0        # 0 — нет штампа, 1 — лёг
 	var intent_pop := 1.0
 	var _tex: Texture2D
+	var _look := ""
 	var _t := 0.0
 	signal chosen(uid: int)
 
@@ -203,8 +206,13 @@ class EnemyView:
 		mouse_filter = Control.MOUSE_FILTER_STOP
 		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		disp_bal = float(e["balance"])
-		if str(e["pid"]) != "":
-			_tex = Art.portrait(str(e["pid"]))
+		var pid := str(e["pid"])
+		if pid == "char_clorinde":
+			_look = "fencing"
+		elif pid == "char_childe":
+			_look = "no_vision"
+		if pid != "":
+			_tex = Art.portrait(pid, "", _look)
 
 	func _gui_input(ev: InputEvent) -> void:
 		if ev is InputEventMouseButton and ev.pressed and ev.button_index == MOUSE_BUTTON_LEFT:
@@ -241,7 +249,10 @@ class EnemyView:
 		var moods: Dictionary = e["def"].get("portrait_moods", {})
 		if not moods.is_empty():
 			var state := "open" if e["open"] else str(e["intent"].get("kind", ""))
-			_tex = Art.portrait(str(e["pid"]), str(moods.get(state, "")))
+			var mood := str(moods.get(state, ""))
+			if _look == "fencing" and mood == "sly":
+				mood = "smile"
+			_tex = Art.portrait(str(e["pid"]), mood, _look)
 		intent_pop = 0.4
 		create_tween().tween_property(self, "intent_pop", 1.0, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
@@ -262,36 +273,40 @@ class EnemyView:
 		draw_set_transform(Vector2(size.x / 2, 34), 0.0, Vector2.ONE * intent_pop)
 		_draw_intent(Vector2.ZERO)
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-		# портрет в овале: дышит, выпадает вперёд, отшатывается
+		# Портрет движется вместе с рамкой, имя и шкала остаются на месте.
 		var breathe := 1.0 + sin(_t * 1.8 + float(e["uid"])) * 0.012
 		draw_set_transform(c + offset, tilt, Vector2.ONE * zoom * breathe)
-		var oval := PackedVector2Array()
-		for k in 48:
-			var a := TAU * k / 48
-			oval.append(Vector2(cos(a) * 92, sin(a) * 118))
-		var glow := 0.0
+		var portrait := Rect2(-101, -118, 202, 236)
+		var inner := Regalia.cut(portrait, 27)
+		var outer := Regalia.cut(portrait.grow(7), 32)
+		var glow := (0.5 + 0.5 * sin(_t * 6.0)) if e["open"] else 0.0
+		var rim := Color("f0d27a") if selected else Color("966d38")
 		if e["open"]:
-			glow = 0.5 + 0.5 * sin(_t * 6.0)
-			draw_colored_polygon(_scaled(oval, 1.12), Color(1.0, 0.75, 0.3, 0.18 + 0.15 * glow))
+			rim = Color("ffcf66").lerp(Color.WHITE, glow * 0.45)
+		if selected or e["open"]:
+			draw_colored_polygon(Regalia.cut(portrait.grow(12 + glow * 4.0), 35), Color(rim, 0.18 + glow * 0.1))
 		if eng.intent_value(e) > 0 and str(e["intent"].get("kind", "")) in ["attack", "press", "decisive"]:
-			draw_colored_polygon(_scaled(oval, 1.07), Color(0.9, 0.2, 0.1, 0.10 + 0.06 * sin(_t * 4.0)))
-		draw_colored_polygon(oval, Color(0.08, 0.06, 0.05, 0.9))
+			draw_colored_polygon(Regalia.cut(portrait.grow(10), 34), Color(0.9, 0.2, 0.1, 0.14 + 0.06 * sin(_t * 4.0)))
+		Look.fill_v(self, outer, Color("33364d"), Color("221917"))
+		Look.fill_v(self, inner, Color("8f7891").darkened((1.0 - dim) * 0.5), Color("263647"))
 		if _tex:
-			var region := Art.cover_region(_tex, Vector2(184, 236))
+			var tex_size := _tex.get_size()
+			var region := Art.cover_region(_tex, portrait.size)
+			region.size *= 0.91 if tex_size.x >= tex_size.y else 0.83
+			region.position = Vector2((tex_size.x - region.size.x) * 0.5, tex_size.y * 0.012)
 			var uvs := PackedVector2Array()
-			for p in oval:
-				var lp := (p + Vector2(92, 118)) / Vector2(184, 236)
-				uvs.append((region.position + lp * region.size) / _tex.get_size())
-			draw_colored_polygon(oval, Color(dim, dim, dim, 1), uvs, _tex)
+			for p in inner:
+				uvs.append((region.position + (p - portrait.position) / portrait.size * region.size) / tex_size)
+			draw_colored_polygon(inner, Color(dim, dim, dim, 1), uvs, _tex)
 		else:
 			draw_circle(Vector2(0, -30), 34, Color(0.28, 0.24, 0.22, dim))
 			draw_colored_polygon(PackedVector2Array([Vector2(-60, 90), Vector2(60, 90), Vector2(40, 10), Vector2(-40, 10)]), Color(0.28, 0.24, 0.22, dim))
+		Look.fill_v(self, inner, Color(0.09, 0.08, 0.08, 0.0), Color(0.09, 0.08, 0.08, 0.28))
 		if flash_col.a > 0.0:
-			draw_colored_polygon(oval, flash_col)
-		var rim := Color("f0d27a") if selected else Look.BRASS
-		if e["open"]:
-			rim = Color(1.0, 0.82, 0.4).lerp(Color.WHITE, glow * 0.5)
-		draw_polyline(oval + PackedVector2Array([oval[0]]), rim, 4.0 if (selected or e["open"]) else 2.5, true)
+			draw_colored_polygon(inner, flash_col)
+		Regalia.metal(self, portrait.grow(7), 32, 7, rim.lerp(Regalia.BRASS, 0.32))
+		Look.outline(self, inner, Color("d0ac6e"), 1.0)
+		Look.outline(self, outer, rim, 2.0 if (selected or e["open"]) else 1.0)
 		if e["open"] and stamp <= 0.0:
 			stamp = 1.0
 		if not e["open"]:
@@ -305,25 +320,16 @@ class EnemyView:
 			draw_set_transform(c, -0.18, Vector2.ONE)
 			draw_string(Look.font("serif_bold"), Vector2(-90, 8), "ВНЕ БОЯ", HORIZONTAL_ALIGNMENT_CENTER, 180, 22, Color(0.95, 0.88, 0.7, 0.95))
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-		# имя и шкалы (без сдвигов, чтобы читались)
-		Look.text_c(self, Look.font("serif_bold"), size.x / 2, 336, str(e["title"]), 19, Color(0.96, 0.9, 0.78, dim), size.x)
-		var bar := Rect2(24, 345, size.x - 48, 12)
-		draw_rect(bar, Color(0, 0, 0, 0.6))
-		var real := float(e["balance"]) / maxf(1.0, float(e["max"]))
-		var shown := disp_bal / maxf(1.0, float(e["max"]))
-		if shown > real:
-			draw_rect(Rect2(bar.position, Vector2(bar.size.x * shown, bar.size.y)), Color(0.95, 0.9, 0.75, 0.8))
-		draw_rect(Rect2(bar.position, Vector2(bar.size.x * minf(real, shown), bar.size.y)), Color("c8a14e") if not e["open"] else Color("b03a2a"))
-		draw_rect(bar, Look.BRASS_DARK, false, 1.0)
-		Look.text_c(self, Look.font("sans"), size.x / 2, 374, "равновесие %d / %d" % [int(round(disp_bal)), e["max"]], 12, Color(0.92, 0.86, 0.72, dim), size.x)
+		# Имя и круговой индикатор равновесия остаются на месте при выпаде.
+		var plate := Rect2(4, 311, size.x - 8, 72)
+		Regalia.panel(self, plate, Color("303149"), 17)
+		var balance := roundi(disp_bal)
+		var stance := Color("e5ad60") if not e["open"] else Color("eb6345")
+		Regalia.dial(self, Vector2(size.x - 38, 347), 28, disp_bal / maxf(1.0, float(e["max"])), stance, "%d/%d" % [balance, e["max"]])
+		Look.text_c(self, Look.font("display_bold"), 92, 343, str(e["title"]), 20, Color(Regalia.IVORY, dim), 155)
+		Look.text_c(self, Look.font("sans"), 92, 363, "РАВНОВЕСИЕ", 11, Color("d5c6b3"), 155)
 		if disp_guard > 0.5:
 			_shield(Vector2(size.x - 40, 290), int(round(disp_guard)))
-
-	func _scaled(pts: PackedVector2Array, k: float) -> PackedVector2Array:
-		var out := PackedVector2Array()
-		for p in pts:
-			out.append(p * k)
-		return out
 
 	func _shield(p: Vector2, n: int) -> void:
 		var pts := PackedVector2Array([p + Vector2(-18, -20), p + Vector2(18, -20), p + Vector2(16, 6), p + Vector2(0, 22), p + Vector2(-16, 6)])
@@ -380,17 +386,30 @@ class HandCard:
 	extends Control
 	var c: Dictionary
 	var d: Dictionary
-	var playable := true
+	var playable := true:
+		set(value):
+			if playable != value:
+				playable = value
+				queue_redraw()
 	var home := Vector2.ZERO
 	var home_rot := 0.0
 	var hover := false
 	var glow := 0.0
+	var kind: String
+	var ink: Color
+	var illustration: Texture2D
 	signal play(uid: int)
 	signal hovered(card)
 
 	func _init(card: Dictionary, def_: Dictionary) -> void:
 		c = card
 		d = def_
+		kind = str(d.get("kind", "skill"))
+		ink = KIND_COLOR.get(kind, KIND_COLOR["skill"])
+		illustration = Art.duel_card(str(c.get("id", "")))
+		if not illustration:
+			illustration = Art.prop("duel_" + kind)
+		texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 		size = CARD_SIZE
 		pivot_offset = CARD_SIZE / 2
 		mouse_filter = Control.MOUSE_FILTER_STOP
@@ -408,38 +427,57 @@ class HandCard:
 
 	func _process(delta: float) -> void:
 		var target := 1.0 if (hover and playable) else 0.0
-		glow = lerpf(glow, target, 1.0 - exp(-12.0 * delta))
-		queue_redraw()
+		if not is_equal_approx(glow, target):
+			glow = move_toward(glow, target, delta * 8.0)
+			queue_redraw()
 
 	func _draw() -> void:
-		var r := Rect2(Vector2(4, 4), size - Vector2(8, 8))
-		var shape := Look.rrect(r, 8)
+		var r := Rect2(2, 3, size.x - 4, size.y - 6)
+		var shape := Regalia.cut(r, 17)
+		var pigment := ink.lightened(0.18) if playable else ink.lerp(Color("474756"), 0.65)
+		var metal := pigment.lightened(0.25).lerp(Regalia.BRASS, 0.4)
+		Look.soft_shadow(self, shape, Vector2(3, 6), 6, 0.74)
 		if glow > 0.02:
-			var kc0: Color = KIND_COLOR.get(str(d.get("kind", "skill")), Color("555555"))
-			draw_colored_polygon(Look.rrect(r.grow(6), 12), Color(kc0.lightened(0.5), 0.35 * glow))
-		Look.soft_shadow(self, shape, Vector2(2, 6 + glow * 8), 6, 0.6)
-		var a := 1.0 if playable else 0.55
-		Look.fill_v(self, shape, Color(0.97, 0.93, 0.84, a), Color(0.88, 0.81, 0.68, a))
-		var kc: Color = KIND_COLOR.get(str(d.get("kind", "skill")), Color("555555"))
-		draw_rect(Rect2(r.position + Vector2(0, 46), Vector2(r.size.x, 4)), kc)
-		Look.outline(self, shape, Color(0.35, 0.25, 0.12, 0.8), 1.5)
-		var cc := r.position + Vector2(20, 20)
-		draw_circle(cc, 16, Look.BRASS_DARK)
-		draw_circle(cc, 13, Look.BRASS if playable else Color(0.45, 0.4, 0.35))
-		Look.text_c(self, Look.font("serif_bold"), cc.x, cc.y + 7, str(int(d.get("cost", 1))), 19, Color("2a1c0c"), 30)
-		draw_multiline_string(Look.font("serif_bold"), r.position + Vector2(40, 26), str(d.get("title", "")), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 46, 15, 2, Look.INK)
-		draw_multiline_string(Look.font("serif"), r.position + Vector2(10, 74), str(d.get("text", "")), HORIZONTAL_ALIGNMENT_LEFT, r.size.x - 20, 13, 8, Look.INK)
-		# значок рода приёма
-		var ic := r.position + Vector2(r.size.x / 2, r.size.y - 26)
-		match str(d.get("kind", "")):
-			"attack":
-				draw_line(ic + Vector2(-16, 10), ic + Vector2(16, -10), Color(kc, 0.55), 3.0, true)
-				draw_line(ic + Vector2(-12, 4), ic + Vector2(-6, 14), Color(kc, 0.55), 3.0, true)
-			"guard":
-				var sh := PackedVector2Array([ic + Vector2(-12, -12), ic + Vector2(12, -12), ic + Vector2(10, 4), ic + Vector2(0, 14), ic + Vector2(-10, 4)])
-				draw_polyline(sh + PackedVector2Array([sh[0]]), Color(kc, 0.55), 2.5, true)
-			_:
-				draw_arc(ic, 11, 0, TAU, 24, Color(kc, 0.55), 2.5, true)
+			Look.outline(self, Regalia.cut(r.grow(2), 18), Color(Regalia.HIGHLIGHT, glow * 0.8), 3.0)
+		Look.fill_v(self, shape, pigment.lightened(0.15), pigment.darkened(0.7))
+		Regalia.metal(self, r, 17, 7, metal)
+		var window := Rect2(10, 33, size.x - 20, 120)
+		var aperture := Regalia.cut(window, 10)
+		draw_colored_polygon(aperture, pigment.darkened(0.45))
+		Look.texture_polygon(self, aperture, illustration, 1.0, Color.WHITE if playable else Color("9e9aaa"))
+		Look.outline(self, aperture, Color(metal.lightened(0.48), 0.84), 1.6)
+
+		var nameplate := Regalia.cut(Rect2(10, 7, size.x - 20, 29), 8)
+		Look.fill_v(self, nameplate, pigment.lightened(0.12), pigment.darkened(0.56))
+		Look.outline(self, nameplate, metal.lightened(0.35), 1.2)
+		var cost := Vector2(16, 16)
+		Regalia.gem(self, cost, 16, pigment.lightened(0.28), playable)
+		Look.text_c(self, Look.font("display_bold"), cost.x, cost.y + 7, str(int(d.get("cost", 1))), 22, Regalia.IVORY, 24)
+		var heading := str(d.get("title", ""))
+		var hf := Look.font("display_bold")
+		var hw := size.x - 43
+		var hs := 17
+		while hs > 13 and hf.get_string_size(heading, HORIZONTAL_ALIGNMENT_LEFT, -1, hs).x > hw:
+			hs -= 1
+		var lines := 1 if hf.get_string_size(heading, HORIZONTAL_ALIGNMENT_LEFT, -1, hs).x <= hw else 2
+		var top := 20.0 - hf.get_height(hs) * lines * 0.5 + hf.get_ascent(hs)
+		draw_multiline_string(hf, Vector2(33, top), heading, HORIZONTAL_ALIGNMENT_CENTER, hw, hs, 2, Regalia.IVORY, TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND)
+
+		var inset := Regalia.cut(Rect2(10, 152, size.x - 20, 87), 10)
+		Look.fill_v(self, inset, Color("273040").lerp(pigment, 0.19), Color("151a23"))
+		Look.outline(self, inset, metal, 1.2)
+		var type_plate := Regalia.cut(Rect2(size.x * 0.5 - 39, 144, 78, 16), 6)
+		Look.fill_v(self, type_plate, pigment.lightened(0.22), pigment.darkened(0.47))
+		Look.outline(self, type_plate, metal.lightened(0.4), 1.0)
+		Look.text_c(self, Look.font("sans"), size.x * 0.5, 156, KIND_TITLE[kind], 10, Regalia.IVORY, 72)
+		var body_font := Look.font("serif")
+		var body := str(d.get("text", ""))
+		var width := size.x - 29
+		var fs := 14
+		var wrap := TextServer.BREAK_MANDATORY | TextServer.BREAK_WORD_BOUND
+		while fs > 10 and body_font.get_multiline_string_size(body, HORIZONTAL_ALIGNMENT_CENTER, width, fs, -1, wrap).y > 72:
+			fs -= 1
+		draw_multiline_string(body_font, Vector2(14, 165 + body_font.get_ascent(fs)), body, HORIZONTAL_ALIGNMENT_CENTER, width, fs, -1, Color("f1e6d2"), wrap)
 
 
 # ================================================================ построение
@@ -459,22 +497,27 @@ func get_title() -> String:
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
-	Sound.environment("backgrounds", str(eng.def.get("bg", "practice")), Rules.phase_key(Game.state), "", "off")
+	var background := str(eng.def.get("bg", "practice"))
+	var phase := Rules.phase_key(Game.state)
+	Sound.environment("backgrounds", background, phase, "", "off")
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	bg_rect = TextureRect.new()
 	bg_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	bg_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	bg_rect.texture = Art.background(str(eng.def.get("bg", "practice")))
+	if background == "docks" and phase == "night":
+		bg_rect.texture = Art.background("docks_night")
+	if bg_rect.texture == null:
+		bg_rect.texture = Art.background(background)
 	if bg_rect.texture == null:
 		bg_rect.texture = Art.background("city")
 	bg_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg_rect)
-	var dark := ColorRect.new()
-	dark.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dark.color = Color(0.03, 0.02, 0.02, 0.55)
-	dark.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(dark)
+	stage_shade = Control.new()
+	stage_shade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	stage_shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stage_shade.draw.connect(_draw_stage_shade)
+	add_child(stage_shade)
 
 	stage = Control.new()
 	stage.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -482,18 +525,23 @@ func _ready() -> void:
 	add_child(stage)
 
 	var title := Label.new()
-	title.position = Vector2(40, 24)
-	title.add_theme_font_override("font", Look.font("serif"))
-	title.add_theme_font_size_override("font_size", 26)
+	title.position = Vector2(40, 15)
+	title.add_theme_font_override("font", Look.font("display_bold"))
+	title.add_theme_font_size_override("font_size", 34)
 	title.add_theme_color_override("font_color", Color("f0e4c7"))
 	title.text = get_title()
 	stage.add_child(title)
 	var sub := Label.new()
-	sub.position = Vector2(42, 60)
-	sub.add_theme_font_override("font", Look.font("serif_italic"))
+	sub.position = Vector2(42, 57)
+	sub.add_theme_font_override("font", Look.font("display_italic"))
 	sub.add_theme_font_size_override("font_size", 15)
 	sub.add_theme_color_override("font_color", Color("cdbf9f"))
 	sub.text = CONTEXT_TITLE.get(eng.context, "")
+	# «Дело чести / Дело чести»: подпись повторяет заголовок — тогда она не нужна.
+	sub.visible = sub.text.strip_edges().to_lower() != title.text.strip_edges().to_lower()
+	for label: Label in [title, sub]:
+		label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.75))
+		label.add_theme_constant_override("shadow_offset_y", 2)
 	stage.add_child(sub)
 
 	enemy_row = HBoxContainer.new()
@@ -507,7 +555,7 @@ func _ready() -> void:
 		enemy_views[e["uid"]] = v
 
 	init_coin = Control.new()
-	init_coin.size = Vector2(300, 64)
+	init_coin.size = Vector2(330, 76)
 	init_coin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	init_coin.draw.connect(_draw_coin)
 	stage.add_child(init_coin)
@@ -529,7 +577,9 @@ func _ready() -> void:
 	stage.add_child(finisher_bar)
 
 	log_box = VBoxContainer.new()
-	log_box.add_theme_constant_override("separation", 4)
+	log_box.add_theme_constant_override("separation", 6)
+	log_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	log_box.draw.connect(_draw_log)
 	stage.add_child(log_box)
 
 	end_btn = _brass_button("Конец хода")
@@ -607,14 +657,15 @@ func _layout() -> void:
 	bg_rect.size = s * 1.1
 	bg_rect.position = -s * 0.05
 	bg_rect.pivot_offset = bg_rect.size / 2
+	stage_shade.queue_redraw()
 	enemy_row.position = Vector2(0, 70)
 	enemy_row.size = Vector2(s.x, 384)
-	init_coin.position = Vector2(s.x / 2 - 110, 456)
+	init_coin.position = Vector2((s.x - init_coin.size.x) / 2, 468)
 	fleur_panel.position = Vector2(30, s.y - 240)
 	finisher_bar.position = Vector2(340, s.y - 330)
 	finisher_bar.size = Vector2(s.x - 680, 60)
 	log_box.position = Vector2(s.x - 330, 110)
-	log_box.size = Vector2(300, 300)
+	log_box.size = Vector2(276, log_box.get_combined_minimum_size().y)
 	deck_pile.position = Vector2(350, s.y - 130)
 	discard_pile.position = Vector2(s.x - 410, s.y - 130)
 	end_btn.position = Vector2(s.x - 300, s.y - 160)
@@ -632,19 +683,36 @@ func _screen() -> Vector2:
 	return size if size.x > 10 else get_viewport_rect().size
 
 
+func _draw_stage_shade() -> void:
+	var s := stage_shade.size
+	var indigo := Color("141a22")
+	stage_shade.draw_rect(Rect2(Vector2.ZERO, s), Color(indigo, 0.24))
+	Look.fill_v(stage_shade, Look.rrect(Rect2(0, 0, s.x, 158), 0), Color(indigo, 0.86), Color(indigo, 0.0))
+	Look.fill_v(stage_shade, Look.rrect(Rect2(0, s.y - 410, s.x, 410), 0), Color(indigo, 0.0), Color(indigo, 0.94))
+	var rule := Rect2(40, 86, minf(465.0, s.x * 0.4), 1.4)
+	var points := Look.rrect(rule, 0)
+	stage_shade.draw_polygon(points, PackedColorArray([Color(GOLD, 0.68), Color(GOLD, 0.0), Color(GOLD, 0.0), Color(GOLD, 0.68)]))
+
+
 func _pile(is_deck: bool) -> Control:
 	var p := Control.new()
 	p.size = Vector2(64, 88)
 	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var crest := Art.prop("ap_blade")
 	p.draw.connect(func():
 		var n: int = eng.deck.size() if is_deck else eng.discard.size()
 		for k in mini(n, 5):
-			var r := Rect2(Vector2(k * 1.5, -k * 1.5), p.size)
-			p.draw_colored_polygon(Look.rrect(r, 5), Color("5a2a22") if is_deck else Color("3a3530"))
-			p.draw_polyline(Look.rrect(r, 5), Look.BRASS_DARK, 1.2, true)
+			var r := Rect2(Vector2(k * 1.4, -k * 1.4), p.size)
+			var shape := Look.rrect(r, 5)
+			Look.fill_v(p, shape, Color("253d51") if is_deck else Color("443637"), Color("192431") if is_deck else Color("251c1b"))
+			Look.outline(p, shape, Color("8b7655"), 1.0)
+			if k == mini(n, 5) - 1:
+				Look.engraved_corners(p, r.grow(-5), Color("b4945d"), 10.0)
+				if crest:
+					p.draw_texture_rect(crest, Rect2(r.position + Vector2(10, 7), Vector2(44, 44)), false, Color(1, 1, 1, 0.82 if is_deck else 0.45))
 		if n == 0:
-			p.draw_polyline(Look.rrect(Rect2(Vector2.ZERO, p.size), 5), Color(0.6, 0.5, 0.35, 0.4), 1.0, true)
-		Look.text_c(p, Look.font("serif_bold"), p.size.x / 2, p.size.y / 2 + 8, str(n), 22, Color("f0e4c7"), 60)
+			Look.outline(p, Look.rrect(Rect2(Vector2.ZERO, p.size), 5), Color(0.6, 0.5, 0.35, 0.46), 1.0)
+		Look.text_c(p, Look.font("display_bold"), p.size.x / 2, 73, str(n), 23, Color("f0e4c7"), 60)
 		Look.text_c(p, Look.font("serif_italic"), p.size.x / 2, p.size.y + 18, "колода" if is_deck else "сброс", 13, Color("d8caa8"), 90))
 	return p
 
@@ -723,69 +791,52 @@ func _wait(sec: float) -> void:
 # ================================================================ панели
 
 func _draw_coin() -> void:
-	var who := disp_init
-	var c := Vector2(32, 32)
-	var col := Look.BRASS if who != "" else Color(0.4, 0.35, 0.3)
-	init_coin.draw_set_transform(c, 0.0, Vector2(absf(_coin_flip), 1.0))
-	init_coin.draw_circle(Vector2.ZERO, 26, Look.BRASS_DARK)
-	init_coin.draw_circle(Vector2.ZERO, 22, col)
-	init_coin.draw_arc(Vector2.ZERO, 18, 0, TAU, 32, Color(1, 0.95, 0.75, 0.4), 1.2, true)
-	Look.text_c(init_coin, Look.font("serif_bold"), 0, 8, "↑" if who == "enemy" else ("↓" if who == "fleur" else "·"), 22, Color("2a1c0c"), 40)
-	init_coin.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	var t := "Инициатива у Флёра" if who == "fleur" else ("Инициатива у противника" if who == "enemy" else "Инициатива ничья")
-	init_coin.draw_string(Look.font("serif_italic"), Vector2(66, 30), t, HORIZONTAL_ALIGNMENT_LEFT, 240, 15, Color("efe3c4"))
-	init_coin.draw_string(Look.font("sans"), Vector2(66, 48), "у кого она — бьёт на 2 сильнее", HORIZONTAL_ALIGNMENT_LEFT, 260, 11, Color(0.85, 0.78, 0.62, 0.7))
+	var p := init_coin
+	var owner := disp_init
+	var color := Color("56bac6") if owner == "fleur" else Color("e07959") if owner == "enemy" else Color("a4916d")
+	var c := Vector2(38, 38)
+	Regalia.panel(p, Rect2(19, 6, p.size.x - 22, 64), Color("202936").lerp(color, 0.19), 22)
+	p.draw_set_transform(c, 0.0, Vector2(maxf(0.03, absf(_coin_flip)), 1.0))
+	Regalia.gem(p, Vector2.ZERO, 33, color.darkened(0.3))
+	Regalia.blades(p, Vector2.ZERO, 22, Regalia.IVORY)
+	p.draw_set_transform(Vector2.ZERO)
+	p.draw_string(Look.font("display_bold"), Vector2(82, 33), "Инициатива", HORIZONTAL_ALIGNMENT_LEFT, 235, 21, Regalia.IVORY)
+	var effect := "Флёр · +2 к удару" if owner == "fleur" else "Соперник · +2 к удару" if owner == "enemy" else "Ничья · без бонуса к удару"
+	p.draw_string(Look.font("sans"), Vector2(82, 55), effect, HORIZONTAL_ALIGNMENT_LEFT, 235, 14, color.lightened(0.35))
 
 
 func _draw_fleur() -> void:
 	var f: Dictionary = eng.fleur
 	var p := fleur_panel
-	var box := Look.rrect(Rect2(0, 0, p.size.x, p.size.y), 10)
-	p.draw_colored_polygon(box, Color(0.07, 0.05, 0.04, 0.85))
-	var rim := Look.BRASS_DARK
-	if f["open"] and eng.result.is_empty():
-		rim = Color(1.0, 0.3, 0.2).lerp(Look.BRASS_DARK, 0.5 + 0.5 * sin(_t * 6.0))
-	p.draw_polyline(box + PackedVector2Array([box[0]]), rim, 2.5, true)
-	p.draw_string(Look.font("serif_bold"), Vector2(18, 34), "Флёр", HORIZONTAL_ALIGNMENT_LEFT, 200, 22, Color("f0e4c7"))
+	var stance := Color("e0b365") if not f["open"] else Color("ed6d54")
+	Regalia.panel(p, Rect2(Vector2.ZERO, p.size), Color("24334b"))
+	p.draw_string(Look.font("display_bold"), Vector2(18, 36), "Флёр", HORIZONTAL_ALIGNMENT_LEFT, 140, 27, Regalia.IVORY)
+	Look.text_c(p, Look.font("sans"), 223, 32, "Ход %d из %d" % [eng.turn, int(eng.def.get("max_rounds", 10))], 13, Color("dbcaab"), 118)
 	if f["open"]:
-		p.draw_string(Look.font("serif_bold"), Vector2(110, 34), "РАСКРЫТ", HORIZONTAL_ALIGNMENT_LEFT, 200, 18, Color("ff6a50"))
-	var bar := Rect2(18, 50, p.size.x - 36, 14)
-	p.draw_rect(bar, Color(0, 0, 0, 0.6))
-	var real := float(f["balance"]) / maxf(1.0, float(f["max"]))
-	var shown := float(fleur_disp["balance"]) / maxf(1.0, float(f["max"]))
-	if shown > real:
-		p.draw_rect(Rect2(bar.position, Vector2(bar.size.x * shown, bar.size.y)), Color(1.0, 0.75, 0.65, 0.8))
-	p.draw_rect(Rect2(bar.position, Vector2(bar.size.x * minf(real, shown), bar.size.y)), Color("c8a14e") if not f["open"] else Color("b03a2a"))
-	p.draw_rect(bar, Look.BRASS_DARK, false, 1.0)
-	p.draw_string(Look.font("sans"), Vector2(18, 82), "Равновесие %d / %d" % [int(round(float(fleur_disp["balance"]))), f["max"]], HORIZONTAL_ALIGNMENT_LEFT, 200, 13, Color("e6d6b0"))
-	var g := int(round(float(fleur_disp["guard"])))
-	p.draw_string(Look.font("sans"), Vector2(180, 82), "Защита %d" % g, HORIZONTAL_ALIGNMENT_LEFT, 120, 13, Color("c9d7e2") if g > 0 else Color(0.6, 0.65, 0.7))
-	p.draw_string(Look.font("sans"), Vector2(18, 112), "Силы", HORIZONTAL_ALIGNMENT_LEFT, 80, 13, Color("e6d6b0"))
-	for k in maxi(eng.energy, DuelEngine.ENERGY):
-		var cc := Vector2(80 + k * 30, 107)
-		var on: bool = k < eng.energy
-		if on:
-			p.draw_circle(cc, 13 + sin(_t * 3.0 + k) * 0.8, Color(1.0, 0.85, 0.4, 0.18))
-		p.draw_circle(cc, 11, Look.BRASS_DARK)
-		p.draw_circle(cc, 9, Color("f0c860") if on else Color(0.25, 0.2, 0.15))
-	p.draw_string(Look.font("sans"), Vector2(18, 144), "Блеск", HORIZONTAL_ALIGNMENT_LEFT, 80, 13, Color("e6d6b0"))
-	for k in 10:
-		var cc := Vector2(80 + k * 20, 139)
-		var lit: bool = k < int(f["panache"])
-		var sc := 1.0 + (0.15 * sin(_t * 5.0 + k) if lit else 0.0)
-		var dia := PackedVector2Array([cc + Vector2(0, -7) * sc, cc + Vector2(6, 0) * sc, cc + Vector2(0, 7) * sc, cc + Vector2(-6, 0) * sc])
-		p.draw_colored_polygon(dia, GOLD if lit else Color(0.25, 0.2, 0.15))
+		Look.text_c(p, Look.font("sans"), 150, 54, "РАСКРЫТ", 13, stance, 120)
+	var balance := roundi(float(fleur_disp["balance"]))
+	var guard := roundi(float(fleur_disp["guard"]))
+	var panache := int(f["panache"])
 	var notes := PackedStringArray()
+	Regalia.dial(p, Vector2(50, 99), 36, float(balance) / maxf(1.0, float(f["max"])), stance, "%d/%d" % [balance, f["max"]])
+	Regalia.dial(p, Vector2(150, 99), 36, float(guard) / maxf(1.0, float(f["max"])), Color("77afd8"), str(guard))
+	Regalia.dial(p, Vector2(250, 99), 36, panache / 10.0, Color("d7a0eb"), str(panache))
+	for i in 3:
+		Look.text_c(p, Look.font("serif"), 50 + i * 100, 152, ["Равновесие", "Защита", "Блеск"][i], 14, Color("e7dac6"), 94)
+	p.draw_string(Look.font("sans"), Vector2(18, 183), "Силы", HORIZONTAL_ALIGNMENT_LEFT, 60, 14, Regalia.IVORY)
+	var energy_slots := maxi(eng.energy, DuelEngine.ENERGY)
+	var spacing := minf(27.0, 202.0 / energy_slots)
+	for i in energy_slots:
+		Regalia.gem(p, Vector2(78 + i * spacing, 179), minf(10.0, spacing * 0.45), Color("68bdde"), i < eng.energy)
 	if int(f["prepared"]) > 0:
-		notes.append("следующий удар +%d" % f["prepared"])
+		notes.append("удар +%d" % f["prepared"])
 	if f["feint"]:
-		notes.append("финт: сквозь защиту")
+		notes.append("финт")
 	if int(f["counter"]) > 0:
 		notes.append("контратака %d" % f["counter"])
 	if int(f["wounds"]) > 0:
 		notes.append("ранен")
-	p.draw_string(Look.font("serif_italic"), Vector2(18, 178), ", ".join(notes), HORIZONTAL_ALIGNMENT_LEFT, p.size.x - 30, 13, Color("f3d68a"))
-	p.draw_string(Look.font("sans"), Vector2(18, 204), "Ход %d из %d" % [eng.turn, int(eng.def.get("max_rounds", 10))], HORIZONTAL_ALIGNMENT_LEFT, 200, 12, Color(0.85, 0.78, 0.62, 0.7))
+	Look.text_c(p, Look.font("serif_italic"), 150, 206, " · ".join(notes), 13, Color("f3d68a"), 270)
 
 
 # ================================================================ рука
@@ -793,10 +844,11 @@ func _draw_fleur() -> void:
 func _hand_slot(i: int, n: int) -> Array:
 	var s := _screen()
 	var mid := (n - 1) / 2.0
-	var step := minf(116.0, 560.0 / maxf(1.0, n - 1)) if n > 1 else 0.0
+	var room := s.x - 835.0
+	var step := minf(CARD_SIZE.x + 3.0, maxf(0.0, room - CARD_SIZE.x) / maxf(1.0, n - 1))
 	var x := s.x / 2 + (i - mid) * step - CARD_SIZE.x / 2
-	var y := s.y - 228 + pow(absf(i - mid), 2.0) * 7.0
-	return [Vector2(x, y), (i - mid) * 0.055]
+	var y := s.y - CARD_SIZE.y - 14 + minf(9.0, pow(absf(i - mid), 2.0) * 2.2)
+	return [Vector2(x, y), clampf((i - mid) * 0.024, -0.08, 0.08)]
 
 
 func _fan(animate := true) -> void:
@@ -822,9 +874,9 @@ func _on_card_hover(hc: HandCard) -> void:
 	var tw := hc.create_tween().set_parallel()
 	if hc.hover:
 		hand_layer.move_child(hc, -1)
-		tw.tween_property(hc, "position", hc.home + Vector2(0, -42), 0.12).set_ease(Tween.EASE_OUT)
+		tw.tween_property(hc, "position", hc.home + Vector2(0, -57), 0.12).set_ease(Tween.EASE_OUT)
 		tw.tween_property(hc, "rotation", 0.0, 0.12)
-		tw.tween_property(hc, "scale", Vector2.ONE * 1.12, 0.12)
+		tw.tween_property(hc, "scale", Vector2.ONE * 1.22, 0.12)
 	else:
 		tw.tween_property(hc, "position", hc.home, 0.15)
 		tw.tween_property(hc, "rotation", hc.home_rot, 0.15)
@@ -1054,7 +1106,7 @@ func _flip_coin(to: String) -> void:
 	tw.tween_property(self, "_coin_flip", 0.0, 0.1)
 	tw.tween_callback(func(): disp_init = to)
 	tw.tween_property(self, "_coin_flip", 1.0, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	fx.ring(init_coin.global_position + Vector2(32, 32) - fx.global_position, GOLD, 60.0, 0.4)
+	fx.ring(init_coin.global_position + Vector2(38, 38) - fx.global_position, GOLD, 60.0, 0.4)
 
 
 # ================================================================ проигрывание событий
@@ -1274,10 +1326,21 @@ func _panel_jolt() -> void:
 	tw.tween_property(fleur_panel, "position", base, 0.06)
 
 
+func _draw_log() -> void:
+	if log_box.get_child_count() == 0 or log_box.size.y < 1.0:
+		return
+	var rect := Rect2(Vector2.ZERO, log_box.size).grow(13)
+	var shape := Look.rrect(rect, 8)
+	Look.fill_v(log_box, shape, Color("26262b"), Color("191b21"))
+	Look.outline(log_box, shape, Color("8f7550"), 1.0)
+	Look.engraved_corners(log_box, rect.grow(-5), Color("9b825b"), 13.0)
+
+
 func _log(text: String, kind: String) -> void:
 	var l := Label.new()
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	l.custom_minimum_size.x = 300
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	l.custom_minimum_size.x = 276
 	l.add_theme_font_override("font", Look.font("serif"))
 	l.add_theme_font_size_override("font_size", 14)
 	var col := Color("e6d6b0")
@@ -1296,8 +1359,10 @@ func _log(text: String, kind: String) -> void:
 		old.queue_free()
 	var i := 0
 	for c in log_box.get_children():
-		(c as Control).self_modulate.a = 0.45 + 0.55 * float(i + 1) / log_box.get_child_count()
+		(c as Control).self_modulate.a = 0.62 + 0.38 * float(i + 1) / log_box.get_child_count()
 		i += 1
+	log_box.call_deferred("reset_size")
+	log_box.queue_redraw()
 
 
 func _float(p: Vector2, text: String, col: Color, fsize := 30, hold := 0.5) -> void:
@@ -1334,6 +1399,14 @@ func _panel(width: float) -> PanelContainer:
 	var p := PanelContainer.new()
 	p.theme_type_variation = "Paper"
 	p.custom_minimum_size = Vector2(width, 0)
+	var paper := Art.surface("paper")
+	p.draw.connect(func():
+		var rect := Rect2(Vector2.ZERO, p.size)
+		if rect.size.y < 18:
+			return
+		Look.texture_polygon(p, Look.rrect(rect.grow(-2), 2), paper, 1.0, Color(1.0, 0.97, 0.91, 0.34))
+		Look.outline(p, Look.rrect(rect.grow(-7), 3), Color(0.48, 0.34, 0.15, 0.46), 1.0)
+		Look.engraved_corners(p, rect.grow(-11), Color("aa8956"), 17.0))
 	overlay.add_child(p)
 	return p
 
@@ -1359,6 +1432,7 @@ func _show_intro() -> void:
 	var k := Label.new()
 	k.theme_type_variation = "Kicker"
 	k.text = CONTEXT_TITLE.get(eng.context, "").to_upper()
+	k.visible = k.text != get_title().to_upper()
 	v.add_child(k)
 	var t := Label.new()
 	t.theme_type_variation = "InkTitle"

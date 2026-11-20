@@ -7,6 +7,8 @@ const PHASE_TINT := [Color(1.0, 0.94, 0.86), Color(1.0, 1.0, 0.98), Color(0.96, 
 const PHASE_LAMP := [0.0, 0.0, 0.55, 1.0]
 
 var bg: ColorRect
+var room_floor: TextureRect
+var frame_hud: DeskFrame
 var wood: ShaderMaterial
 var lamp_rect: ColorRect
 var lamp_mat: ShaderMaterial
@@ -32,24 +34,28 @@ const ZOOM_MIN := 0.55
 const ZOOM_MAX := 1.35
 ## Зоны стола: куда ложатся новые вещи и как раскладывает «Прибрать».
 const ZONES := {
-	"person": Rect2(40, 560, 1240, 600),
-	"approach": Rect2(360, 1190, 640, 190),   # правее латунных кнопок «Меню» и «Прибрать стол»
-	"rumor": Rect2(1330, 560, 1030, 520), "info": Rect2(1330, 560, 1030, 520), "clue": Rect2(1330, 560, 1030, 520),
-	"item": Rect2(1030, 1190, 890, 190),
-	"invitation": Rect2(1940, 1100, 420, 280), "event": Rect2(1940, 1100, 420, 280),
-	"affair": Rect2(1400, 40, 600, 330), "storyline": Rect2(1400, 40, 600, 330),
-	"deadline": Rect2(1720, 400, 300, 160),
-	"state": Rect2(2050, 420, 300, 140),
-	"world": Rect2(1330, 400, 380, 160),
+	"person": Rect2(220, 590, 1080, 590),
+	"approach": Rect2(596, 1190, 610, 190),   # правее консоли с табличками «Меню» и «Прибрать стол»
+	"rumor": Rect2(1330, 590, 790, 490), "info": Rect2(1330, 590, 790, 490), "clue": Rect2(1330, 590, 790, 490),
+	"item": Rect2(1220, 1190, 490, 190),
+	"invitation": Rect2(1720, 1100, 400, 280), "event": Rect2(1720, 1100, 400, 280),
+	"affair": Rect2(1340, 30, 540, 330), "storyline": Rect2(1340, 30, 540, 330),
+	"deadline": Rect2(1580, 420, 270, 150),
+	"state": Rect2(1860, 420, 260, 150),
+	"world": Rect2(1330, 420, 240, 150),
 }
-## Безделушки на деревянных краях стола, вне зон для карт (координаты стола).
+## Кожаная подложка. Вокруг неё остаётся дерево: сверху под картой и открыткой места,
+## слева под картой и справа между часами и записной книжкой.
+const FELT := Rect2(190, 400, 1950, 980)
+## Безделушки лежат на дереве, вне подложки и зон для карт (координаты стола).
+## Правый край стола под экранными часами (x > 1880, y < 360) остаётся пустым.
 const TRINKETS := {
-	"mirror": Vector2(494, 312),
-	"bell": Vector2(642, 312),
-	"letters": Vector2(762, 310),
-	"swan": Vector2(1168, 264),
-	"hat": Vector2(2040, 196),
-	"glass": Vector2(2220, 272),
+	"mirror": Vector2(34, 622),
+	"bell": Vector2(52, 800),
+	"swan": Vector2(36, 960),
+	"letters": Vector2(706, 302),
+	"hat": Vector2(2188, 588),
+	"glass": Vector2(2246, 796),
 }
 const ZONE_ORDER := ["affair", "storyline", "deadline", "state", "world", "person", "rumor", "info", "clue", "invitation", "event", "item", "approach"]
 
@@ -90,7 +96,7 @@ var _drag_vel := Vector2.ZERO       # для инерции после пере�
 var _arrived: Array = []             # карты, прилетевшие за последнюю синхронизацию
 
 var card_index: CardIndex
-const INDEX_POS := Vector2(1182, 44)
+const INDEX_POS := Vector2(2172, 404)
 ## Что нельзя убрать в картотеку: дела, сроки и печати подходов всегда на виду.
 const KEEP_ON_DESK := ["affair", "deadline", "approach"]
 
@@ -182,9 +188,25 @@ func _ready() -> void:
 	world.size = WORLD
 	desk_input.add_child(world)
 
+	# Вокруг стола комната: пол, на нём тень от стола и резной край столешницы.
+	room_floor = TextureRect.new()
+	# ковёр подобран так, что паркет в его середине чуть больше столешницы
+	room_floor.size = Vector2(3700, 2080)
+	room_floor.position = WORLD / 2.0 - room_floor.size / 2.0
+	room_floor.texture = Art.prop("desk_room_floor")
+	room_floor.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	room_floor.stretch_mode = TextureRect.STRETCH_SCALE
+	room_floor.modulate = Color(0.62, 0.58, 0.55)
+	room_floor.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	world.add_child(room_floor)
+	var rim := Control.new()
+	rim.size = WORLD
+	rim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rim.draw.connect(_draw_rim.bind(rim))
+	world.add_child(rim)
 	bg = ColorRect.new()
-	bg.position = Vector2(-700, -500)
-	bg.size = WORLD + Vector2(1400, 1000)
+	bg.position = Vector2.ZERO
+	bg.size = WORLD
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	wood = ShaderMaterial.new()
 	wood.shader = load("res://shaders/wood.gdshader")
@@ -209,13 +231,17 @@ func _ready() -> void:
 		trinkets.append(trinket)
 
 	hint_label = Label.new()
-	hint_label.add_theme_font_override("font", Look.font("hand"))
-	hint_label.add_theme_font_size_override("font_size", 15)
-	hint_label.add_theme_color_override("font_color", Color(0.93, 0.85, 0.7, 0.55))
+	hint_label.add_theme_font_override("font", Look.font("serif"))
+	hint_label.add_theme_font_size_override("font_size", 14)
+	hint_label.add_theme_color_override("font_color", Color(0.93, 0.86, 0.72, 0.72))
+	hint_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.55))
+	hint_label.add_theme_constant_override("shadow_offset_y", 1)
+	hint_label.add_theme_constant_override("line_spacing", -2)
 	hint_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hint_label.clip_text = true
-	hint_label.text = "Колесо — масштаб, пустое место стола — сдвинуть вид, Home — вернуть. Карту можно бросить на булавку, портрет, папку дела или в картотеку."
+	# Две строки по смыслу, прижаты к правому краю сукна: не уходят за его кромку.
+	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hint_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	hint_label.text = "Колесо — масштаб, пустое место стола — сдвинуть вид, Home — вернуть.\nКарту можно бросить на булавку, портрет, папку дела или в картотеку."
 
 	map = CityMap.new()
 	map.pin_clicked.connect(_travel)
@@ -230,6 +256,11 @@ func _ready() -> void:
 		if nodes.has(pid):
 			_toggle_note(nodes[pid]))
 	world.add_child(spread)
+
+	# Экранная рамка: углы-постаменты под часами, кнопками и записной книжкой.
+	frame_hud = DeskFrame.new()
+	frame_hud.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(frame_hud)
 
 	dial = TimeDial.new()
 	dial.wait_requested.connect(_on_wait)
@@ -338,6 +369,21 @@ func on_shown() -> void:
 				if target != NO_ROOM:
 					_save_layout_at(card, target)
 					create_tween().tween_property(card, "position", target, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	if not Game.state["flags"].get("_desk_v4", false):
+		# Стол переложен: подложка уже, карта крупнее, безделушки на деревянных полях.
+		# Карты, оставшиеся под вещами, на полях или под часами, переезжают один раз.
+		Game.state["flags"]["_desk_v4"] = true
+		var reserved := _reserved()
+		for id in nodes.keys():
+			var card: TableCard = nodes[id]
+			var lay = Game.state["layout"].get(id)
+			var rect := Rect2(card.position if lay == null else Vector2(float(lay[0]), float(lay[1])), card.size)
+			if not _misplaced(rect, reserved):
+				continue
+			var target := _free_spot(card.size, _zone_for(card.d), id)
+			if target != NO_ROOM:
+				_save_layout_at(card, target)
+				create_tween().tween_property(card, "position", target, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	if not Game.state["flags"].get("_desk_intro", false):
 		# Первый взгляд на стол: карта города, открытка места, люди и письмо — всё в кадре.
 		Game.state["flags"]["_desk_intro"] = true
@@ -376,20 +422,30 @@ func _layout_fixed() -> void:
 	wood.set_shader_parameter("size", bg.size)
 	lamp_mat.set_shader_parameter("size", ts)
 	# на столе (в мире)
-	map.position = Vector2(30, 30)
-	spread.position = Vector2(500, 34)
-	inkwell.position = Vector2(973, 308)
+	map.position = Vector2(20, 16)
+	spread.position = Vector2(652, 30)
+	inkwell.position = Vector2(1170, 296)
 	for trinket in trinkets:
 		trinket.position = TRINKETS[trinket.kind]
 	# на экране
-	dial.position = Vector2(ts.x - 310, 28)
-	notebook.position = Vector2(ts.x - 170, ts.y - 180)
-	plaque.position = Vector2(34, ts.y - 72)
-	tidy_btn.position = Vector2(166, ts.y - 72)
+	# Часы висят под полкой кронштейна, таблички лежат на консоли слева,
+	# записная книжка стоит на зеркальной консоли справа.
+	var tr := frame_hud.corner_rect("tr")
+	var bl := frame_hud.corner_rect("bl")
+	var br := frame_hud.corner_rect("br")
+	if tr.size.y > 0:
+		dial.position = Vector2(tr.position.x + tr.size.x * DeskFrame.TR_ARM_X - dial.size.x - 6, tr.size.y * DeskFrame.TR_SHELF_BOTTOM - 4)
+	else:
+		dial.position = Vector2(ts.x - 336, 28)
+	var ledge := bl.position.y + bl.size.y * DeskFrame.LEDGE_TOP if bl.size.y > 0 else ts.y - 28
+	plaque.position = Vector2(bl.size.x * DeskFrame.LEDGE_FROM, ledge - 40)
+	tidy_btn.position = Vector2(plaque.position.x + 126, ledge - 40)
+	var ledge_r := br.position.y + br.size.y * DeskFrame.LEDGE_TOP if br.size.y > 0 else ts.y - 28
+	notebook.position = Vector2(br.position.x + br.size.x * (1.0 - DeskFrame.LEDGE_FROM) * 0.5 - notebook.size.x * 0.5, ledge_r - notebook.size.y + 8)
 	card_index.position = INDEX_POS
 	# подсказка живёт между латунными табличками и записной книжкой и не уходит за край
-	hint_label.position = Vector2(440, ts.y - 66)
-	hint_label.size = Vector2(maxf(200.0, ts.x - 440 - 200), 56)
+	hint_label.position = Vector2(bl.end.x + 16, ts.y - 104)
+	hint_label.size = Vector2(maxf(200.0, br.position.x - bl.end.x - 40), 64)
 	_update_hint()
 	blotter.queue_redraw()
 	_clamp_camera()
@@ -403,8 +459,39 @@ func _update_hint() -> void:
 	hint_label.visible = bool(Game.settings["hints"]) and int(Game.state.get("day", 1)) <= 3 and sheet == null
 
 
+## Край столешницы: толстый резной орех с латунным кантом и тень стола на полу.
+const RIM := 44.0
+func _draw_rim(ci: Control) -> void:
+	var outer := Rect2(Vector2.ZERO, WORLD).grow(RIM)
+	var edge := Look.rrect(outer, 26)
+	Look.soft_shadow(ci, edge, Vector2(14, 26), 26, 0.85)
+	Look.thickness(ci, edge, 12.0, Color("2a170b"), Color("120904"))
+	Look.fill_v(ci, edge, Color("5a3519"), Color("2e1a0c"))
+	# фаска: светлая сверху, тёмная снизу, как у точёного края
+	Look.outline(ci, Look.rrect(outer.grow(-3), 24), Color(1.0, 0.82, 0.55, 0.18), 2.0)
+	Look.outline(ci, Look.rrect(outer.grow(-RIM * 0.42), 18), Color(0.12, 0.06, 0.02, 0.55), 3.0)
+	# латунный кант с бирюзовой эмалью
+	var inlay := outer.grow(-RIM * 0.62)
+	Look.outline(ci, Look.rrect(inlay, 14), Color("b08d4a"), 3.0)
+	Look.outline(ci, Look.rrect(inlay.grow(-4), 12), Color(0.16, 0.42, 0.40, 0.75), 2.0)
+	# латунные розетки по углам столешницы и посередине длинных сторон
+	var marks := [outer.position + Vector2(RIM, RIM) * 0.5, Vector2(outer.end.x, outer.position.y) + Vector2(-RIM, RIM) * 0.5,
+		outer.end - Vector2(RIM, RIM) * 0.5, Vector2(outer.position.x, outer.end.y) + Vector2(RIM, -RIM) * 0.5,
+		Vector2(outer.get_center().x, outer.position.y + RIM * 0.5), Vector2(outer.get_center().x, outer.end.y - RIM * 0.5)]
+	for m in marks:
+		ci.draw_circle(m + Vector2(1, 2), 9.0, Color(0, 0, 0, 0.35), true, -1, true)
+		ci.draw_circle(m, 9.0, Color("8e6a2a"), true, -1, true)
+		ci.draw_circle(m, 6.5, Color("d8b866"), true, -1, true)
+		ci.draw_circle(m, 3.0, Color("2a6b66"), true, -1, true)
+		ci.draw_circle(m - Vector2(2, 2), 1.6, Color(1, 0.95, 0.8, 0.8), true, -1, true)
+
+
 func _draw_blotter() -> void:
-	var r := Rect2(20, 400, WORLD.x - 40, WORLD.y - 420)
+	# край столешницы чуть приподнят: тонкая тень по периметру дерева
+	var top := Rect2(Vector2.ZERO, WORLD)
+	for i in 6:
+		Look.outline(blotter, Look.rrect(top.grow(-i * 2.0), 4), Color(0.05, 0.02, 0.0, 0.16 - i * 0.025), 2.0)
+	var r := FELT
 	var edge := Look.rrect(r, 17)
 	Look.soft_shadow(blotter, edge, Vector2(3, 8), 10, 0.7)
 	# кожаная подложка лежит на столе толстым листом
@@ -424,10 +511,89 @@ func _draw_blotter() -> void:
 	for y in range(int(seam.position.y + 14), int(seam.end.y - 14), 7):
 		for x in [seam.position.x, seam.end.x]:
 			blotter.draw_line(Vector2(x, y), Vector2(x, y + 3), thread, 1.0)
-	# Тиснение по углам подложки.
-	for p in [r.position + Vector2(24, 24), Vector2(r.end.x - 24, r.position.y + 24), r.end - Vector2(24, 24), Vector2(r.position.x + 24, r.end.y - 24)]:
-		var mark := PackedVector2Array([p + Vector2(0, -6), p + Vector2(4, 0), p + Vector2(0, 6), p + Vector2(-4, 0)])
-		Look.outline(blotter, mark, Color(0.75, 0.61, 0.34, 0.35), 1.0)
+	_draw_tooling(r)
+	_draw_wood_marks()
+
+
+## Золотое тиснение по коже: бордюр, угловые веера и медальон в середине.
+## Оно бледное и лежит под картами, только чтобы пустая подложка не была голой.
+func _draw_tooling(r: Rect2) -> void:
+	var gilt := Color(0.78, 0.63, 0.35, 0.30)
+	var faint := Color(0.78, 0.63, 0.35, 0.13)
+	var band := r.grow(-30)
+	# Бордюр: ромбы с точками через равный шаг.
+	for side in 2:
+		var x := band.position.x + 60.0
+		while x < band.end.x - 60.0:
+			var y := band.position.y if side == 0 else band.end.y
+			_lozenge(Vector2(x, y), Vector2(5, 3), gilt)
+			blotter.draw_circle(Vector2(x + 14, y), 1.1, faint, true, -1, true)
+			blotter.draw_circle(Vector2(x - 14, y), 1.1, faint, true, -1, true)
+			x += 44.0
+	for side in 2:
+		var y := band.position.y + 60.0
+		while y < band.end.y - 60.0:
+			var x := band.position.x if side == 0 else band.end.x
+			_lozenge(Vector2(x, y), Vector2(3, 5), gilt)
+			y += 44.0
+	# Угловые веера: дуги и лучи от угла внутрь подложки.
+	var corners := [[band.position, Vector2(1, 1)], [Vector2(band.end.x, band.position.y), Vector2(-1, 1)],
+		[band.end, Vector2(-1, -1)], [Vector2(band.position.x, band.end.y), Vector2(1, -1)]]
+	for c in corners:
+		var o: Vector2 = c[0]
+		var dir: Vector2 = c[1]
+		var start := dir.angle() - PI / 4      # четверть круга, раскрытая внутрь подложки
+		for rad in [34.0, 46.0, 52.0]:
+			blotter.draw_arc(o, rad, start, start + PI / 2, 18, faint if rad == 46.0 else gilt, 1.0, true)
+		for k in 5:
+			var t := (k + 0.5) / 5.0
+			var ray := Vector2(dir.x * cos(t * PI / 2), dir.y * sin(t * PI / 2))
+			blotter.draw_line(o + ray * 8, o + ray * 30, faint, 1.0, true)
+		_lozenge(o, Vector2(5, 5), gilt)
+	# Медальон в середине подложки.
+	var m := r.get_center() + Vector2(0, 10)
+	for rad in [150.0, 142.0]:
+		blotter.draw_arc(m, rad, 0, TAU, 128, faint, 1.2, true)
+	blotter.draw_arc(m, 96, 0, TAU, 96, Color(gilt, 0.16), 1.0, true)
+	for k in 16:
+		var a := k * TAU / 16
+		var p := m + Vector2.from_angle(a) * 120
+		_lozenge(p, Vector2(4, 4) if k % 2 == 0 else Vector2(2.4, 2.4), faint if k % 2 else Color(gilt, 0.2))
+	for k in 8:
+		var a := k * TAU / 8 + PI / 8
+		var tip := m + Vector2.from_angle(a) * 78
+		var side := Vector2.from_angle(a).orthogonal() * 13
+		var base := m + Vector2.from_angle(a) * 30
+		blotter.draw_polyline(PackedVector2Array([base + side, tip, base - side]), Color(gilt, 0.16), 1.0, true)
+	blotter.draw_arc(m, 24, 0, TAU, 48, Color(gilt, 0.2), 1.0, true)
+	_lozenge(m, Vector2(9, 9), Color(gilt, 0.18))
+
+
+func _lozenge(p: Vector2, half: Vector2, color: Color) -> void:
+	Look.outline(blotter, PackedVector2Array([p + Vector2(0, -half.y), p + Vector2(half.x, 0), p + Vector2(0, half.y), p + Vector2(-half.x, 0)]), color, 1.0)
+
+
+## Следы жизни на дереве: кольца от бокала и чашки, капли воска и сургуча.
+func _draw_wood_marks() -> void:
+	var rings := [[Vector2(2300, 1010), 34.0, 0.16], [Vector2(2232, 1030), 22.0, 0.10], [Vector2(1300, 356), 30.0, 0.12], [Vector2(116, 1150), 40.0, 0.11]]
+	for ring in rings:
+		var c: Vector2 = ring[0]
+		var rad: float = ring[1]
+		var alpha: float = ring[2]
+		# Кольцо незамкнутое и неровное, как настоящий след.
+		blotter.draw_arc(c, rad, 0.3, TAU - 0.5, 64, Color(0.18, 0.08, 0.03, alpha), 3.0, true)
+		blotter.draw_arc(c + Vector2(1.5, 1), rad - 3, 1.2, TAU - 0.2, 64, Color(0.18, 0.08, 0.03, alpha * 0.5), 1.5, true)
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 7
+	for spot in [[Vector2(640, 370), Color(0.86, 0.80, 0.66, 0.55)], [Vector2(150, 1210), Color(0.86, 0.80, 0.66, 0.5)], [Vector2(1250, 380), Color(0.47, 0.06, 0.09, 0.75)]]:
+		var c: Vector2 = spot[0]
+		var col: Color = spot[1]
+		for k in 5:
+			var p := c + Vector2(rng.randf_range(-14, 14), rng.randf_range(-8, 8))
+			var rad := rng.randf_range(1.6, 4.2)
+			blotter.draw_circle(p + Vector2(0.8, 1.2), rad, Color(0, 0, 0, 0.25), true, -1, true)
+			blotter.draw_circle(p, rad, col, true, -1, true)
+			blotter.draw_circle(p - Vector2(rad * 0.3, rad * 0.35), rad * 0.35, Color(1, 1, 1, 0.25), true, -1, true)
 
 
 func _reserved() -> Array:
@@ -437,6 +603,19 @@ func _reserved() -> Array:
 		Rect2(inkwell.position, inkwell.size),
 		Rect2(INDEX_POS, card_index.size).grow(6),
 	] + trinkets.map(func(tr): return Rect2(tr.position, tr.size * tr.scale))
+
+
+## Карта лежит под вещью, на деревянном поле сбоку или под экранными часами.
+func _misplaced(rect: Rect2, reserved: Array) -> bool:
+	for rr in reserved:
+		if rr.intersects(rect.grow(-10)):
+			return true
+	if rect.end.y > FELT.position.y + 20 and (rect.position.x < FELT.position.x - 20 or rect.end.x > FELT.end.x + 20):
+		return true
+	# левый нижний угол под консолью с табличками
+	if rect.position.x < 600 and rect.end.y > 1200:
+		return true
+	return rect.end.x > 1900 and rect.position.y < 360
 
 
 func _zone_for(d: Dictionary) -> Rect2:
@@ -485,7 +664,7 @@ func _grid_spot(card_size: Vector2, zone: Rect2, occupied: Array) -> Vector2:
 		if ok:
 			return p
 	# Зона переполнена: ищем любое свободное место на подложке, начиная с ближайших к зоне.
-	var leather := Rect2(40, 420, WORLD.x - 80, WORLD.y - 440)
+	var leather := FELT.grow(-20)
 	var spots := []
 	var y := leather.position.y
 	while y + card_size.y <= leather.end.y:
@@ -1449,7 +1628,10 @@ func _place_sheet(sh) -> void:
 	var ts := table_size()
 	var sz: Vector2 = sh.get_combined_minimum_size().max(sh.size)
 	var y := clampf(ts.y - sz.y - 40, 90, maxf(90, ts.y - sz.y - 10))
-	sh.position = Vector2(roundf((ts.x - sz.x) / 2), roundf(y))
+	# Лист сдвинут вправо, на сторону слухов и улик: портреты людей слева остаются видны,
+	# их можно щёлкнуть или перетащить в ячейку. Записная книжка справа не перекрывается.
+	var x := clampf(ts.x - sz.x - 200, (ts.x - sz.x) / 2, maxf((ts.x - sz.x) / 2, ts.x - sz.x - 20))
+	sh.position = Vector2(roundf(x), roundf(y))
 
 
 func _case_under(gp: Vector2, dragged: TableCard) -> String:
@@ -1595,7 +1777,7 @@ func _home_rect() -> Rect2:
 func _fit_zoom(r: Rect2) -> float:
 	# по ближнему, самому узкому краю
 	var ts := Vector2(table_size().x / NEAR_SCALE, plane_size.y)
-	return clampf(minf(ts.x / r.size.x, ts.y / r.size.y), ZOOM_MIN, ZOOM_MAX)
+	return clampf(minf(ts.x / r.size.x, ts.y / r.size.y), zoom_min(), ZOOM_MAX)
 
 
 func _home_camera(instant := false) -> void:
@@ -1615,7 +1797,7 @@ func focus_rect(r: Rect2, zoom_mul := 1.0, force := false) -> void:
 		return
 	if not Game.settings.get("camera_direction", true) and not force:
 		return
-	zoom_target = clampf(_fit_zoom(r.grow(60)) * zoom_mul, ZOOM_MIN, ZOOM_MAX)
+	zoom_target = clampf(_fit_zoom(r.grow(60)) * zoom_mul, zoom_min(), ZOOM_MAX)
 	zoom_target = minf(zoom_target, maxf(cam_zoom, 1.0))
 	cam_target = r.get_center()
 	_anchored = false
@@ -1669,15 +1851,25 @@ func _zoom_at(screen_point: Vector2, factor: float) -> void:
 		_anchor_world = (screen_to_plane(screen_point) - (_plane_anchor() - cam_pos * cam_zoom)) / cam_zoom
 		_anchor_screen = screen_point
 	_anchored = true
-	zoom_target = clampf(zoom_target * factor, ZOOM_MIN, ZOOM_MAX)
+	zoom_target = clampf(zoom_target * factor, zoom_min(), ZOOM_MAX)
 	_smooth = 0.16
 	_user_cam_time = _clock
 
 
+## Самое дальнее отдаление: столешница с резным краем ровно заполняет экранную раму.
+## Дальше отъезжать незачем: между краем стола и рамой открылся бы пустой пол.
+func zoom_min() -> float:
+	var ts := Vector2(table_size().x / NEAR_SCALE, plane_size.y)
+	var r := Rect2(Vector2.ZERO, WORLD).grow(RIM + 24.0)
+	return clampf(minf(ts.x / r.size.x, ts.y / r.size.y), ZOOM_MIN, ZOOM_MAX)
+
+
 func _clamp_camera() -> void:
 	# по ближнему краю: дальний шире, но за краем мира там тоже дерево стола
+	zoom_target = maxf(zoom_target, zoom_min())
 	var half := Vector2(table_size().x / NEAR_SCALE, plane_size.y) / 2.0 / zoom_target
-	var margin := Vector2(160, 120)
+	# из-за края показываем только резной кант столешницы, не пол за ним
+	var margin := Vector2(RIM + 24.0, RIM + 24.0)
 	var lo := half - margin
 	var hi := WORLD - half + margin
 	for k in 2:
@@ -1793,9 +1985,9 @@ func _input(e: InputEvent) -> void:
 			KEY_S, KEY_DOWN:
 				cam_target.y += step
 			KEY_EQUAL, KEY_KP_ADD:
-				zoom_target = clampf(zoom_target * 1.12, ZOOM_MIN, ZOOM_MAX)
+				zoom_target = clampf(zoom_target * 1.12, zoom_min(), ZOOM_MAX)
 			KEY_MINUS, KEY_KP_SUBTRACT:
-				zoom_target = clampf(zoom_target / 1.12, ZOOM_MIN, ZOOM_MAX)
+				zoom_target = clampf(zoom_target / 1.12, zoom_min(), ZOOM_MAX)
 			_:
 				return
 		_anchored = false

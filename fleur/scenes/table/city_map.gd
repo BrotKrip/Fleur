@@ -18,10 +18,10 @@ const REGION_PINS := {
 	"loc_poisson": Vector2(0.53, 0.57),
 }
 
-const LABEL_FS := 12
+const LABEL_FS := 14
 
 func _ready() -> void:
-	size = Vector2(440, 420)
+	size = Vector2(600, 540)
 	pivot_offset = size / 2
 	rotation = -0.018
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -43,7 +43,7 @@ func _ready() -> void:
 ## Прямоугольник, в который вписан рисунок карты. Булавки задаются долями именно его,
 ## а не всего листа: иначе при вписывании с сохранением пропорций они съезжают в море.
 func chart_rect() -> Rect2:
-	var area := Rect2(Vector2(4, 42), size - Vector2(8, 48))
+	var area := Rect2(Vector2(4, 46), size - Vector2(8, 52))
 	if _chart == null:
 		return area
 	var chart_size := _chart.get_size()
@@ -63,7 +63,7 @@ func pin_local(loc: String) -> Vector2:
 ## У каждого оттиска есть поле изображения и собственная строка названия.
 func _inset_image(loc: String) -> Rect2:
 	var tex: Texture2D = _region_charts[loc]
-	var image_size := tex.get_size() * (108.0 / tex.get_width())
+	var image_size := tex.get_size() * (140.0 / tex.get_width())
 	var origin := Vector2(size.x - image_size.x - 11, 52)
 	if loc == "loc_poisson":
 		origin = Vector2(11, size.y - image_size.y - 62)
@@ -223,11 +223,11 @@ func _draw_procedural_chart() -> void:
 
 func _draw_cartouche() -> void:
 	# Надписи не запечены в картинку и остаются резкими при масштабировании.
-	var title_rect := Rect2(80, 9, size.x - 160, 31)
+	var title_rect := Rect2(130, 8, size.x - 260, 36)
 	draw_colored_polygon(Look.rrect(title_rect, 4), Color(0.96, 0.91, 0.79, 0.78))
-	Look.text_c(self, Look.font("serif_italic"), size.x / 2, 32, "Кур-де-Фонтейн", 22, Color("493b2c"))
-	draw_line(Vector2(112, 39), Vector2(size.x - 112, 39), Color(0.54, 0.42, 0.25, 0.38), 0.8, true)
-	Look.text_c(self, Look.font("hand"), 70, size.y - 22, "Море", 13, Color(0.22, 0.31, 0.33, 0.9))
+	Look.text_c(self, Look.font("serif_italic"), size.x / 2, 32, "Кур-де-Фонтейн", 26, Color("493b2c"))
+	draw_line(Vector2(160, 42), Vector2(size.x - 160, 42), Color(0.54, 0.42, 0.25, 0.38), 0.8, true)
+	Look.text_c(self, Look.font("hand"), 70, size.y - 22, "Море", 15, Color(0.22, 0.31, 0.33, 0.9))
 	# Маленькая латунная роза ветров на чистом поле листа.
 	var rc := Vector2(size.x - 44, size.y - 46)
 	draw_circle(rc, 24, Color(0.96, 0.92, 0.81, 0.86))

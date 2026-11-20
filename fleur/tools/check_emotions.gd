@@ -50,6 +50,9 @@ func _run() -> void:
 				pid = str(node["s"])
 				mood = str(node["as"])
 			var file: String = art.mood_file(mood)
+			# Флёр — рассказчик без спрайта: пометка у его реплики задаёт тон, а не картинку.
+			if pid != "" and not content.characters.has(pid):
+				continue
 			if pid != "" and file != "" and file != "neutral":
 				required[pid + "/" + file] = true
 	for key: String in required:

@@ -122,7 +122,7 @@ func _ready() -> void:
 	add_child(location_plaque)
 	place_label = Label.new()
 	place_label.position = Vector2(56, 26)
-	place_label.add_theme_font_override("font", Look.font("serif"))
+	place_label.add_theme_font_override("font", Look.font("display"))
 	place_label.add_theme_font_size_override("font_size", 19)
 	place_label.add_theme_color_override("font_color", Color("f0e4c7"))
 	place_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
@@ -132,7 +132,7 @@ func _ready() -> void:
 	scene_label.position = Vector2(56, 52)
 	scene_label.text = ""
 	scene_label.visible = false
-	scene_label.add_theme_font_override("font", Look.font("serif_italic"))
+	scene_label.add_theme_font_override("font", Look.font("display_italic"))
 	scene_label.add_theme_font_size_override("font_size", 14)
 	scene_label.add_theme_color_override("font_color", Color("d6c7a8"))
 	scene_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
@@ -194,7 +194,7 @@ func _ready() -> void:
 	name_plate.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	name_plate.draw.connect(Decor.nameplate.bind(name_plate))
 	name_label = Label.new()
-	name_label.add_theme_font_override("font", Look.font("serif_bold"))
+	name_label.add_theme_font_override("font", Look.font("display_bold"))
 	name_label.add_theme_font_size_override("font_size", 22)
 	name_plate.add_child(name_label)
 	add_child(name_plate)
@@ -246,27 +246,36 @@ func _ready() -> void:
 
 	var tools := HBoxContainer.new()
 	tool_bar = tools
-	tools.add_theme_constant_override("separation", 8)
+	tools.add_theme_constant_override("separation", 4)
+	tools.draw.connect(func(): tools.draw_texture_rect(Decor.haze(), Rect2(-60, -26, tools.size.x + 120, tools.size.y + 52), false))
 	for pair in [["Пропуск", _toggle_skip], ["Скрыть", _toggle_ui], ["История", _show_history], ["Настройки", Dialogs.settings]]:
 		var b := Button.new()
 		b.text = pair[0]
 		b.add_theme_font_size_override("font_size", 15)
+		# Лёгкие надписи вместо четырёх плашек: сцена не закрыта рамками, латунь — только под курсором.
 		var tool_style := StyleBoxFlat.new()
-		tool_style.bg_color = Color("112c33ed")
-		tool_style.border_color = Color("aa905e")
-		tool_style.set_border_width_all(1)
-		tool_style.set_corner_radius_all(2)
-		tool_style.content_margin_left = 16
-		tool_style.content_margin_right = 16
-		tool_style.content_margin_top = 7
-		tool_style.content_margin_bottom = 7
+		tool_style.bg_color = Color(0, 0, 0, 0)
+		tool_style.border_color = Color(Decor.BRASS, 0.0)
+		tool_style.border_width_bottom = 1
+		tool_style.content_margin_left = 11
+		tool_style.content_margin_right = 11
+		tool_style.content_margin_top = 6
+		tool_style.content_margin_bottom = 6
+		var tool_hover := tool_style.duplicate() as StyleBoxFlat
+		tool_hover.border_color = Color(Decor.PALE_BRASS, 0.9)
 		var tool_active := tool_style.duplicate() as StyleBoxFlat
-		tool_active.bg_color = Color("275054")
-		tool_active.border_color = Color("d5bb82")
+		tool_active.bg_color = Color(0.09, 0.22, 0.24, 0.75)
+		tool_active.border_color = Decor.PALE_BRASS
+		tool_active.set_corner_radius_all(2)
 		b.add_theme_stylebox_override("normal", tool_style)
-		b.add_theme_stylebox_override("hover", tool_active)
+		b.add_theme_stylebox_override("hover", tool_hover)
 		b.add_theme_stylebox_override("pressed", tool_active)
-		b.add_theme_color_override("font_color", Color("f1dfb8"))
+		b.add_theme_color_override("font_color", Color(0.95, 0.88, 0.74, 0.86))
+		b.add_theme_color_override("font_hover_color", Color("fff3d6"))
+		b.add_theme_color_override("font_pressed_color", Color("fff3d6"))
+		b.add_theme_color_override("font_hover_pressed_color", Color("fff3d6"))
+		b.add_theme_color_override("font_outline_color", Color(0.02, 0.05, 0.06, 0.8))
+		b.add_theme_constant_override("outline_size", 4)
 		b.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		b.pressed.connect(pair[1])
 		b.focus_mode = Control.FOCUS_NONE
@@ -367,7 +376,8 @@ func _fit_location() -> void:
 	for title: Label in [place_label, scene_label]:
 		title.clip_text = true
 		title.size.x = width + 3
-	location_plaque.size = Vector2(width + 53, 62)
+	# Линейка ложится сразу под последней строкой, без пустого поля под названием.
+	location_plaque.size = Vector2(width + 53, 58 if scene_label.visible and scene_label.text != "" else 40)
 	location_plaque.queue_redraw()
 
 
@@ -640,8 +650,10 @@ func _say(who: String, text: String) -> void:
 	name_label.add_theme_color_override("font_color", _speaker_color(who).lerp(Color("fff0cd"), 0.38))
 	name_plate.reset_size()
 	if who == "":
-		text_label.add_theme_font_override("font", Look.font("serif_italic"))
-		text_label.add_theme_color_override("font_color", Color("e2d6bc"))
+		# Повествование прямым шрифтом: кириллический курсив («т» как «m») тяжело читать
+		# абзацами. От реплик его отличают тёплый приглушённый тон и отсутствие имени.
+		text_label.add_theme_font_override("font", Look.font("serif"))
+		text_label.add_theme_color_override("font_color", Color("ddd0b4"))
 	else:
 		text_label.add_theme_font_override("font", Look.font("serif"))
 		text_label.add_theme_color_override("font_color", Color("f6eedc"))

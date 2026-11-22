@@ -244,6 +244,14 @@
 		"text": "Утренняя гостья Флёра. Пришла за забытой подвязкой и гребнем «на вырост».",
 		"color": "#c8a0a0"
 	},
+	"npc_morning_guest": {
+		"type": "person",
+		"look": "portrait",
+		"role": "episodic",
+		"title": "Утренняя гостья",
+		"text": "Светло-русая девушка, проснувшаяся у Флёра. Имя начинается на «М».",
+		"color": "#c8a0a0"
+	},
 	"npc_bourdieu": {
 		"type": "person",
 		"look": "portrait",

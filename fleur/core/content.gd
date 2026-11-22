@@ -88,7 +88,7 @@ func figure_lighting(id: String, phase: String, shot_profile := "") -> Dictionar
 ## Текстовый формат сцен (data/scenes/*.scene) — чтобы сцены можно было писать как прозу.
 ##   @id имя / @after следующая_сцена
 ##   @bg имя [профиль_света] / @show id [left|center|right] / @hide id
-##   @label имя / @goto имя / @if {условие JSON} -> имя / @do [эффекты JSON] / @end
+##   @label имя / @goto имя / @if {условие JSON} -> имя / @adult имя / @do [эффекты JSON] / @end
 ##   N: текст                      — повествование
 ##   кто: текст                    — реплика (fleur, char_..., или говорящий из world.json)
 ##   кто [эмоция]: текст           — реплика со сменой эмоции (держится, пока не сменят)
@@ -163,6 +163,9 @@ func parse_scene(text: String, fname := "") -> Dictionary:
 					nodes.append({"label": arg})
 				"goto":
 					nodes.append({"goto": arg})
+				"adult":
+					# При выключенных откровенных сценах перейти к указанной метке.
+					nodes.append({"adult": arg})
 				"if":
 					var arrow := arg.rfind("->")
 					nodes.append({"if": JSON.parse_string(arg.substr(0, arrow)), "goto": arg.substr(arrow + 2).strip_edges()})

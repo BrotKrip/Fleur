@@ -3,7 +3,7 @@ extends Control
 ## к состоянию игры и по завершении возвращает список изменений на стол.
 ##
 ## Узлы сцены: { bg }, { show, at }, { hide }, { n } — повествование, { s, t } — реплика,
-## { choice: [{ t, when, effects, goto }] }, { label }, { goto }, { if, goto }, { do }, { end }.
+## { choice: [{ t, when, effects, goto }] }, { label }, { goto }, { adult }, { if, goto }, { do }, { end }.
 
 const Decor := preload("res://ui/ambient_canvas.gd")
 const FIGURE_LIGHT := preload("res://shaders/figure_lighting.gdshader")
@@ -458,6 +458,8 @@ func _run() -> void:
 			i += 1
 		elif n.has("if"):
 			i = labels[n["goto"]] if Rules.test(n["if"], s, ctx) else i + 1
+		elif n.has("adult"):
+			i = i + 1 if bool(Game.settings.get("adult_content", true)) else labels[n["adult"]]
 		elif n.has("goto"):
 			i = labels[n["goto"]]
 		elif n.has("end"):

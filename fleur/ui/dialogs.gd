@@ -95,11 +95,13 @@ static func settings() -> void:
 		slider.value_changed.connect(func(v): Game.set_setting(key, v))
 		slider_row.call(pair[1], slider)
 
-	for pair in [["fullscreen", "Полноэкранный режим"], ["autosave", "Автосохранение"], ["hints", "Подсказки на столе"]]:
+	for pair in [["fullscreen", "Полноэкранный режим"], ["autosave", "Автосохранение"], ["hints", "Подсказки на столе"], ["adult_content", "Откровенные сцены (18+)"]]:
 		var cb := CheckBox.new()
 		cb.text = pair[1]
 		cb.button_pressed = bool(Game.settings[pair[0]])
 		var key: String = pair[0]
+		if key == "adult_content":
+			cb.tooltip_text = "Если выключить, откровенные части романтических сцен будут пропущены без изменения сюжета."
 		cb.toggled.connect(func(on): Game.set_setting(key, on))
 		sh.body.add_child(cb)
 	sh.add_row([Sheet.make_button("Готово", sh.close)])

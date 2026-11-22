@@ -25,6 +25,7 @@ var settings := {
 	"ambience_volume": 1.0,
 	"effects_volume": 1.0,
 	"hints": true,
+	"adult_content": true,
 }
 
 ## Изменения, которые надо показать на столе после возвращения из VN/активности.
